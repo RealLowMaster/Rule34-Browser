@@ -20,7 +20,7 @@ function AskForRemoveIcon(name) {
 		{
 			text: 'Yes',
 			class: 'btn btn-danger',
-			onclick: `this.parentElement.parentElement.remove();RemoveIcon('${name}')`
+			onclick: `RemoveIcon('${name}')`
 		},
 		{ text: 'No' }
 	])

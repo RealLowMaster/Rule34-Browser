@@ -1,0 +1,133 @@
+#main-browser {
+
+}
+
+#main-browser > div:first-child {
+	display: flex;
+	height: 39px;
+	background-color: var(--tertiary-bg);
+}
+
+#mb-tabs {
+	display: flex;
+	width: calc(100% - 100px);
+	height: 100%;
+}
+
+#mb-tabs > div {
+	display: inline-flex;
+	align-items: center;
+	width: 232px;
+	height: 100%;
+	background-color: var(--tertiary-bg);
+	border-radius: 11px 11px 0 0;
+	position: relative;
+	user-select: none;
+	cursor: pointer;
+}
+
+#mb-tabs > div::before {
+	content: '';
+	width: 1px;
+	height: 60%;
+	background-color: var(--primary-bg);
+	position: absolute;
+	left: -.5px;
+}
+
+#mb-tabs > div:last-child::after {
+	content: '';
+	width: 1px;
+	height: 60%;
+	background-color: var(--primary-bg);
+	position: absolute;
+	right: -.5px;
+}
+
+#mb-tabs > div > img {
+	width: 24px;
+	height: 24px;
+	margin: 0 5px 0 10px;
+}
+
+#mb-tabs > div > span {
+	width: calc(100% - 60px);
+	color: var(--interactive-normal);
+	font-size: 14px;
+}
+
+#mb-tabs > div > div {
+	width: 17px;
+	height: 17px;
+	color: var(--primary-header);
+	border-radius: 50%;
+	text-align: center;
+	line-height: 14px;
+	font-size: 20px;
+	position: absolute;
+	right: 2px;
+}
+
+#mb-tabs > div:hover { background-color: var(--modifier-active-bg) }
+#mb-tabs > div:hover > span { color: var(--interactive-hover) }
+#mb-tabs > div > div:hover { background-color: #ed4245; color: #fff }
+
+#mb-tabs > div[active] { background-color: var(--modifier-selected-bg) }
+#mb-tabs > div[active] > span { color: var(--interactive-active) }
+
+#mb-tabs > div[active]::before,
+#mb-tabs > div[active]::after {
+	content: '';
+	width: 16px;
+	height: 16px;
+	background-color: var(--modifier-selected-bg);
+	position: absolute;
+	z-index: +1;
+	bottom: 0;
+}
+
+#mb-tabs > div[active]::after {
+	right: -16px;
+	clip-path: path("M 0 16 L 0 0 Q 0 16 16 16 Z");
+}
+
+#mb-tabs > div[active]::before {
+	left: -16px;
+	clip-path: path("M 16 16 L 16 0 Q 16 16 0 16 Z");
+}
+
+#mb-tabs > div[active] + div::before { display: none }
+
+#main-browser > div:first-child > div:last-child {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100px;
+	height: 100%;
+}
+
+#main-browser > div:first-child > div:last-child > div {
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	margin: 0 5px 0 0;
+	background-color: var(--secondary-bg);
+	color: var(--primary-header);
+	border-radius: 50%;
+	text-align: center;
+	line-height: 30px;
+	font-size: 20px;
+	cursor: pointer;
+	user-select: none;
+	transition: transform .2s, background-color .2s;
+}
+
+#main-browser > div:first-child > div:last-child > div:hover {
+	transform: scale(1.1);
+	background-color: var(--modifier-hover-bg);
+}
+
+#main-browser > div:last-child {
+	height: calc(100% - 39px);
+	overflow-y: auto;
+}

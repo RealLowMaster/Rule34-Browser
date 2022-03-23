@@ -1,6 +1,7 @@
 const defaultSetting = {
 	theme: 0,
 	language: 0,
+	animations: true,
 	not: true,
 	not_sound: true,
 	full_screen: false,
@@ -9,6 +10,7 @@ const defaultSetting = {
 
 // [ 'setting name', 'translate name', 'translate tip' || null ]
 const sto_checkbox = [
+	['animations', 'animations', 'animationstip'],
 	['not', 'notifications', 'nottip'],
 	['not_sound', 'notsound', 'notsoundtip'],
 	['full_screen', 'fullscreen', 'fullscreentip'],
@@ -34,6 +36,13 @@ let setting
 function LoadSettings() {
 	if (existsSync(dirDocument+'/setting.json')) setting = jsonfile.readFileSync(dirDocument+'/setting.json').a
 	else {
+		setting = defaultSetting
+		jsonfile.writeFileSync(dirDocument+'/setting.json',{a:setting})
+	}
+
+	if (setting == null) {
+		console.error(setting)
+		console.error('Could not cache settings')
 		setting = defaultSetting
 		jsonfile.writeFileSync(dirDocument+'/setting.json',{a:setting})
 	}
@@ -106,6 +115,8 @@ function LoadSettings() {
 	document.getElementById('setting-tabs').getElementsByTagName('button')[0].click()
 	ApplySetting()
 	ApplyTheme(setting.theme)
+	if (setting.animations) document.body.classList.remove('no-animation')
+	else document.body.classList.add('no-animation')
 }
 
 function OpenSettings() {
@@ -245,6 +256,10 @@ function ApplySetting(prev_setting = null) {
 
 	// If prev_setting != null => That mean we are Saving Setting (Apply Function Run in CloseSetting() Too)
 	if (prev_setting != null) {
+		if (setting.animations != prev_setting.animations) {
+			if (setting.animations) document.body.classList.remove('no-animation')
+			else document.body.classList.add('no-animation')
+		}
 		if (setting.theme != prev_setting.theme) ApplyTheme(setting.theme)
 		if (setting.language != prev_setting.language) ApplyLanguage(setting.language)
 		if (setting.full_screen != prev_setting.full_screen) ChangeScreenMode(setting.full_screen, false)

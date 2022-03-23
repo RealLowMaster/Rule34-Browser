@@ -125,6 +125,25 @@ textarea::-webkit-input-placeholder { user-select: none }
 	position: relative;
 }
 
+#window-body > div {
+	width: 100%;
+	height: calc(100% - var(--topMenuSize));
+	position: fixed;
+	top: var(--topMenuSize);
+	left: 0;
+}
+
+.no-animation,
+.no-animation::after,
+.no-animation::before,
+.no-animation *,
+.no-animation *::after,
+.no-animation *::before {
+	animation: none !important;
+	animation-name: none !important;
+	transition: none !important;
+}
+
 .btn {
 	display: inline-flex;
 	justify-content: center;

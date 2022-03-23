@@ -27,6 +27,7 @@
 	<script type="text/javascript" src="js/theme.js" defer></script>
 	<script type="text/javascript" src="js/applys.js" defer></script>
 	<script type="text/javascript" src="js/settings.js" defer></script>
+	<script type="text/javascript" src="js/custom.js" defer></script>
 	<script type="text/javascript" src="js/startup.js" defer></script>
 </head>
 <body>
@@ -40,6 +41,34 @@
 			</div>
 		</div>
 		<div id="window-body">
+			<!-- Main Browser ⨯ -->
+			<div id="main-browser">
+				<div>
+					<div id="mb-tabs">
+						<div>
+							<img src="Image/favicon.png">
+							<span>Friends</span>
+							<div onclick="">⨯</div>
+						</div>
+						<div active>
+							<img src="Image/favicon.png">
+							<span>Friends</span>
+							<div onclick="">⨯</div>
+						</div>
+						<div>
+							<img src="Image/favicon.png">
+							<span>Friends</span>
+							<div onclick="">⨯</div>
+						</div>
+					</div>
+					<div>
+						<div lt="newtab" onclick="AddNewTab()"><i ic="plus"></i></div>
+						<div lt="settings" onclick="OpenSettings()"><i ic="gear"></i></div>
+					</div>
+				</div>
+				<div></div>
+			</div>
+
 			<!-- Settings -->
 			<div id="setting-window">
 				<div id="setting-tabs">
@@ -58,19 +87,7 @@
 							<h1 l="appearance"></h1>
 							<div id="sto_theme"></div>
 							<hr>
-							<!-- <div id="sto_test" class="sto_selector">
-								<h6>test</h6>
-								<div>
-									<button type="button" onclick=""></button>
-									<div>
-										<div onclick="">1 t</div>
-										<div onclick="">2 t</div>
-										<div onclick="">3 t</div>
-										<div onclick="">4 t</div>
-									</div>
-								</div>
-								<p>Test Tip.</p>
-							</div> -->
+							<div id="sto_animations"></div>
 						</div>
 
 						<div id="st_Notifications">

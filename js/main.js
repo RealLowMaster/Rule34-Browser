@@ -3,7 +3,7 @@ const { existsSync, mkdirSync, writeFileSync, readFileSync } = require('fs')
 const jsonfile = require('jsonfile')
 const KeyManager = new HotKeyManager()
 const ContextManger = new ContextMenuManager()
-const dirDocument = remote.app.getPath('documents')+'\\APP_NAME'
+const dirDocument = remote.app.getPath('documents')+'\\Rule34 Browser'
 if (!existsSync(dirDocument)) mkdirSync(dirDocument)
 const ThisWindow = remote.getCurrentWindow(), loading = new Loading(), update_number = 0
 
@@ -33,13 +33,13 @@ function AskForQuitApp() {
 		{
 			text: 'Yes',
 			class: 'btn btn-danger',
-			onclick: 'this.parentElement.parentElement.remove();remote.app.quit()'
+			onclick: 'remote.app.quit()'
 		},
 		{
 			text: 'No',
-			onclick: 'KeyManager.BackwardCategory();this.parentElement.parentElement.remove()'
+			onclick: 'KeyManager.BackwardCategory()'
 		}
-	], 'KeyManager.BackwardCategory();this.parentElement.remove()')
+	])
 }
 
 function ChangeScreenMode(fullscreen = null, save = true) {
@@ -67,6 +67,7 @@ function SetHotKeys() {
 	KeyManager.use_public = true
 
 	KeyManager.AddCategory('default')
+	KeyManager.AddHotKey('default', true, false, false, 83, 'AddNewTab()')
 	KeyManager.AddHotKey('default', false, false, false, 27, 'AskForQuitApp()')
 
 	KeyManager.AddCategory('setting')
@@ -84,12 +85,12 @@ function SetHotKeys() {
 }
 
 function SetContextMenus() {
-	let i = ContextManger.AddMenu('default')
-	ContextManger.AddItem(i, {text:'Hello'})
-	ContextManger.AddItem(i, {text:'test',click:"console.log('test')"})
-	ContextManger.AddItem(i, {text:'test',click:"console.log('test')"})
+	let i = ContextManger.AddMenu('tab')
+	ContextManger.AddItem(i, { text:'Copy', click:'' })
+	ContextManger.AddItem(i, { text:'Reload', click:'' })
+	ContextManger.AddItem(i, { text:'Duplicate', click:'' })
+	ContextManger.AddItem(i, { text:'Pin', click:'' })
 	ContextManger.AddItem(i, {})
-	ContextManger.AddItem(i, {text:'test',click:"console.log('test')"})
-	ContextManger.AddItem(i, {text:'test',click:"console.log('test')"})
-	ContextManger.AddEvent(i, document.body)
+	ContextManger.AddItem(i, { text:'Close', click:'' })
+	ContextManger.AddItem(i, { text:'Close other tabs', click:'' })
 }

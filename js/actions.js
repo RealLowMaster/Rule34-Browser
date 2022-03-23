@@ -73,9 +73,12 @@ function PopAlert(txt, style) {
 	document.body.appendChild(alertElement)
 
 	const alerts = document.getElementsByClassName('pop-alert')
-	for (let i = 0; i < alerts.length; i++) {
-		PopAlertFrame(alerts[i])
+	if (setting.animations) for (let i = 0, l = alerts.length; i < l; i++) PopAlertFrame(alerts[i])
+	else for (let i = 0, l = alerts.length; i < l; i++) {
+		const bottom = Number(alerts[i].style.bottom.replace('px', ''))
+		alerts[i].style.bottom = (bottom+45)+'px'
 	}
+	
 
 	setTimeout(() => {
 		alertElement.remove()
