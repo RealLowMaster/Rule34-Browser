@@ -1,0 +1,88 @@
+{
+	"name": "rule34-browser",
+	"version": "1.0.0",
+	"description": "A Browser for Easily View, Download and Manage Rule34 pictures :)",
+	"main": "index.js",
+	"author": "Mehdi Enayatzadeh (LowMaster)",
+	"license": "MIT",
+	"private": true,
+	"keywords": [
+		"rule34",
+		"nsfw",
+		"adult",
+		"hentai",
+		"erotic",
+		"browser",
+		"management"
+	],
+	"build": {
+		"appId": "me.lowmaster.rule34-browser",
+		"productName": "Rule34 Browser",
+		"copyright": "Copyright © 2022 Mehdi Enayatzadeh (LowMaster)",
+		"compression": "maximum",
+		"directories": {
+			"output": "build"
+		},
+		"mac": {
+			"category": "public.app-category.adult",
+			"target": [
+				"dmg"
+			],
+			"icon": "Image/favicon.icns"
+		},
+		"dmg": {
+			"icon": "Image/favicon.icns",
+			"iconSize": 100,
+			"window": {
+				"width": 544,
+				"height": 408
+			},
+			"contents": [
+				{
+					"x": 110,
+					"y": 150
+				},
+				{
+					"x": 240,
+					"y": 150,
+					"type": "link",
+					"path": "/Applications"
+				}
+			]
+		},
+		"linux": {
+			"target": [
+				"AppImage",
+				"deb"
+			],
+			"icon": "Image/favicon-32x32.png"
+		},
+		"win": {
+			"target": "NSIS",
+			"publisherName": "Mehdi Enayatzadeh (LowMaster)",
+			"icon": "Image/favicon.ico"
+		},
+		"asar": true,
+		"nsis": {
+			"allowToChangeInstallationDirectory": true,
+			"oneClick": false
+		}
+	},
+	"scripts": {
+		"start": "electron .",
+		"build": "electron-builder --dir",
+		"dist": "electron-builder"
+	},
+	"devDependencies": {
+		"electron": "13.1.4",
+		"electron-builder": "22.7.0"
+	},
+	"dependencies": {
+		"jsonfile": "^6.1.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RealLowMaster/Rule34-Browser.git"
+	},
+	"bugs": "https://github.com/RealLowMaster/Rule34-Browser/issues"
+}

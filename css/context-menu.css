@@ -1,0 +1,49 @@
+.context-menu {
+	display: block;
+	width: 200px;
+	height: auto;
+	background-color: var(--secondary-bg-alt);
+	color: var(--text-normal);
+	border: 1px solid var(--modifier-accent-bg);
+	border-radius: 4px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 999999999;
+	user-select: none !important;
+	cursor: default;
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+.context-menu > div {
+	display: block;
+	width: 100%;
+	padding: 7px 10px;
+	background-color: transparent;
+	direction: var(--dir);
+	font-size: .9rem;
+	cursor: pointer;
+}
+
+.context-menu > div:hover { background-color: var(--modifier-hover-bg) }
+
+.context-menu > p {
+	display: block;
+	width: 95%;
+	margin: 5px auto;
+	padding: 1px 12px;
+	color: var(--secondary-header);
+	border-bottom: 1px solid var(--modifier-accent-bg);
+	text-transform: uppercase;
+	direction: var(--dir);
+	font-size: .6rem;
+	font-weight: 600;
+}
+
+.context-menu > span {
+	display: block;
+	width: 95%;
+	height: 1px;
+	margin: 5px auto;
+	background-color: var(--modifier-accent-bg);
+}

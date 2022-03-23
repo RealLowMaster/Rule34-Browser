@@ -1,0 +1,479 @@
+#setting-window {
+	display: none;
+	width: 100%;
+	height: 100%;
+	background-color: var(--primary-bg);
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	user-select: none;
+	cursor: default;
+	direction: var(--dir);
+	overflow: hidden auto;
+}
+
+#setting-tabs {
+	display: flex;
+	flex: 1 0 218px;
+	background-color: var(--secondary-bg);
+	z-index: 1;
+	-webkit-box-flex: 1;
+    -webkit-box-pack: end;
+    justify-content: flex-end;
+    vertical-align: baseline;
+    padding: 60px 6px 60px 20px;
+}
+
+#setting-tabs > div {
+	width: 218px;
+	overflow: hidden scroll;
+	background-color: var(--secondary-bg);
+}
+
+#setting-tabs > div > p {
+	display: block;
+	padding: 0 10px 6px 10px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 17px;
+	text-transform: uppercase;
+	color: #8e9297;
+}
+
+#setting-tabs > div > hr {
+	display: block;
+    height: 1px;
+	margin: 8px 10px;
+	background-color: #ffffff0f;
+}
+
+#setting-tabs > div > button {
+	display: block;
+	width: 100%;
+	padding: 6px 10px;
+    margin-bottom: 2px;
+	background-color: transparent;
+	color: var(--secondary-header);
+    border-radius: 4px;
+	font-family: Outfit,Arial,sans-serif;
+	font-weight: 500;
+	font-size: 16px;
+    line-height: 20px;
+	white-space: nowrap;
+    text-overflow: ellipsis;
+	text-align: left;
+    overflow: hidden;
+	cursor: default;
+}
+
+#setting-tabs > div > button:hover { background-color: var(--modifier-accent-bg) }
+
+#setting-tabs > div > button[active] {
+	color: var(--interactive-active);
+	background-color: #4f545c52;
+}
+
+#setting-body {
+	display: flex;
+	flex: 1 1 800px;
+	background-color: var(--sto-bg);
+	position: relative;
+}
+
+#setting-body > div {
+	display: block;
+	flex: 1;
+	height: 100%;
+	padding: 60px 55px 80px 40px;
+	background-color: var(--sto-bg);
+	overflow: hidden auto;
+}
+
+#setting-body > div > div {
+	display: none;
+	width: 100%;
+	max-width: 700px;
+	height: auto;
+	padding: 10px;
+	overflow: visible;
+}
+
+#setting-body > div > div > h1 {
+	display: block;
+	width: 100%;
+	margin-bottom: 20px;
+	color: var(--interactive-active);
+	font-size: 20px;
+	font-weight: 600;
+	letter-spacing: 1px;
+	line-height: 24px;
+}
+
+#setting-body > div > div > h6 {
+	display: block;
+	width: 100%;
+	margin: 25px auto 30px auto;
+	color: var(--secondary-header);
+	text-transform: uppercase;
+	font-size: 12px;
+	line-height: 16px;
+}
+
+#setting-body > div > div > hr {
+	width: 100%;
+	height: 1px;
+	margin-top: 23px;
+	margin-bottom: 30px;
+	background-color: var(--modifier-accent-bg);
+	border: none;
+}
+
+#setting-tabs > div::-webkit-scrollbar,
+#setting-body > div::-webkit-scrollbar {
+	background-color: transparent;
+}
+
+#setting-tabs > div::-webkit-scrollbar-thumb,
+#setting-body > div::-webkit-scrollbar-thumb {
+	border: 4px solid transparent;
+    background-clip: padding-box;
+    border-radius: 8px;
+}
+
+#setting-tabs > div:hover::-webkit-scrollbar-thumb,
+#setting-body > div::-webkit-scrollbar-thumb {
+	border-color: var(--tertiary-bg);
+}
+
+#setting-exit-btn,
+#setting-save-btn {
+	display: flex !important;
+	justify-content: center;
+	align-items: center;
+	width: 36px !important;
+	height: 36px !important;
+	padding: 0 !important;
+	color: var(--interactive-active);
+	border: 2px solid #72767d;
+	border-radius: 50%;
+	cursor: pointer;
+	position: absolute;
+	top: 10px;
+	left: 760px;
+	right: auto;
+}
+
+#setting-exit-btn[rtl],
+#setting-save-btn[rtl] {
+	left: auto;
+	right: 760px;
+}
+
+#setting-exit-btn > svg,
+#setting-save-btn > svg {
+	width: 18px;
+	height: 18px;
+}
+
+#setting-save-btn {
+	color: #52BE80;
+	border-color: #1E8449;
+	top: 50px;
+}
+
+#setting-exit-btn:hover {
+	background-color: #72767d4d;
+}
+
+#setting-save-btn:hover {
+	background-color: #A9DFBF4d;
+}
+
+@media screen and (max-width: 1440px) {
+	#setting-body {
+		position: unset;
+	}
+
+	#setting-exit-btn,
+	#setting-save-btn {
+		left: auto;
+		right: 13px;
+	}
+
+	#setting-exit-btn[rtl],
+	#setting-save-btn[rtl] {
+		left: 13px;
+		right: auto;
+	}
+}
+
+/* Check Box  */
+.sto-checkbox {
+	display: block;
+	width: 100%;
+	margin: 10px auto 23px auto;
+}
+
+.sto-checkbox > div {
+	display: grid;
+	grid-template-columns: 11fr 44px;
+	width: 100%;
+}
+
+.sto-checkbox > div > label {
+	display: flex;
+	align-items: center;
+	padding-bottom: 4px;
+	color: var(--interactive-active);
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.sto-checkbox > div > input {
+	width: 44px;
+	height: 26px;
+	background-color: hsl(218, 4.6%, 46.9%);
+	border-radius: 14px;
+	position: relative;
+	appearance: none;
+	cursor: pointer;
+	transition: background-color .5s;
+}
+
+.sto-checkbox > div > input:checked {
+	background-color: hsl(139, 47.3%, 43.9%);
+}
+
+.sto-checkbox > div > input::before {
+	content: '';
+	width: 18px;
+	height: 18px;
+	background: #fff;
+	border-radius: 50%;
+	position: absolute;
+	top: calc(50% - 9px);
+	left: 3px;
+	transition: left .2s;
+}
+
+.sto-checkbox > div > input:checked::before {
+	left: calc(100% - 21px);
+}
+
+.sto-checkbox > div > input::after {
+	content: '';
+	width: 20px;
+	height: 20px;
+	background-image: url('../Image/times.svg');
+	border-radius: 1px;
+	position: absolute;
+	top: calc(50% - 10px);
+	left: 2px;
+	transition: left .2s, background-image ease .25s;
+}
+
+.sto-checkbox > div > input:checked::after {
+	background-image: url('../Image/check.svg');
+	left: calc(100% - 22px);
+}
+
+.sto-checkbox > p {
+	display: block;
+	margin-top: 8px;
+	color: var(--secondary-header);
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+}
+
+/* Radio Row Style  */
+.sto-radio {
+	display: block;
+	width: 100%;
+	margin-top: 8px;
+	margin-bottom: 40px;
+}
+
+.sto-radio > p,
+.sto_selector > h6 {
+	display: block;
+	width: 100%;
+	margin-bottom: 8px;
+	color: var(--secondary-header);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 16px;
+	text-transform: uppercase;
+}
+
+.sto-radio > div {
+	display: block;
+	width: 100%;
+	padding: 10px 10px 10px 40px;
+	margin-bottom: 8px;
+	background-color: var(--secondary-bg);
+	color: var(--interactive-normal);
+	border-radius: 4px;
+	font-size: 16px;
+	font-weight: 300;
+	position: relative;
+}
+.sto-radio > div:not([active]):hover { background-color: var(--modifier-accent-bg) }
+
+.sto-radio > div[active] {
+	background-color: var(--tertiary-bg);
+	color: var(--interactive-active);
+}
+
+.sto-radio > div::before {
+	display: block;
+	content: '';
+	width: 24px;
+	height: 24px;
+	background-image: url('../Image/radio.svg');
+	position: absolute;
+	top: calc(50% - 12px);
+	left: 10px;
+}
+
+.sto-radio > div[active]::before { background-image: url('../Image/radio-check.svg') }
+
+/* Range */
+.sto-range {
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.sto-range > p {
+	display: block;
+	width: 100%;
+	margin-bottom: 70px;
+	margin-top: 30px;
+	color: var(--secondary-header);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 16px;
+	text-transform: uppercase;
+}
+
+.sto-range > input {
+	display: block;
+	width: 100%;
+	height: 7px;
+	-webkit-appearance: none;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.sto-range > input::-webkit-slider-thumb {
+	width: 35px;
+	height: 35px;
+	-webkit-appearance: none;
+	cursor: pointer;
+	z-index: +1;
+	position: relative;
+}
+
+.sto-range > div {
+	height: 104px;
+	width: 35px;
+	position: absolute;
+	bottom: -13px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: +2;
+	cursor: pointer;
+	pointer-events: none;
+}
+
+.sto-range > div > div:first-child {
+	height: 35px;
+	width: 35px;
+	background-color: #fff;
+	border-radius: 50%;
+	position: absolute;
+	bottom: 0;
+	user-select: none;
+	pointer-events: none;
+}
+
+.sto-range > div > div:first-child::before {
+	content: '';
+	width: 24px;
+	height: 24px;
+	padding: 2px;
+	background-color: #ffd200;
+	background: #ffd200 url('../Image/range-arrow.svg') no-repeat center;
+	border-radius: 50%;
+	position: absolute;
+	top: calc(50% - 12px);
+	left: calc(50% - 12px);
+	box-sizing: border-box;
+}
+
+.sto-range > div > div:last-child {
+	width: 35px;
+	height: 35px;
+	position: absolute;
+	top: 15px;
+	background-color: #ffd200;
+	border-radius: 4px;
+	text-align: center;
+	line-height: 35px;
+	font-size: 20px;
+	font-weight: 600;
+	user-select: none;
+	pointer-events: none;
+}
+
+.sto-range > div > div:last-child::after {
+	content: '';
+	border-top: 17px solid #ffd200;
+	border-left: 17.5px solid transparent;
+	border-right: 17.5px solid transparent;
+	position: absolute;
+	bottom: -15.5px;
+	left: 0;
+}
+
+/* Upload */
+.sto-dialog {
+	display: block;
+	width: 100%;
+	padding: 10px;
+	margin: 10px auto 23px auto;
+	background-color: var(--tertiary-bg);
+	border-radius: 4px;
+}
+
+.sto-dialog > button {
+	display: inline-block;
+}
+
+.sto-dialog > p {
+	display: inline-block;
+	max-width: 65%;
+	margin-left: 10px;
+	color: #dcddde;
+	font-size: 14px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	text-align: left;
+}
+
+/* Selector */
+.sto-selector {
+	display: block;
+	width: 100%;
+	margin: 10px auto 23px auto;
+}
+
+.sto_selector > h6 {}
+
+.sto_selector > div {}
+
+.sto_selector > p {}

@@ -1,0 +1,7 @@
+/build
+/node_modules
+/test
+setting.json
+yarn.lock
+package-lock.json
+task.txt

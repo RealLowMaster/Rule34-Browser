@@ -1,0 +1,225 @@
+#language-manager,
+#theme-manager {
+	display: none;
+	grid-template-columns: 10fr 250px;
+	width: 100%;
+	height: calc(100% - var(--topMenuSize));
+	position: fixed;
+	top: var(--topMenuSize);
+	left: 0;
+}
+
+#language-manager > div:first-child,
+#theme-manager > div:first-child { background-color: #666 }
+
+#language-structure-panel,
+#theme-structure-panel {
+	display: block;
+	width: calc(100% - 250px);
+	height: calc(100% - var(--topMenuSize));
+	position: fixed;
+	top: var(--topMenuSize);
+	left: 0;
+}
+
+#language-structures,
+#theme-structures {
+	height: calc(100% - 40px);
+	padding: 10px;
+	overflow-y: auto;
+}
+
+#language-structures > div,
+#theme-structures > div {
+	display: flex;
+	width: 100%;
+	padding: 5px;
+	margin: 5px 0;
+	background-color: #222;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color ease-in-out .2s;
+}
+
+#language-structures > div[active],
+#theme-structures > div[active] { background-color: #1975dd; }
+
+#language-structures > div > p,
+#theme-structures > div > p {
+	display: flex;
+	align-items: center;
+	flex: 0 0 50%;
+	max-width: 50%;
+	padding: 0 5px;
+	color: #fff;
+}
+
+#language-structures > div > div,
+#theme-structures > div > div {
+	display: flex;
+	align-items: center;
+	flex: 0 0 50%;
+	max-width: 50%;
+	padding: 0 10px;
+}
+
+#language-structures > div > div > input,
+#theme-structures > div > div > input {
+	display: block;
+	width: 100%;
+	padding: 7px 10px;
+	background-color: transparent;
+	color: #fff;
+	border: 1px dotted transparent;
+	border-radius: 4px;
+}
+
+#language-structures > div > div > input:hover,
+#language-structures > div > div > input:focus,
+#theme-structures > div > div > input:hover,
+#theme-structures > div > div > input:focus { border-color: #fff }
+
+#language-manager > div:last-child,
+#theme-manager > div:last-child {
+	display: block;
+	width: 250px;
+	height: calc(100% - var(--topMenuSize));
+	position: fixed;
+	top: var(--topMenuSize);
+	right: 0;
+	border-left: 1px solid #222;
+}
+
+#language-manager > div:last-child > div:first-child,
+#theme-manager > div:last-child > div:first-child,
+#language-structure-panel > div:first-child,
+#theme-structure-panel > div:first-child {
+	display: flex;
+	height: 40px;
+	align-items: center;
+	background-color: #444;
+	border-bottom: 1px solid #222;
+}
+
+#language-manager > div:last-child > div:first-child > div,
+#theme-manager > div:last-child > div:first-child > div,
+#language-structure-panel > div:first-child > div,
+#theme-structure-panel > div:first-child > div {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	width: 32px;
+	height: 32px;
+	font-size: 20px;
+	color: #fff;
+	cursor: pointer;
+}
+
+#language-manager > div:last-child > div:first-child > div:hover,
+#theme-manager > div:last-child > div:first-child > div:hover,
+#language-structure-panel > div:first-child > div:hover,
+#theme-structure-panel > div:first-child > div:hover { color: #f00 }
+
+#language-container,
+#theme-container {
+	height: calc(100% - 40px);
+	padding: 10px;
+	overflow-y: auto;
+	background-color: #555;
+}
+
+#language-container > div,
+#theme-container > div {
+	width: 100%;
+	padding: 10px;
+	margin: 5px 0;
+	background-color: #222;
+	color: #fff;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color ease-in-out .2s;
+}
+
+#language-container > div[active],
+#theme-container > div[active] { background-color: #1975dd }
+
+#language-structures > div[active] > p::selection,
+#theme-structures > div[active] > p::selection,
+#language-container > div[active]::selection,
+#theme-container > div[active]::selection { background-color: #e00 }
+
+#language-add-panel,
+#theme-add-panel,
+#language-add-structure,
+#theme-add-structure {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: calc(100% - var(--topMenuSize));
+	background-color: #000a;
+	position: fixed;
+	top: var(--topMenuSize);
+	left: 0;
+	z-index: +1;
+}
+
+#language-add-panel > form,
+#theme-add-panel > form,
+#language-add-structure > form,
+#theme-add-structure > form {
+	display: block;
+	width: 350px;
+	height: auto;
+	padding: 20px;
+	background-color: #fff;
+	color: #222;
+	position: relative;
+}
+
+#language-add-panel > form > label,
+#theme-add-panel > form > label,
+#language-add-structure > form > label,
+#theme-add-structure > form > label {
+	display: block;
+	width: 100%;
+	padding: 8px 0;
+	text-align: left;
+	user-select: none;
+}
+
+#language-add-panel > form > input,
+#language-add-panel > form > select,
+#theme-add-panel > form > input,
+#theme-add-panel > form > select,
+#language-add-structure > form > input,
+#language-add-structure > form > select,
+#theme-add-structure > form > input,
+#theme-add-structure > form > select {
+	display: block;
+	width: 100%;
+	padding: 7px 10px;
+	margin-bottom: 15px;
+	background-color: #fff;
+	border: 1px solid #eee;
+	border-radius: 4px;
+	text-align: left;
+	transition: border-color ease-in-out .2s;
+}
+
+#language-add-panel > form > input:hover,
+#language-add-panel > form > select:hover,
+#language-add-panel > form > input:focus,
+#language-add-panel > form > select:focus,
+#theme-add-panel > form > input:hover,
+#theme-add-panel > form > select:hover,
+#theme-add-panel > form > input:focus,
+#theme-add-panel > form > select:focus,
+#language-add-structure > form > input:hover,
+#language-add-structure > form > input:focus,
+#language-add-structure > form > select:hover,
+#language-add-structure > form > select:focus,
+#theme-add-structure > form > input:hover,
+#theme-add-structure > form > input:focus,
+#theme-add-structure > form > select:hover,
+#theme-add-structure > form > select:focus { border-color: #3288eb }

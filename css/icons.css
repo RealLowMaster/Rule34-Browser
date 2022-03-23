@@ -1,0 +1,156 @@
+svg {
+	display: inline-block;
+	user-select: none;
+	height: 1em;
+	overflow: visible;
+	box-sizing: content-box;
+	vertical-align: -.125em;
+}
+
+#icon-manager {
+	display: none;
+	width: 100%;
+	height: calc(100% - var(--topMenuSize));
+	padding: 20px;
+	background-color: #fff;
+	overflow-y: auto;
+	position: fixed;
+	top: var(--topMenuSize);
+	left: 0;
+	z-index: 101;
+	cursor: default;
+}
+
+#icon-manager-container {
+	display: block;
+	width: 100%;
+	padding: 10px 0;
+	text-align: center;
+}
+
+#icon-manager-container > div {
+	display: inline-block;
+	width: auto;
+	padding: 5px;
+	margin: 5px;
+	background-color: transparent;
+	color: #222;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	position: relative;
+}
+
+#icon-manager-container > div > svg {
+	display: block;
+	width: 40px;
+	height: 40px;
+	margin: 10px auto;
+}
+
+#icon-manager-container > div > p {
+	display: block;
+	padding: 2px;
+	margin-top: 5px;
+	text-align: center;
+}
+
+#icon-manager-container > div > div {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	width: 15px;
+	height: 15px;
+	background-color: #e00b;
+	color: #fff;
+	border-radius: 0 5px 0 4px;
+	font-size: 14px;
+	line-height: 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+	cursor: pointer;
+	user-select: none;
+}
+
+#icon-manager-container > div:hover > div { display: flex }
+#icon-manager-container > div > div:hover { background-color: #e00a }
+
+#icon-manager-add {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: calc(100% - var(--topMenuSize));
+	position: fixed;
+	top: var(--topMenuSize);
+	left: 0;
+	user-select: none;
+	z-index: +1;
+}
+
+#icon-manager-add > div:first-child {
+	width: 100%;
+	height: 100%;
+	background-color: #000c;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+#icon-manager-add > div:last-child {
+	display: block;
+	width: calc(100% - 80px);
+	height: calc(100% - 60px);
+	padding: 10px;
+	background-color: #fff;
+	overflow-y: auto;
+	position: relative;
+	z-index: +1;
+}
+
+#icon-manager-add > div:last-child > p {
+	display: block;
+	width: 100%;
+	font-size: .9rem;
+	padding: 2px 0;
+}
+
+#icon-manager-add > div:last-child > input,
+#icon-manager-add > div:last-child > textarea,
+#icon-manager-add-svg > textarea {
+	display: block;
+	width: 100%;
+	padding: 7px 10px;
+	margin-bottom: 32px;
+	font-size: 1rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	transition: .2s ease-in-out border-color;
+}
+
+#icon-manager-add > div:last-child > input:hover,
+#icon-manager-add > div:last-child > textarea:hover,
+#icon-manager-add-svg > textarea:hover,
+#icon-manager-add > div:last-child > input:focus,
+#icon-manager-add > div:last-child > textarea:focus,
+#icon-manager-add-svg > textarea:focus {
+	border-color: #5DADE2;
+}
+
+#icon-manager-add > div:last-child > textarea,
+#icon-manager-add-svg > textarea {
+	resize: vertical;
+}
+
+#icon-manager-add-svg {
+	display: none;
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+	background-color: #fff;
+	overflow-y: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: +1;
+}
