@@ -141,7 +141,7 @@ function RemoveSelectedLanguage() {
 		{
 			text: 'Yes',
 			class: 'btn btn-danger',
-			onclick: 'RemoveLanguage()'
+			click: 'RemoveLanguage()'
 		},
 		{text: 'No'}
 	])
@@ -242,7 +242,7 @@ function RemoveSelectedLangStructure() {
 		{
 			text: 'Yes',
 			class: 'btn btn-danger',
-			onclick: 'RemoveLangStructure()'
+			click: 'RemoveLangStructure()'
 		},
 		{text: 'No'}
 	])

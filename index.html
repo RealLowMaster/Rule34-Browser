@@ -44,29 +44,18 @@
 			<!-- Main Browser ⨯ -->
 			<div id="main-browser">
 				<div>
-					<div id="mb-tabs">
-						<div>
-							<img src="Image/favicon.png">
-							<span>Friends</span>
-							<div onclick="">⨯</div>
-						</div>
-						<div active>
-							<img src="Image/favicon.png">
-							<span>Friends</span>
-							<div onclick="">⨯</div>
-						</div>
-						<div>
-							<img src="Image/favicon.png">
-							<span>Friends</span>
-							<div onclick="">⨯</div>
-						</div>
-					</div>
+					<div id="mb-tabs"></div>
 					<div>
-						<div lt="newtab" onclick="AddNewTab()"><i ic="plus"></i></div>
-						<div lt="settings" onclick="OpenSettings()"><i ic="gear"></i></div>
+						<div lt="newtab" onclick="browser.AddTab()"><i ic="plus"></i></div>
+						<div id="menu"><i ic="dots-vertical"></i></div>
 					</div>
 				</div>
-				<div></div>
+				<div id="mb-tools">
+					<div lv=""><i ic="prev"></i></div>
+					<div lv=""><i ic="next"></i></div>
+					<div lv=""><i ic="reload"></i></div>
+				</div>
+				<div id="mb-pages"></div>
 			</div>
 
 			<!-- Settings -->

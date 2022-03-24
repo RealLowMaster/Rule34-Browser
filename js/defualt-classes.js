@@ -490,8 +490,8 @@ class ContextMenuManager {
 				if (this.#menu[menu][i].click != undefined) {
 					save = document.createElement('div')
 					save.innerText = this.#menu[menu][i].text
-					if (typeof this.#menu[menu][i].click === 'string') save.setAttribute('onclick', `eval('${this.#menu[menu][i].click.replace(/'/g, "\\'").replace(/"/g, '\\"')}')`)
-					else if (typeof this.#menu[menu][i].click === 'function') save.addEventListener('click', this.#menu[menu][i].click)
+					if (typeof this.#menu[menu][i].click === 'string') save.onclick = () => { eval(this.#menu[menu][i].click); this.CloseMenu() }
+					else if (typeof this.#menu[menu][i].click === 'function') save.onclick = () => { this.#menu[menu][i].click(); this.CloseMenu() }
 					container.appendChild(save)
 				} else {
 					save = document.createElement('p')

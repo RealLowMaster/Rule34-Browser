@@ -20,7 +20,7 @@ function AskForRemoveIcon(name) {
 		{
 			text: 'Yes',
 			class: 'btn btn-danger',
-			onclick: `RemoveIcon('${name}')`
+			click: `RemoveIcon('${name}')`
 		},
 		{ text: 'No' }
 	])

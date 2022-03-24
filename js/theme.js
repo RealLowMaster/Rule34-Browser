@@ -131,7 +131,7 @@ function RemoveSelectedTheme() {
 		{
 			text: 'Yes',
 			class: 'btn btn-danger',
-			onclick: 'RemoveTheme()'
+			click: 'RemoveTheme()'
 		},
 		{text: 'No'}
 	])
@@ -231,7 +231,7 @@ function RemoveSelectedThemeStructure() {
 		{
 			text: 'Yes',
 			class: 'btn btn-danger',
-			onclick: 'RemoveThemeStructure()'
+			click: 'RemoveThemeStructure()'
 		},
 		{text: 'No'}
 	])

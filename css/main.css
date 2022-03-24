@@ -1,7 +1,3 @@
-#main-browser {
-
-}
-
 #main-browser > div:first-child {
 	display: flex;
 	height: 39px;
@@ -115,19 +111,52 @@
 	color: var(--primary-header);
 	border-radius: 50%;
 	text-align: center;
-	line-height: 30px;
+	line-height: 31px;
 	font-size: 20px;
 	cursor: pointer;
 	user-select: none;
-	transition: transform .2s, background-color .2s;
+	transition: background-color .2s;
 }
 
 #main-browser > div:first-child > div:last-child > div:hover {
-	transform: scale(1.1);
 	background-color: var(--modifier-hover-bg);
 }
 
-#main-browser > div:last-child {
-	height: calc(100% - 39px);
+#mb-tools {
+	display: block;
+	width: 100%;
+	height: 30px;
+	padding: 0 15px;
+	background-color: var(--tertiary-bg);
+	user-select: none;
+}
+
+#mb-tools > div {
+	display: inline-block;
+	width: 26px;
+	height: 26px;
+	margin: 2px;
+	background-color: var(--modifier-hover-bg);
+	color: var(--primary-header);
+	border-radius: 50%;
+	text-align: center;
+	line-height: 26px;
+	font-size: 20px;
+	cursor: pointer;
+	transition: transform .2s, background-color .2s;
+}
+
+#mb-tools > div:hover {
+	background-color: var(--secondary-bg);
+	transform: scale(1.1);
+}
+
+#mb-pages {
+	height: calc(100% - 69px);
 	overflow-y: auto;
+}
+
+#mb-pages > div {
+	display: none;
+	width: 100%;
 }

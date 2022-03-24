@@ -43,7 +43,7 @@ function Confirm(txt, buttons) {
 		save = document.createElement('div')
 		save.setAttribute('class', classes)
 		save.innerText = text
-		if (typeof buttons[i].click === 'string') save.setAttribute('onclick', buttons[i].click+'this.parentElement.parentElement.remove();KeyManager.stop=false')
+		if (typeof buttons[i].click === 'string') save.setAttribute('onclick', buttons[i].click+';this.parentElement.parentElement.remove();KeyManager.stop=false')
 		else if (typeof buttons[i].click === 'function') {
 			save.addEventListener('click', buttons[i].click)
 			save.setAttribute('onclick', 'this.parentElement.parentElement.remove();KeyManager.stop=false')
