@@ -1,3 +1,30 @@
+#show-startup {
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: calc(100% - var(--topMenuSize));
+	background-color: var(--primary-bg);
+	color: var(--primary-header);
+	position: fixed;
+	top: var(--topMenuSize);
+	left: 0;
+	z-index: +1;
+}
+
+#show-startup > p {
+	padding: 10px;
+	font-size: 18px;
+	text-align: center;
+}
+
+#show-startup > div {
+	
+}
+
+
+
 #main-browser > div:first-child {
 	display: flex;
 	height: 39px;

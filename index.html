@@ -51,9 +51,9 @@
 					</div>
 				</div>
 				<div id="mb-tools">
-					<div lv=""><i ic="prev"></i></div>
-					<div lv=""><i ic="next"></i></div>
-					<div lv=""><i ic="reload"></i></div>
+					<div lt="prev-page"><i ic="prev"></i></div>
+					<div lt="next-page"><i ic="next"></i></div>
+					<div lt="reload"><i ic="reload"></i></div>
 				</div>
 				<div id="mb-pages"></div>
 			</div>
@@ -62,6 +62,9 @@
 			<div id="setting-window">
 				<div id="setting-tabs">
 					<div >
+						<p l="user-settings"></p>
+						<button type="button" onclick="OpenSettingTab(this,'st_downloads')" l="downloads"></button>
+						<hr>
 						<p l="app-setting"></p>
 						<button type="button" onclick="OpenSettingTab(this,'st_Appearance')" l="appearance"></button>
 						<button type="button" onclick="OpenSettingTab(this,'st_Notifications')" l="notifications"></button>
@@ -72,6 +75,12 @@
 
 				<div id="setting-body">
 					<div>
+						<div id="st_downloads">
+							<h1 l="downloads"></h1>
+							<h6 l="dl_path"></h6>
+							<div id="sto_dl_path"></div>
+						</div>
+
 						<div id="st_Appearance">
 							<h1 l="appearance"></h1>
 							<div id="sto_theme"></div>
@@ -93,6 +102,7 @@
 						
 						<div id="st_Advanced">
 							<h1 l="advanced"></h1>
+							<hr>
 							<div id="sto_full_screen"></div>
 							<hr>
 							<div id="sto_developer_mode"></div>

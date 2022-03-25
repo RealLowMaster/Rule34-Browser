@@ -359,11 +359,13 @@ class ProcressPanel {
 class ContextMenuManager {
 	#menu
 	#menuNames
+	#menuOptions
 	#element
 
 	constructor() {
 		this.#menu = []
 		this.#menuNames = []
+		this.#menuOptions = []
 		this.#element = null
 		this.save = null
 		window.addEventListener('click', () => { if (this.#element != null) this.CloseMenu() })
@@ -394,13 +396,38 @@ class ContextMenuManager {
 		} else throw "Element Not Found!"
 	}
 
-	AddMenu(name) {
-		if (name == null || name.replace(/ /g, '').length == 0) throw "Name is Required"
-		if (this.#menuNames.indexOf(name.toLowerCase()) > -1) throw "Menu Already Exists"
+	AddMenu(name, useLanguageAlign = false, rtl = false) {
+		if (name == null || name.replace(/ /g, '').length == 0) throw "Name is Required."
+		if (this.#menuNames.indexOf(name.toLowerCase()) > -1) throw "Menu Already Exists."
+		if (typeof useLanguageAlign !== 'boolean') throw "Use Language Align Should Be Boolean."
+		if (!useLanguageAlign) {
+			if (typeof rtl !== 'boolean') throw "rtl Should Be Boolean."
+		} else rtl = null
+
+
+
 		const index = this.#menuNames.length
 		this.#menuNames[index] = name.toLowerCase()
+		this.#menuOptions[index] = [useLanguageAlign, rtl]
 		this.#menu[index] = []
 		return index
+	}
+
+	ConfigMenu(menu, useLanguageAlign = false, rtl = false) {
+		if (typeof menu === 'number') {
+			if (this.#menu[menu] == undefined || this.#menu[menu] == null) throw "Menu Not Found."
+		} else if (typeof menu === 'string') {
+			const cat_index = this.#menuNames.indexOf(menu.toLowerCase())
+			if (cat_index < 0) throw "Menu Not Found"
+			menu = cat_index
+		} else throw "Menu Type Should Be Number (int) Or String"
+
+		if (typeof useLanguageAlign !== 'boolean') throw "Use Language Align Should Be Boolean."
+		if (!useLanguageAlign) {
+			if (typeof rtl !== 'boolean') throw "rtl Should Be Boolean."
+		} else rtl = null
+
+		this.#menuOptions[menu] = [useLanguageAlign, rtl]
 	}
 
 	AddItem(menu, config) {
@@ -435,6 +462,7 @@ class ContextMenuManager {
 		} else throw "Menu Type Should Be Number (int) Or String"
 		this.#menu.splice(menu, 1)
 		this.#menuNames.splice(menu, 1)
+		this.#menuOptions.splice(menu, 1)
 	}
 
 	RemoveItem(menu, index) {
@@ -489,13 +517,13 @@ class ContextMenuManager {
 			if (this.#menu[menu][i].text != undefined) {
 				if (this.#menu[menu][i].click != undefined) {
 					save = document.createElement('div')
-					save.innerText = this.#menu[menu][i].text
+					save.innerText = Language(this.#menu[menu][i].text)
 					if (typeof this.#menu[menu][i].click === 'string') save.onclick = () => { eval(this.#menu[menu][i].click); this.CloseMenu() }
 					else if (typeof this.#menu[menu][i].click === 'function') save.onclick = () => { this.#menu[menu][i].click(); this.CloseMenu() }
 					container.appendChild(save)
 				} else {
 					save = document.createElement('p')
-					save.innerText = this.#menu[menu][i].text
+					save.innerText = Language(this.#menu[menu][i].text)
 					container.appendChild(save)
 				}
 			} else {

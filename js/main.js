@@ -39,6 +39,44 @@ function AskForQuitApp() {
 	])
 }
 
+function FormatBytes(bytes, decimals = 2) {
+	if (bytes === 0) return '0 Bytes'
+	const dm = decimals < 0 ? 0 : decimals
+	const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+	const i = Math.floor(Math.log(bytes) / Math.log(1024))
+	return parseFloat((bytes / Math.pow(1024, i)).toFixed(dm)) + ' ' + sizes[i]
+}
+
+function MemorySizeOf(obj) {
+	let bytes = 0
+	function sizeOf(obj) {
+		if(obj !== null && obj !== undefined) {
+			switch(typeof obj) {
+			case 'number':
+				bytes += 8
+				break
+			case 'string':
+				bytes += obj.length * 2
+				break
+			case 'boolean':
+				bytes += 4
+				break
+			case 'object':
+				let objClass = Object.prototype.toString.call(obj).slice(8, -1)
+				if(objClass === 'Object' || objClass === 'Array') {
+					for (let key in obj) {
+						if(!obj.hasOwnProperty(key)) continue
+						sizeOf(obj[key])
+					}
+				} else bytes += obj.toString().length * 2
+				break
+			}
+		}
+		return bytes
+	}
+	return FormatBytes(sizeOf(obj))
+}
+
 function ChangeScreenMode(fullscreen = null, save = true) {
 	if (fullscreen == null) fullscreen = !ThisWindow.isFullScreen()
 
@@ -83,14 +121,14 @@ function SetHotKeys() {
 
 function SetContextMenus() {
 	let i = ContextManager.AddMenu('menu')
-	ContextManager.AddItem(i, { text:'New Tab', click: () =>  browser.AddTab() })
+	ContextManager.AddItem(i, { text:'newtab', click: () =>  browser.AddTab() })
 	ContextManager.AddItem(i, {})
-	ContextManager.AddItem(i, { text:'History', click: () => OpenHistory() })
-	ContextManager.AddItem(i, { text:'Downloads', click: () => OpenDownloads() })
-	ContextManager.AddItem(i, { text:'Bookmarks', click: () => OpenBookmarks() })
+	ContextManager.AddItem(i, { text:'history', click: () => OpenHistory() })
+	ContextManager.AddItem(i, { text:'downloads', click: () => OpenDownloads() })
+	ContextManager.AddItem(i, { text:'bookmarks', click: () => OpenBookmarks() })
 	ContextManager.AddItem(i, {})
-	ContextManager.AddItem(i, { text:'Settings', click: () => OpenSettings() })
-	ContextManager.AddItem(i, { text:'Exit', click: () => remote.app.quit() })
+	ContextManager.AddItem(i, { text:'settings', click: () => OpenSettings() })
+	ContextManager.AddItem(i, { text:'exit', click: () => remote.app.quit() })
 
 	document.getElementById('menu').onclick = e => {
 		e.preventDefault()

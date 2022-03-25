@@ -1,3 +1,19 @@
+const site = [
+
+]
+
+const db = {
+	post: [],
+	collection: [],
+	artist: [],
+	tag: [],
+	parody: [],
+	character: [],
+	meta: []
+}
+
+const paths = {}
+
 class Tab {
 	constructor(index) {
 		this.history = []
@@ -127,8 +143,136 @@ class BrowserManager {
 	PinTab(index) {}
 }
 
-function toBinary(val) {
+function ShowStartup() {
+	const container = document.createElement('div')
+	container.id = 'show-startup'
+	let save = document.createElement('p')
+	save.innerText = Language('cdl_path')
+	container.appendChild(save)
+
+	save = document.createElement('div')
+	save.classList.add('btn')
+	save.classList.add('btn-primary')
+	save.innerText = Language('openfolder')
+	save.onclick = ChooseDLPath
+	container.appendChild(save)
+
+	document.body.appendChild(container)
+}
+
+function ChooseDLPath() {
+	const directory = remote.dialog.showOpenDialogSync({title:Language('choosedirectory'), properties:['openDirectory']})
+
+	if (directory == null || directory.length == 0 || directory[0] == null || !existsSync(directory[0])) return
+
+	setting.dl_path = directory[0]
+	try {
+		jsonfile.writeFileSync(dirDocument+'/setting.json',{a:setting})
+		ThisWindow.reload()
+	} catch(err) {
+		console.error(err)
+		error('SavingSettings->'+err)
+	}
+}
+
+function LoadDatabase() {
+	loading.Forward()
+	if (
+		typeof setting.dl_path !== 'string' ||
+		!existsSync(setting.dl_path)
+	) {
+		loading.Close()
+		ShowStartup()
+		return
+	}
+	paths.db = setting.dl_path+'/'
+	paths.dl = paths.db+'DL/'
+	paths.thumb = paths.db+'thumb/'
+
+	// Check Folders
+	if (!existsSync(paths.dl)) try { mkdirSync(paths.dl) } catch(err) {
+		console.error(err)
+		error('MakingDownloadFolder->'+err)
+	}
+
+	if (!existsSync(paths.thumb)) try { mkdirSync(paths.thumb) } catch(err) {
+		console.error(err)
+		error('MakingThumbFolder->'+err)
+	}
+
+	// -------------> Check Databases
+	// post
+	if (!existsSync(paths.db+'post')) try { jsonfile.writeFileSync(paths.db+'post', {a:[]}) } catch(err) {
+		console.error(err)
+		error('CreatingPostDB->'+err)
+	} else try { db.post = jsonfile.readFileSync(paths.db+'post').a } catch(err) {
+		db.post = []
+		console.error(err)
+		error('LoadingPostDB->'+err)
+	}
+
+	// collection
+	if (!existsSync(paths.db+'collection')) try { jsonfile.writeFileSync(paths.db+'collection', {a:[]}) } catch(err) {
+		console.error(err)
+		error('CreatingCollectionDB->'+err)
+	} else try { db.collection = jsonfile.readFileSync(paths.db+'collection').a } catch(err) {
+		db.collection = []
+		console.error(err)
+		error('LoadingCollectionDB->'+err)
+	}
+
+	// artist
+	if (!existsSync(paths.db+'artist')) try { jsonfile.writeFileSync(paths.db+'artist', {a:[]}) } catch(err) {
+		console.error(err)
+		error('CreatingArtistDB->'+err)
+	} else try { db.artist = jsonfile.readFileSync(paths.db+'artist').a } catch(err) {
+		db.artist = []
+		console.error(err)
+		error('LoadingArtistDB->'+err)
+	}
+
+	// tag
+	if (!existsSync(paths.db+'tag')) try { jsonfile.writeFileSync(paths.db+'tag', {a:[]}) } catch(err) {
+		console.error(err)
+		error('CreatingTagDB->'+err)
+	} else try { db.tag = jsonfile.readFileSync(paths.db+'tag').a } catch(err) {
+		db.tag = []
+		console.error(err)
+		error('LoadingTagDB->'+err)
+	}
 	
+	// parody
+	if (!existsSync(paths.db+'parody')) try { jsonfile.writeFileSync(paths.db+'parody', {a:[]}) } catch(err) {
+		console.error(err)
+		error('CreatingParodyDB->'+err)
+	} else try { db.parody = jsonfile.readFileSync(paths.db+'parody').a } catch(err) {
+		db.parody = []
+		console.error(err)
+		error('LoadingParodyDB->'+err)
+	}
+	
+	// character
+	if (!existsSync(paths.db+'character')) try { jsonfile.writeFileSync(paths.db+'character', {a:[]}) } catch(err) {
+		console.error(err)
+		error('CreatingCharacterDB->'+err)
+	} else try { db.character = jsonfile.readFileSync(paths.db+'character').a } catch(err) {
+		db.character = []
+		console.error(err)
+		error('LoadingCharacterDB->'+err)
+	}
+
+	// Meta
+	if (!existsSync(paths.db+'meta')) try { jsonfile.writeFileSync(paths.db+'meta', {a:[]}) } catch(err) {
+		console.error(err)
+		error('CreatingMetaDB->'+err)
+	} else try { db.meta = jsonfile.readFileSync(paths.db+'meta').a } catch(err) {
+		db.meta = []
+		console.error(err)
+		error('LoadingMetaDB->'+err)
+	}
+
+	loading.Close()
+	KeyManager.ChangeCategory('default')
 }
 
 const browser = new BrowserManager()

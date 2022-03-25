@@ -1,4 +1,4 @@
-loading.Show(6, 'Loading...')
+loading.Show(8, 'Loading...')
 
 function Startup() {
 	loading.Forward('Loading App Name...')
@@ -15,8 +15,8 @@ function Startup() {
 		LoadSettings()
 	} catch(err) {
 		console.error(err)
-		Alert('LoadSetting->ERR: '+err)
 		setting = defaultSetting
+		Alert('LoadSetting->ERR: '+err)
 	}
 
 	loading.Forward('Apply Languages...')
@@ -51,9 +51,13 @@ function Startup() {
 		Alert('ConvertingIcons->ERR: '+err)
 	}
 
-	loading.Forward()
-	loading.Close()
-	KeyManager.ChangeCategory('default')
+	loading.Forward('Loading Database...')
+	try {
+		LoadDatabase()
+	} catch(err) {
+		console.error(err)
+		error(err)
+	}
 }
 
 let stateCheck = setInterval(() => {

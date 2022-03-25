@@ -4,6 +4,7 @@ const defaultSetting = {
 	animations: true,
 	not: true,
 	not_sound: true,
+	dl_path: null,
 	full_screen: false,
 	developer_mode: false
 }
@@ -27,7 +28,9 @@ const sto_radio = [
 const sto_range = []
 
 // [ 'setting name', isFolder, 'title' || null ]
-const sto_dialog = []
+const sto_dialog = [
+	['dl_path', true, 'dl_path']
+]
 
 // [ 'setting name', 'translate name'. [ 'translate name', 'translate name', etc... ] ]
 const sto_select = []
@@ -169,8 +172,8 @@ function OnRangeInput(who) {
 function OpenUploadFile(who, isFolder, title, callback) {
 	who = who || null
 	if (title == undefined) {
-		if (isFolder) title = 'Choose Directory'
-		else title = 'Choose File'
+		if (isFolder) title = Language('choosedirectory')
+		else title = Language('choosefile')
 	}
 	callback = callback || null
 	let properties
@@ -222,7 +225,10 @@ function SaveSetting() {
 		setting[sto_dialog[i][0]] = element.title
 	}
 
-	jsonfile.writeFileSync(dirDocument+'/setting.json',{a:setting})
+	try { jsonfile.writeFileSync(dirDocument+'/setting.json',{a:setting}) } catch(err) {
+		console.error(err)
+		PopAlert('SavingSetting->'+err, 'danger')
+	}
 	KeyManager.BackwardCategory()
 	document.getElementById('setting-window').style.display = 'none'
 	ApplySetting(prev_setting)
