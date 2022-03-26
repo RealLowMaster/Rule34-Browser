@@ -46,14 +46,23 @@
 				<div>
 					<div id="mb-tabs"></div>
 					<div>
-						<div lt="newtab" onclick="browser.AddTab()"><i ic="plus"></i></div>
+						<div lt="newtab" onclick="NewTab()"><i ic="plus"></i></div>
 						<div id="menu"><i ic="dots-vertical"></i></div>
 					</div>
 				</div>
 				<div id="mb-tools">
 					<div lt="prev-page"><i ic="prev"></i></div>
 					<div lt="next-page"><i ic="next"></i></div>
-					<div lt="reload"><i ic="reload"></i></div>
+					<div lt="reload" onclick="browser.ReloadTab(browser.selectedTab)"><i ic="reload"></i></div>
+
+					<form id="mb-search">
+						<input id="mbs" type="text" lp="search">
+					</form>
+
+					<form id="mb-jump-page">
+						<input id="mbjp" type="number">
+						<span>/ 2000</span>
+					</form>
 				</div>
 				<div id="mb-pages"></div>
 			</div>

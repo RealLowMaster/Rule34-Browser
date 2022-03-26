@@ -102,7 +102,9 @@ function SetHotKeys() {
 	KeyManager.use_public = true
 
 	KeyManager.AddCategory('default')
-	KeyManager.AddHotKey('default', true, false, false, 83, 'browser.AddTab()')
+	KeyManager.AddHotKey('default', true, false, false, 78, 'NewTab()')
+	KeyManager.AddHotKey('default', true, false, false, 82, 'browser.ReloadTab(browser.selectedTab)')
+	KeyManager.AddHotKey('default', true, false, false, 87, 'browser.CloseTab(browser.selectedTab)')
 	KeyManager.AddHotKey('default', false, false, false, 27, 'AskForQuitApp()')
 
 	KeyManager.AddCategory('setting')
@@ -137,19 +139,28 @@ function SetContextMenus() {
 	}
 
 	i = ContextManager.AddMenu('tab')
-	ContextManager.AddItem(i, { text:'Copy', click: () => browser.CopyTab(ContextManager.save) })
-	ContextManager.AddItem(i, { text:'Reload', click: () => browser.ReloadTab(ContextManager.save) })
-	ContextManager.AddItem(i, { text:'Duplicate', click: () => browser.DuplicateTab(ContextManager.save) })
-	ContextManager.AddItem(i, { text:'Pin', click: () => browser.PinTab(ContextManager.save) })
+	ContextManager.AddItem(i, { text:'copy', click: () => browser.CopyTab(ContextManager.save) })
+	ContextManager.AddItem(i, { text:'reload', click: () => browser.ReloadTab(ContextManager.save) })
+	ContextManager.AddItem(i, { text:'duplicate', click: () => browser.DuplicateTab(ContextManager.save) })
+	ContextManager.AddItem(i, { text:'pin', click: () => browser.PinTab(ContextManager.save) })
+	// ContextManager.AddItem(i, { text:'add-bookmarks', click: () =>  })
 	ContextManager.AddItem(i, {})
-	ContextManager.AddItem(i, { text:'Close', click: () => browser.CloseTab(ContextManager.save) })
-	ContextManager.AddItem(i, { text:'Close other tabs', click: () => browser.CloseOtherTabs(ContextManager.save) })
+	ContextManager.AddItem(i, { text:'close', click: () => browser.CloseTab(ContextManager.save) })
+	ContextManager.AddItem(i, { text:'cls-other-tabs', click: () => browser.CloseOtherTabs(ContextManager.save) })
 
 	i = ContextManager.AddMenu('posts')
-	ContextManager.AddItem(i, { text:'Open', click:'' })
-	ContextManager.AddItem(i, { text:'Open in new tab', click:'' })
+	ContextManager.AddItem(i, { text:'open', click:'' })
+	ContextManager.AddItem(i, { text:'open-in-ntab', click:'' })
 	ContextManager.AddItem(i, { text:'Pack', click:'' })
 	ContextManager.AddItem(i, { text:'UnPack', click:'' })
 	ContextManager.AddItem(i, { text:'Delete', click:'' })
 	ContextManager.AddItem(i, { text:'Properties', click:'' })
+
+
+	i = ContextManager.AddMenu('nor-links')
+	ContextManager.AddItem(i, { text:'open', click: () => browser.LinkClick(ContextManager.save[0], ContextManager.save[1]) })
+	ContextManager.AddItem(i, { text:'open-in-ntab', click: () => browser.OpenLinkInNewTab(ContextManager.save[0], ContextManager.save[1]) })
+	// ContextManager.AddItem(i, { text:'add-bookmarks', click: () =>  })
+
+	i = ContextManager.AddMenu('rule34.xxx-post')
 }

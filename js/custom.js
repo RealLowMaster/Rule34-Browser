@@ -1,9 +1,18 @@
+const loading_img = new Image()
+loading_img.src = 'Image/loading.gif'
+
+const mb_search = document.getElementById('mb-search')
+const mb_jump_page = document.getElementById('mb-jump-page')
+
+
 const site = [
 
 ]
 
 const db = {
 	post: [],
+	have_ids: [],
+	have_site: [],
 	collection: [],
 	artist: [],
 	tag: [],
@@ -16,15 +25,23 @@ const paths = {}
 
 class Tab {
 	constructor(index) {
+		this.id = index
 		this.history = []
+		this.historySite = []
+		this.historyValue = []
 		this.selectedHistory = -1
+		this.customizing = false
 		this.scroll = 0
 		this.search = ''
+		this.jumpPage = -1
 		this.pageNumber = 1
 		this.maxPages = 0
-		this.realoding = false
+		this.loading = false
 		this.token = null
 		this.site = -1
+		this.needReload = false
+		this.links = []
+		this.linksValue = []
 		this.tab = document.createElement('div')
 		this.tab.onclick = () => browser.ActivateTab(index)
 		this.tab.oncontextmenu = () => ContextManager.ShowMenu('tab', index)
@@ -42,13 +59,78 @@ class Tab {
 		document.getElementById('mb-pages').appendChild(this.page)
 	}
 
-	AddHistory(txt) {}
+	Loading(site = -1, jumpPage = -1) {
+		this.loading = true
+		this.needReload = false
+		this.site = site
+		this.jumpPage = jumpPage
+		this.links = []
+		this.linksValue = []
+		if (browser.selectedTab == this.id) {
+			if (this.site == -1) mb_search.style.display = 'none'
+			else mb_search.style.display = 'block'
+			mb_jump_page.style.display = 'none'
+		}
+		this.Change(loading_img.src, 'Loading...')
+		this.page.innerHTML = '<div class="br-loading"><p>Loading...</p><img src="'+loading_img.src+'"></div>'
+		this.token = new Date().getTime()
+		return this.token
+	}
+
+	Load(token, html, icon, txt) {
+		if (token != this.token) return
+		this.page.innerHTML = null
+		this.page.appendChild(html)
+		this.Change(icon, txt)
+		this.needReload = false
+		this.loading = false
+
+		if (browser.selectedTab == this.id && this.jumpPage != -1) {
+			mbjp.value = this.tabs[i].pageNumber
+			mb_jump_page.children[1].innerText = '/ '+this.tabs[i].maxPages
+			mb_jump_page.style.display = 'block'
+		} else mb_jump_page.style.display = 'none'
+	}
+
+	AddLink(index, value = null) {
+		const i = this.links.length
+		this.links[i] = index
+		this.linksValue[i] = value
+		return i
+	}
+
+	AddHistory(index, value) {
+		if (this.customizing) return
+		const i = this.history.length
+		if (i == 0 || this.selectedHistory == i - 1) {
+			this.history[i] = index
+			this.historySite[i] = this.site
+			this.historyValue[i] = value
+			this.selectedHistory = i
+		} else {
+			this.selectedHistory++
+			this.history.splice(this.selectedHistory)
+			this.historySite.splice(this.selectedHistory)
+			this.historyValue.splice(this.selectedHistory)
+			
+			this.history[this.selectedHistory] = index
+			this.historySite[this.selectedHistory] = this.site
+			this.historyValue[this.selectedHistory] = value
+		}
+	}
 
 	Prev() {}
 	
 	Next() {}
 
-	Reload() {}
+	Reload() {
+		if (this.loading) return
+		this.loading = true
+		this.needReload = false
+		this.customizing = true
+		browser.Link(this.id, this.historySite[this.selectedHistory], this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
+		this.customizing = false
+	}
 
 	Change(ico, txt) {
 		if (ico != null) this.icon.src = ico
@@ -69,6 +151,7 @@ class BrowserManager {
 		this.tabs = []
 		this.tabsIds = []
 		this.selectedTab = null
+		this.backward = false
 	}
 
 	AddTab() {
@@ -77,13 +160,11 @@ class BrowserManager {
 		const id = Number(save.substring(save.length - 8))
 		this.tabs[i] = new Tab(id)
 		this.tabsIds[i] = id
-		this.ActivateTab(id)
 		return id
 	}
 
 	CloseTab(index) {
-		try { event.stopPropagation() } catch(err) { console.error(err) }
-		console.log(false, index)
+		try { event.stopPropagation() } catch(err) {}
 		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
 			this.tabs[i].Close()
 			this.tabs.splice(i, 1)
@@ -111,6 +192,18 @@ class BrowserManager {
 		this.selectedTab = null
 		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
 			this.selectedTab = index
+
+			if (this.tabs[i].site == -1) mb_search.style.display = 'none'
+			else mb_search.style.display = 'block'
+
+			if (!this.tabs[i].loading && this.tabs[i].jumpPage != -1) {
+				mbjp.value = this.tabs[i].pageNumber
+				mb_jump_page.children[1].innerText = '/ '+this.tabs[i].maxPages
+				mb_jump_page.style.display = 'block'
+			} else mb_jump_page.style.display = 'none'
+
+			if (this.tabs[i].needReload) this.tabs[i].Reload()
+
 			this.tabs[i].tab.setAttribute('active','')
 			this.tabs[i].page.style.display = 'block'
 			return
@@ -132,7 +225,57 @@ class BrowserManager {
 		this.tabsIds = []
 	}
 
-	ReloadTab(index) {}
+	GetTab(index) {
+		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) return this.tabs[i]
+		return null
+	}
+
+	OpenLinkInNewTab(tabId, link) {
+		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
+			this.Link(this.AddTab(), this.tabs[i].site, this.tabs[i].links[link], this.tabs[i].linksValue[link])
+			return
+		}
+	}
+
+	LinkClick(tabId, link) {
+		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
+			this.Link(tabId, this.tabs[i].site, this.tabs[i].links[link], this.tabs[i].linksValue[link])
+			return
+		}
+	}
+
+	Link(tabId, site, index, value) {
+		switch(site) {
+			case -1:
+				switch(index) {
+					case 0:
+						LoadPage(tabId, value)
+						break
+					case 1:
+						LoadSites(tabId)
+						break
+					case 2:
+						LoadCollections(tabId)
+						break
+				}
+				break
+			case 0:
+				break
+			case 1:
+				break
+		}
+	}
+
+	ReloadTab(index) {
+		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
+			this.tabs[i].Reload()
+			return
+		}
+	}
+
+	SetNeedReload(site) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) this.tabs[i].needReload = true
+	}
 
 	CopyTab(index) {}
 
@@ -141,6 +284,32 @@ class BrowserManager {
 	DuplicateTab(index) {}
 
 	PinTab(index) {}
+}
+
+const browser = new BrowserManager()
+
+mb_search.onsubmit = e => {
+	e.preventDefault()
+}
+
+mb_jump_page.onsubmit = e => {
+	e.preventDefault()
+}
+
+mbs.onfocus = () => KeyManager.stop = true
+mbs.addEventListener('focusout', () => {
+	KeyManager.stop = false
+})
+
+mbjp.onfocus = () => KeyManager.stop = true
+mbjp.addEventListener('focusout', () => {
+	KeyManager.stop = false
+})
+
+function NewTab() {
+	const id = browser.AddTab()
+	browser.ActivateTab(id)
+	LoadPage(id, 1)
 }
 
 function ShowStartup() {
@@ -211,6 +380,21 @@ function LoadDatabase() {
 		error('LoadingPostDB->'+err)
 	}
 
+	// have
+	if (!existsSync(paths.db+'have')) try { jsonfile.writeFileSync(paths.db+'have', {i:[],s:[]}) } catch(err) {
+		console.error(err)
+		error('CreatingHaveDB->'+err)
+	} else try {
+		const save = jsonfile.readFileSync(paths.db+'have')
+		db.have_ids = save.i
+		db.have_site = save.s
+	} catch(err) {
+		db.have_ids = []
+		db.have_site = []
+		console.error(err)
+		error('LoadingHaveDB->'+err)
+	}
+
 	// collection
 	if (!existsSync(paths.db+'collection')) try { jsonfile.writeFileSync(paths.db+'collection', {a:[]}) } catch(err) {
 		console.error(err)
@@ -273,9 +457,65 @@ function LoadDatabase() {
 
 	loading.Close()
 	KeyManager.ChangeCategory('default')
+	NewTab()
 }
 
-const browser = new BrowserManager()
+function NormalLink(tabId, link) {
+	const e = window.event, key = e.which
+	e.preventDefault()
+	if (key == 1) browser.LinkClick(tabId, link)
+	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
+	else {
+		ContextManager.save = [tabId, link]
+		ContextManager.ShowMenu('nor-links')
+	}
+}
+
+function NormalLinkElement(name, inner, tabId, link) {
+	const element = document.createElement(name)
+	element.setAttribute('l', inner)
+	element.innerText = Language(inner)
+	element.onmousedown = () => NormalLink(tabId, link)
+	return element
+}
+
+function ChangeFilter(tabId, backward) {
+	browser.backward = backward
+	browser.SetNeedReload(-1)
+	browser.ReloadTab(tabId)
+}
+
+function LoadPage(tabId, page = 1) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading()
+	tab.AddHistory(0, page)
+	const container = document.createElement('div')
+	container.classList.add('main-page')
+	let save = document.createElement('div')
+	save.classList.add('main-page-menu')
+	save.appendChild(NormalLinkElement('div', 'sites', tabId, tab.AddLink(1)))
+	save.appendChild(NormalLinkElement('div', 'collections', tabId, tab.AddLink(2)))
+	container.appendChild(save)
+
+	save = document.createElement('div')
+	save.classList.add('main-page-filter')
+	let save2 = document.createElement('div')
+	save2.innerHTML = Icon('new-to-old')
+	if (browser.backward) save2.setAttribute('active','')
+	else save2.onclick = () => ChangeFilter(tabId, true)
+	save.appendChild(save2)
+	save2 = document.createElement('div')
+	save2.innerHTML = Icon('old-to-new')
+	if (!browser.backward) save2.setAttribute('active','')
+	else save2.onclick = () => ChangeFilter(tabId, false)
+	save.appendChild(save2)
+	container.appendChild(save)
+
+	tab.Load(token, container, 'Image/favicon-32x32.png', 'Page 1')
+}
+
+function LoadSites(tabId) {}
+function LoadCollections(tabId) {}
 
 function OpenHistory() {}
 function OpenDownloads() {}
