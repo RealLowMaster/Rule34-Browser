@@ -85,6 +85,8 @@
 	width: calc(100% - 60px);
 	color: var(--interactive-normal);
 	font-size: 14px;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 #mb-tabs > div > div {
@@ -98,6 +100,10 @@
 	position: absolute;
 	right: 2px;
 }
+
+#mb-tabs[small] > div > img { display: none }
+#mb-tabs[small] > div > p { display: none }
+#mb-tabs[small] > div > div { margin: auto; right: 0; left: 0 }
 
 #mb-tabs > div:hover { background-color: var(--modifier-active-bg) }
 #mb-tabs > div:hover > span { color: var(--interactive-hover) }

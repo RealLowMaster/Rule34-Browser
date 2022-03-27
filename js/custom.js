@@ -172,6 +172,8 @@ class BrowserManager {
 		this.tabsIds = []
 		this.selectedTab = null
 		this.backward = false
+		this.timeout = null
+		window.addEventListener('resize', () => this.ResizeTabs())
 	}
 
 	AddTab() {
@@ -180,10 +182,12 @@ class BrowserManager {
 		const id = Number(save.substring(save.length - 8))
 		this.tabs[i] = new Tab(id)
 		this.tabsIds[i] = id
+		this.ResizeTabs()
 		return id
 	}
 
 	CloseTab(index) {
+		clearTimeout(this.timeout)
 		try { event.stopPropagation() } catch(err) {}
 		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
 			this.tabs[i].Close()
@@ -197,6 +201,8 @@ class BrowserManager {
 					else this.ActivateTab(this.tabsIds[i])
 				} else this.selectedTab = null
 			}
+
+			this.timeout = setTimeout(() => this.ResizeTabs(), 1000)
 			return
 		}
 	}
@@ -232,11 +238,13 @@ class BrowserManager {
 	}
 
 	CloseOtherTabs(index) {
+		clearTimeout(this.timeout)
 		for (let i = this.tabsIds.length - 1; i >= 0; i--) if (this.tabsIds[i] != index) {
 			this.tabs[i].Close()
 			this.tabs.splice(i, 1)
 			this.tabsIds.splice(i, 1)
 		} else this.ActivateTab(this.tabsIds[i])
+		this.ResizeTabs()
 	}
 
 	ClearTabs() {
@@ -291,6 +299,22 @@ class BrowserManager {
 	SetNeedReload(site) {
 		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) this.tabs[i].needReload = true
 		this.ActivateTab(this.selectedTab)
+	}
+
+	ResizeTabs() {
+		const count = this.tabsIds.length
+		if (count == 0) return
+		const mb_tabs = document.getElementById('mb-tabs')
+
+		if (mb_tabs.clientWidth < (232 * count)) {
+			const size = mb_tabs.clientWidth / count
+			if (size <= 30) mb_tabs.setAttribute('small','')
+			else mb_tabs.removeAttribute('small')
+			for (let i = 0; i < count; i++) this.tabs[i].tab.style.width = size+'px'
+		} else {
+			mb_tabs.removeAttribute('small')
+			for (let i = 0; i < count; i++) this.tabs[i].tab.style.width = 232+'px'
+		}
 	}
 
 	CopyTab(index) {}
