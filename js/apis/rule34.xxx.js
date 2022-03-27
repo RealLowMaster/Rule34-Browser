@@ -74,6 +74,7 @@ class rule34xxx {
 		else search = this.#ToURL(search)
 		const url = this.baseURL+'index.php?page=post&s=list&tags='+search+'&pid='+(page * 42)
 
+		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
@@ -125,7 +126,7 @@ class rule34xxx {
 				arr.pagination = []
 				
 				for (let i = 0, l = save.length; i < l; i++) {
-					if (save[i].tagName == 'A') arr.pagination.push([Number(LastChar('=', save[i].href)) / 42, save[i].innerText])
+					if (save[i].tagName == 'A') arr.pagination.push([Number(LastChar('=', save[i].href)) / 42 + 1, save[i].innerText])
 					else if (save[i].tagName == 'B') arr.pagination.push([null, save[i].innerText])
 				}
 				save = save[save.length - 3]
@@ -134,7 +135,7 @@ class rule34xxx {
 					let num = Number(LastChar('=', save.href))
 					if (isNaN(num)) arr.maxPages = null
 					else {
-						num = num / 42
+						num = num / 42 + 1
 						arr.maxPages = num > this.maxPage ? this.maxPage : num
 					}
 				}
@@ -162,6 +163,7 @@ class rule34xxx {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		const url = this.baseURL+'index.php?page=post&s=view&id='+id
 
+		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
@@ -220,12 +222,14 @@ class rule34xxx {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		const url = this.baseURL+'index.php?page=post&s=view&id='+id
 
+		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw statusMsg[index]
 				else throw "Error::Code::"+response.status
 			}
+			
 			return response.text()
 		}).then(htm => {
 			const html = new DOMParser().parseFromString(htm, 'text/html')

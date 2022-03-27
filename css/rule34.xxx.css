@@ -84,3 +84,29 @@
 .rule34-xxx-posts > div:hover { background-color: var(--r34x-interactive-hover) }
 .rule34-xxx-posts > div > img { max-width: 100%; max-height: 100% }
 .rule34-xxx-posts > div[v] > img { border: 3px solid var(--r34x-img-bd-color) }
+
+.rule34-xxx-pagination {
+	width: 100%;
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+.rule34-xxx-pagination > div {
+	display: inline-block;
+	margin: 0 3px;
+	padding: 2px 6px;
+	color: var(--r34x-link);
+	border: 1px solid var(--r34x-link);
+	cursor: pointer;
+}
+
+.rule34-xxx-pagination > div:hover {
+	color: #fff;
+	background-color: var(--r34x-link);
+}
+
+.rule34-xxx-pagination > span {
+	margin: 0 3px;
+	padding: 2px 6px;
+	cursor: default;
+}

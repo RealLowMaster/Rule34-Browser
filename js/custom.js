@@ -215,7 +215,6 @@ class Tab {
 class BrowserManager {
 	constructor() {
 		this.tabs = []
-		this.tabsIds = []
 		this.selectedTab = null
 		this.selectedTabIndex = null
 		this.copied = null;
@@ -235,7 +234,6 @@ class BrowserManager {
 		const save = new Date().getTime().toString()
 		const id = Number(save.substring(save.length - 8))
 		this.tabs[i] = new Tab(id)
-		this.tabsIds[i] = id
 		this.ResizeTabs()
 		return id
 	}
@@ -243,16 +241,15 @@ class BrowserManager {
 	CloseTab(index) {
 		clearTimeout(this.timeout)
 		try { event.stopPropagation() } catch(err) {}
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
 			this.tabs[i].Close()
 			this.tabs.splice(i, 1)
-			this.tabsIds.splice(i, 1)
 
 			if (index == this.selectedTab) {
-				if (this.tabsIds.length > 0) {
-					if (i == 0) this.ActivateTab(this.tabsIds[0])
-					else if (i == this.tabsIds.length) this.ActivateTab(this.tabsIds[i-1])
-					else this.ActivateTab(this.tabsIds[i])
+				if (this.tabs.length > 0) {
+					if (i == 0) this.ActivateTab(this.tabs[0].id)
+					else if (i == this.tabs.length) this.ActivateTab(this.tabs[i-1].id)
+					else this.ActivateTab(this.tabs[i].id)
 				} else this.selectedTab = null
 			}
 
@@ -262,8 +259,13 @@ class BrowserManager {
 	}
 
 	ActivateTab(index) {
+		if (this.tabs.length == 0) {
+			this.selectedTab == null
+			this.selectedTabIndex = null
+			return
+		}
 		if (this.selectedTab != null) {
-			for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == this.selectedTab) {
+			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == this.selectedTab) {
 				this.tabs[i].tab.removeAttribute('active')
 				this.tabs[i].page.style.display = 'none'
 				break
@@ -271,7 +273,7 @@ class BrowserManager {
 		}
 		this.selectedTab = null
 		this.selectedTabIndex = null
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
 			this.selectedTab = index
 			this.selectedTabIndex = i
 
@@ -298,34 +300,32 @@ class BrowserManager {
 
 	CloseOtherTabs(index) {
 		clearTimeout(this.timeout)
-		for (let i = this.tabsIds.length - 1; i >= 0; i--) if (this.tabsIds[i] != index) {
+		for (let i = this.tabs.length - 1; i >= 0; i--) if (this.tabs[i].id != index) {
 			this.tabs[i].Close()
 			this.tabs.splice(i, 1)
-			this.tabsIds.splice(i, 1)
-		} else this.ActivateTab(this.tabsIds[i])
+		} else this.ActivateTab(this.tabs[i].id)
 		this.ResizeTabs()
 	}
 
 	CloseAllTabs() {
-		for (let i = this.tabsIds.length - 1; i >= 0; i--) this.tabs[i].Close()
+		for (let i = this.tabs.length - 1; i >= 0; i--) this.tabs[i].Close()
 		this.tabs = []
-		this.tabsIds = []
 	}
 
 	GetTab(index) {
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) return this.tabs[i]
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) return this.tabs[i]
 		return null
 	}
 
 	OpenLinkInNewTab(tabId, link) {
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == tabId) {
 			this.Link(this.AddTab(), this.tabs[i].links[link], this.tabs[i].linksValue[link])
 			return
 		}
 	}
 
 	LinkClick(tabId, link) {
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == tabId) {
 			this.Link(tabId, this.tabs[i].links[link], this.tabs[i].linksValue[link])
 			return
 		}
@@ -367,21 +367,21 @@ class BrowserManager {
 	}
 
 	Prev(tabId) {
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == tabId) {
 			this.tabs[i].Prev()
 			return
 		}
 	}
 
 	Next(tabId) {
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == tabId) {
 			this.tabs[i].Next()
 			return
 		}
 	}
 
 	ReloadTab(tabId) {
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == tabId) {
 			this.tabs[i].Reload()
 			return
 		}
@@ -393,7 +393,7 @@ class BrowserManager {
 	}
 
 	ResizeTabs() {
-		const count = this.tabsIds.length
+		const count = this.tabs.length
 		if (count == 0) return
 		const mb_tabs = document.getElementById('mb-tabs')
 
@@ -409,7 +409,7 @@ class BrowserManager {
 	}
 
 	CopyTab(index) {
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
 			this.copied = [
 				[...this.tabs[i].history],
 				[...this.tabs[i].historyValue],
@@ -429,7 +429,7 @@ class BrowserManager {
 	}
 
 	DuplicateTab(index) {
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
 			this.Link(this.AddTab(), this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
 			return
 		}
@@ -795,9 +795,7 @@ function LoadCollections(tabId) {}
 
 function OpenHistory() {}
 
-function OpenDownloads() {
-
-}
+function OpenDownloads() {}
 
 function OpenBookmarks() {}
 

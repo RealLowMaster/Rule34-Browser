@@ -92,8 +92,24 @@ function Rule34XXXGetPosts(tab, arr) {
 		if (arr[i].video) post.setAttribute('v', '')
 		const img = document.createElement('img')
 		img.src = arr[i].thumb
+		img.loading = 'lazy'
 		post.appendChild(img)
 		container.appendChild(post)
+	}
+	return container
+}
+
+function Rule34XXXGetPagination(tab, arr, linkId) {
+	const container = document.createElement('div')
+	container.classList.add('rule34-xxx-pagination')
+	arr = arr.pagination
+	for (let i = 0, l = arr.length; i < l; i++) {
+		if (arr[i][0][0] != null) container.appendChild(NormalLinkElement('div', arr[i][1], tab.id, tab.AddLink(linkId, arr[i][0]), false))
+		else {
+			const save = document.createElement('span')
+			save.innerText = arr[i][1]
+			container.appendChild(save)
+		}
 	}
 	return container
 }
@@ -119,7 +135,7 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 
 		let save = document.createElement('p')
 		save.classList.add('rule34-xxx-title')
-		save.innerText = 'Page '+page
+		save.innerText = (search != null ? search : '')+'Page '+page
 		container.appendChild(save)
 
 		const sides = document.createElement('div')
@@ -131,6 +147,8 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 
 		side = document.createElement('div')
 		side.appendChild(Rule34XXXGetPosts(tab, arr))
+		for (let i = 0, l = arr.pagination.length; i < l; i++) arr.pagination[i][0] = [arr.pagination[i][0], search]
+		side.appendChild(Rule34XXXGetPagination(tab, arr, 4))
 		sides.appendChild(side)
 
 		container.appendChild(sides)
