@@ -1,0 +1,1 @@
+function Rule34XYZHome(tabId, page) {}

@@ -4,13 +4,17 @@ const defaultSetting = {
 	animations: true,
 	not: true,
 	not_sound: true,
+	pic_per_page: 20,
 	dl_path: null,
+	dl_limit: 5,
+	show_unoptimize: false,
 	full_screen: false,
 	developer_mode: false
 }
 
 // [ 'setting name', 'translate name', 'translate tip' || null ]
 const sto_checkbox = [
+	['show_unoptimize', 'showunopt', 'showunopttip'],
 	['animations', 'animations', 'animationstip'],
 	['not', 'notifications', 'nottip'],
 	['not_sound', 'notsound', 'notsoundtip'],
@@ -25,7 +29,10 @@ const sto_radio = [
 ]
 
 // [ 'setting name', 'translate name', min, max ]
-const sto_range = []
+const sto_range = [
+	['pic_per_page', 'picperpage', 1, 90],
+	['dl_limit', 'dllimit', 0, 20]
+]
 
 // [ 'setting name', isFolder, 'title' || null ]
 const sto_dialog = [

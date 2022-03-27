@@ -1,12 +1,36 @@
+const sharp = require('sharp')
+// sharp('Image/sites/rule34.xyz-72x72.png').resize(24, 24).png({ quality: 100 }).toFile('Image/sites/img.png')
+
 const loading_img = new Image()
 loading_img.src = 'Image/loading.gif'
 
 const mb_search = document.getElementById('mb-search')
 const mb_jump_page = document.getElementById('mb-jump-page')
 
+const status = [403, 404, 500, 503]
+const statusMsg = [
+	"You don't have the permission to View this Page.",
+	"Page Not Found.",
+	"Internal Server Error.",
+	"Server is unavailable at this Time."
+]
 
-const site = [
 
+const sites = [
+	{
+		name: 'Rule34.xxx',
+		url: 'rule34.xxx',
+		icon: 'png',
+		tags: ['All'],
+		home: Rule34XXXHome
+	},
+	{
+		name: 'Rule34.xyz',
+		url: 'rule34.xyz',
+		icon: 'png',
+		tags: ['All'],
+		home: Rule34XYZHome
+	}
 ]
 
 const db = {
@@ -27,7 +51,6 @@ class Tab {
 	constructor(index) {
 		this.id = index
 		this.history = []
-		this.historySite = []
 		this.historyValue = []
 		this.selectedHistory = -1
 		this.customizing = false
@@ -104,17 +127,14 @@ class Tab {
 		const i = this.history.length
 		if (i == 0 || this.selectedHistory == i - 1) {
 			this.history[i] = index
-			this.historySite[i] = this.site
 			this.historyValue[i] = value
 			this.selectedHistory = i
 		} else {
 			this.selectedHistory++
 			this.history.splice(this.selectedHistory)
-			this.historySite.splice(this.selectedHistory)
 			this.historyValue.splice(this.selectedHistory)
 			
 			this.history[this.selectedHistory] = index
-			this.historySite[this.selectedHistory] = this.site
 			this.historyValue[this.selectedHistory] = value
 		}
 	}
@@ -128,7 +148,7 @@ class Tab {
 		this.loading = true
 		this.needReload = false
 		this.customizing = true
-		browser.Link(this.id, this.historySite[this.selectedHistory], this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
+		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 		this.customizing = false
 	}
 
@@ -232,37 +252,32 @@ class BrowserManager {
 
 	OpenLinkInNewTab(tabId, link) {
 		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
-			this.Link(this.AddTab(), this.tabs[i].site, this.tabs[i].links[link], this.tabs[i].linksValue[link])
+			this.Link(this.AddTab(), this.tabs[i].links[link], this.tabs[i].linksValue[link])
 			return
 		}
 	}
 
 	LinkClick(tabId, link) {
 		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
-			this.Link(tabId, this.tabs[i].site, this.tabs[i].links[link], this.tabs[i].linksValue[link])
+			this.Link(tabId, this.tabs[i].links[link], this.tabs[i].linksValue[link])
 			return
 		}
 	}
 
-	Link(tabId, site, index, value) {
-		switch(site) {
-			case -1:
-				switch(index) {
-					case 0:
-						LoadPage(tabId, value)
-						break
-					case 1:
-						LoadSites(tabId)
-						break
-					case 2:
-						LoadCollections(tabId)
-						break
-				}
-				break
+	Link(tabId, index, value) {
+		switch(index) {
 			case 0:
-				break
+				LoadPage(tabId, value)
+				return
 			case 1:
-				break
+				LoadSites(tabId)
+				return
+			case 2:
+				LoadCollections(tabId)
+				return
+			case 3:
+				sites[value].home(tabId, 1)
+				return
 		}
 	}
 
@@ -275,6 +290,7 @@ class BrowserManager {
 
 	SetNeedReload(site) {
 		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) this.tabs[i].needReload = true
+		this.ActivateTab(this.selectedTab)
 	}
 
 	CopyTab(index) {}
@@ -473,16 +489,62 @@ function NormalLink(tabId, link) {
 
 function NormalLinkElement(name, inner, tabId, link) {
 	const element = document.createElement(name)
-	element.setAttribute('l', inner)
-	element.innerText = Language(inner)
+	if (inner != null) {
+		element.setAttribute('l', inner)
+		element.innerText = Language(inner)
+	}
 	element.onmousedown = () => NormalLink(tabId, link)
 	return element
 }
 
-function ChangeFilter(tabId, backward) {
+function ChangeFilter(backward) {
 	browser.backward = backward
 	browser.SetNeedReload(-1)
-	browser.ReloadTab(tabId)
+}
+
+function GetPagination(total_pages, page) {
+	let min = 1, max = 1, bdot = false, fdot = false, bfirst = false, ffirst = false, pagination_width = 5
+	if (total_pages > pagination_width - 1) {
+		if (page == 1) {
+			min = 1
+			max = pagination_width
+		} else {
+			if (page < total_pages) {
+				if (page == pagination_width || page == pagination_width - 1) min = page - Math.floor(pagination_width / 2) - 1
+				else min = page - Math.floor(pagination_width / 2)
+				
+				if (page == (total_pages - pagination_width) + 1 || page == (total_pages - pagination_width) + 2) max = page + Math.floor(pagination_width / 2) + 1
+				else max = page + Math.floor(pagination_width / 2)
+			} else {
+				min = page - pagination_width + 1
+				max = page
+			}
+		}
+	} else {
+		min = 1
+		max = total_pages
+	}
+	
+	if (min < 1) min = 1
+	if (max > total_pages) max = total_pages
+	
+	if (page > pagination_width - 1 && total_pages > pagination_width) bfirst = true
+	if (page > pagination_width && total_pages > pagination_width + 1) bdot = true
+	if (page < (total_pages - pagination_width) + 2 && total_pages > pagination_width) ffirst = true
+	if (page < (total_pages - pagination_width) + 1 && total_pages > pagination_width + 1) fdot = true
+	
+	const arr = []
+	if (page > 1) arr.push(['Prev', page - 1])
+	if (bfirst) arr.push(['1', 1])
+	if (bdot) arr.push(['...', null])
+	for (let i=min; i <= max;i++) {
+		if (i == page) arr.push([`${i}`, null])
+		else arr.push([`${i}`, i])
+	}
+	if (fdot) arr.push(['...', null])
+	if (ffirst) arr.push([`${total_pages}`, total_pages])
+	if (page < total_pages) arr.push(['Next', page + 1])
+	return arr
 }
 
 function LoadPage(tabId, page = 1) {
@@ -502,21 +564,92 @@ function LoadPage(tabId, page = 1) {
 	let save2 = document.createElement('div')
 	save2.innerHTML = Icon('new-to-old')
 	if (browser.backward) save2.setAttribute('active','')
-	else save2.onclick = () => ChangeFilter(tabId, true)
+	else save2.onclick = () => ChangeFilter(true)
 	save.appendChild(save2)
 	save2 = document.createElement('div')
 	save2.innerHTML = Icon('old-to-new')
 	if (!browser.backward) save2.setAttribute('active','')
-	else save2.onclick = () => ChangeFilter(tabId, false)
+	else save2.onclick = () => ChangeFilter(false)
 	save.appendChild(save2)
 	container.appendChild(save)
 
-	tab.Load(token, container, 'Image/favicon-32x32.png', 'Page 1')
+	const total_pages = Math.ceil(db.post.length / setting.pic_per_page)
+	if (page > total_pages) page = total_pages
+
+	if (total_pages > 0) {
+
+	} else {
+		page = 1
+		save = document.createElement('div')
+		save.classList.add('alert')
+		save.classList.add('alert-danger')
+		save.setAttribute('l', 'nopost')
+		save.innerText = Language('nopost')
+		container.appendChild(save)
+	}
+
+	tab.Load(token, container, 'Image/favicon-32x32.png', 'Page '+page)
 }
 
-function LoadSites(tabId) {}
+function LoadSites(tabId) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading()
+	tab.AddHistory(1)
+	const container = document.createElement('div')
+	container.classList.add('main-page')
+	let save = document.createElement('div')
+	save.classList.add('main-page-menu')
+	save.appendChild(NormalLinkElement('div', 'home', tabId, tab.AddLink(0)))
+	save.appendChild(NormalLinkElement('div', 'collections', tabId, tab.AddLink(2)))
+	container.appendChild(save)
+
+	save = document.createElement('div')
+	save.classList.add('main-page-sites')
+	for (let i = 0, l = sites.length; i < l; i++) {
+		const save2 = NormalLinkElement('div', null, tabId, tab.AddLink(3, i))
+		let save3 = document.createElement('div')
+		let save4 = document.createElement('img')
+		save4.src = 'Image/sites/'+sites[i].url+'-32x32.'+sites[i].icon
+		save4.title = sites[i].url
+		save3.appendChild(save4)
+		save2.appendChild(save3)
+		save4 = document.createElement('p')
+		save4.innerText = sites[i].name
+		save2.appendChild(save4)
+		save3 = document.createElement('div')
+		for (let j = 0, n = sites[i].tags.length; j < n; j++){
+			save4 = document.createElement('div')
+			save4.innerText = sites[i].tags[j]
+			save3.appendChild(save4)
+		}
+		save2.appendChild(save3)
+		save.appendChild(save2)
+	}
+	container.appendChild(save)
+
+
+	tab.Load(token, container, 'Image/favicon-32x32.png', 'Sites')
+}
+
 function LoadCollections(tabId) {}
 
 function OpenHistory() {}
-function OpenDownloads() {}
+
+function OpenDownloads() {
+
+}
+
 function OpenBookmarks() {}
+
+function test() {
+	const rule = new rule34xxx()
+
+	// rule.Page(1, (err, result) => {
+	// 	console.log(err, result)
+	// })
+
+	// 5859610 => pic | 5859608 => vid
+	rule.Post(5859610, (err, result) => {
+		console.log(err, result)
+	})
+}

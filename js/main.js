@@ -97,6 +97,11 @@ function ChangeScreenMode(fullscreen = null, save = true) {
 	if (save) jsonfile.writeFileSync(dirDocument+'/setting.json', setting)
 }
 
+function LastChar(char, txt, backward = false) {
+	if (backward) return new String(txt).substring(0, txt.lastIndexOf(char))
+	else return new String(txt).substring(txt.lastIndexOf(char) + 1)
+}
+
 function SetHotKeys() {
 	KeyManager.AddPublicHotKey(false, false, false, 122, 'ChangeScreenMode()')
 	KeyManager.use_public = true

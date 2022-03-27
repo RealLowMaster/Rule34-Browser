@@ -78,7 +78,8 @@
 		"electron-builder": "22.7.0"
 	},
 	"dependencies": {
-		"jsonfile": "^6.1.0"
+		"jsonfile": "^6.1.0",
+		"sharp": "^0.30.3"
 	},
 	"repository": {
 		"type": "git",
