@@ -1,0 +1,74 @@
+:root {
+	--r34x-primary-bg: #aae5a4;
+	--r34x-secondary-bg: #93c393;
+	--r34x-primary-header: #222;
+	--r34x-link: #009;
+	--r34x-link-hover: #000;
+	--r34x-interactive-normal: rgba(50,50,50,.1);
+	--r34x-interactive-hover: #7fb17e;
+}
+
+.rule34-xxx-page { color: var(--r34x-primary-header) }
+
+.rule34-xxx-menu {
+	display: flex;
+	width: 100%;
+	padding: 5px 10px;
+	color: var(--r34x-link);
+	user-select: none;
+}
+
+.rule34-xxx-menu > div {
+	padding: 10px;
+	cursor: pointer;
+}
+
+.rule34-xxx-menu > div:hover {
+	color: var(--r34x-link-hover);
+	background-color: var(--r34x-secondary-bg);
+}
+
+.rule34-xxx-title {
+	display: block;
+	width: 100%;
+	margin: 15px 0;
+	padding: 10px;
+	text-align: center;
+	font-size: 18px;
+}
+
+.rule34-xxx-sides {
+	display: grid;
+	grid-template-columns: 300px 11fr;
+	width: 100%;
+}
+
+.rule34-xxx-tags {
+	display: block;
+	width: 100%;
+	padding: 20px;
+}
+
+.rule34-xxx-tags > p {
+	display: block;
+	width: 100%;
+	margin-top: 10px;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.rule34-xxx-tags > div {
+	width: 100%;
+}
+
+.rule34-xxx-tags > div > span:first-child {
+	margin-right: 5px;
+	font-size: 14px;
+	color: var(--r34x-link);
+	cursor: pointer;
+}
+.rule34-xxx-tags > div > span:first-child:hover { color: var(--r34x-link-hover); }
+
+.rule34-xxx-tags > div > span:last-child {
+	font-size: 14px;
+}

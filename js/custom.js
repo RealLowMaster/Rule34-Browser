@@ -15,7 +15,6 @@ const statusMsg = [
 	"Server is unavailable at this Time."
 ]
 
-
 const sites = [
 	{
 		name: 'Rule34.xxx',
@@ -95,18 +94,24 @@ class Tab {
 			mb_jump_page.style.display = 'none'
 		}
 		this.Change(loading_img.src, 'Loading...')
+		this.page.style.backgroundColor = 'var(--primary-bg)'
 		this.page.innerHTML = '<div class="br-loading"><p>Loading...</p><img src="'+loading_img.src+'"></div>'
 		this.token = new Date().getTime()
 		return this.token
 	}
 
-	Load(token, html, icon, txt) {
+	Load(token, html, txt, bg = null) {
 		if (token != this.token) return
+		this.needReload = false
 		this.page.innerHTML = null
 		this.page.appendChild(html)
-		this.Change(icon, txt)
-		this.needReload = false
 		this.loading = false
+		let icon
+		if (this.site == -1) icon = 'Image/favicon-32x32.png'
+		else icon = 'Image/sites/'+sites[this.site].url+'-32x32.'+sites[this.site].icon
+		this.Change(icon, txt)
+		if (bg == null) this.page.style.backgroundColor = 'var(--primary-bg)'
+		else this.page.style.backgroundColor = bg
 
 		if (browser.selectedTab == this.id && this.jumpPage != -1) {
 			mbjp.value = this.tabs[i].pageNumber
@@ -139,9 +144,25 @@ class Tab {
 		}
 	}
 
-	Prev() {}
+	Prev() {
+		if (this.selectedHistory <= 0) return
+		this.loading = true
+		this.needReload = false
+		this.customizing = true
+		this.selectedHistory--
+		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
+		this.customizing = false
+	}
 	
-	Next() {}
+	Next() {
+		if (this.selectedHistory >= this.history.length - 1) return
+		this.loading = true
+		this.needReload = false
+		this.customizing = true
+		this.selectedHistory++
+		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
+		this.customizing = false
+	}
 
 	Reload() {
 		if (this.loading) return
@@ -287,11 +308,40 @@ class BrowserManager {
 			case 3:
 				sites[value].home(tabId, 1)
 				return
+			case 4:
+				Rule34XXXHome(tabId, value[0], value[1])
+				return
+			case 5:
+				Rule34XXXArtists(tabId, value)
+				return
+			case 6:
+				Rule34XXXTags(tabId, value)
+				return
+			case 7:
+				Rule34XXXPools(tabId, value)
+				return
+			case 8:
+				Rule34XXXStats(tabId)
+				return
 		}
 	}
 
-	ReloadTab(index) {
-		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
+	Prev(tabId) {
+		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
+			this.tabs[i].Prev()
+			return
+		}
+	}
+
+	Next(tabId) {
+		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
+			this.tabs[i].Next()
+			return
+		}
+	}
+
+	ReloadTab(tabId) {
+		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == tabId) {
 			this.tabs[i].Reload()
 			return
 		}
@@ -346,6 +396,8 @@ class BrowserManager {
 	}
 
 	PinTab(index) {}
+
+	AddLinkToBookmarks() {}
 }
 
 const browser = new BrowserManager()
@@ -522,24 +574,27 @@ function LoadDatabase() {
 	NewTab()
 }
 
-function NormalLink(tabId, link) {
+function NormalLink(tabId, link, notNormal) {
 	const e = window.event, key = e.which
 	e.preventDefault()
 	if (key == 1) browser.LinkClick(tabId, link)
 	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
 	else {
 		ContextManager.save = [tabId, link]
-		ContextManager.ShowMenu('nor-links')
+		if (notNormal) ContextManager.ShowMenu('nor-links-book')
+		else ContextManager.ShowMenu('nor-links')
 	}
 }
 
-function NormalLinkElement(name, inner, tabId, link) {
+function NormalLinkElement(name, inner, tabId, link, notNormal = true, lang = false) {
 	const element = document.createElement(name)
 	if (inner != null) {
-		element.setAttribute('l', inner)
-		element.innerText = Language(inner)
+		if (lang) {
+			element.setAttribute('l', inner)
+			element.innerText = Language(inner)
+		} else element.innerText = inner
 	}
-	element.onmousedown = () => NormalLink(tabId, link)
+	element.onmousedown = () => NormalLink(tabId, link, notNormal)
 	return element
 }
 
@@ -601,8 +656,8 @@ function LoadPage(tabId, page = 1) {
 	container.classList.add('main-page')
 	let save = document.createElement('div')
 	save.classList.add('main-page-menu')
-	save.appendChild(NormalLinkElement('div', 'sites', tabId, tab.AddLink(1)))
-	save.appendChild(NormalLinkElement('div', 'collections', tabId, tab.AddLink(2)))
+	save.appendChild(NormalLinkElement('div', 'sites', tabId, tab.AddLink(1), false, true))
+	save.appendChild(NormalLinkElement('div', 'collections', tabId, tab.AddLink(2), false, true))
 	container.appendChild(save)
 
 	save = document.createElement('div')
@@ -634,7 +689,7 @@ function LoadPage(tabId, page = 1) {
 		container.appendChild(save)
 	}
 
-	tab.Load(token, container, 'Image/favicon-32x32.png', 'Page '+page)
+	tab.Load(token, container, 'Page '+page)
 }
 
 function LoadSites(tabId) {
@@ -645,14 +700,14 @@ function LoadSites(tabId) {
 	container.classList.add('main-page')
 	let save = document.createElement('div')
 	save.classList.add('main-page-menu')
-	save.appendChild(NormalLinkElement('div', 'home', tabId, tab.AddLink(0)))
-	save.appendChild(NormalLinkElement('div', 'collections', tabId, tab.AddLink(2)))
+	save.appendChild(NormalLinkElement('div', 'home', tabId, tab.AddLink(0), false, true))
+	save.appendChild(NormalLinkElement('div', 'collections', tabId, tab.AddLink(2), false, true))
 	container.appendChild(save)
 
 	save = document.createElement('div')
 	save.classList.add('main-page-sites')
 	for (let i = 0, l = sites.length; i < l; i++) {
-		const save2 = NormalLinkElement('div', null, tabId, tab.AddLink(3, i))
+		const save2 = NormalLinkElement('div', null, tabId, tab.AddLink(3, i), false, true)
 		let save3 = document.createElement('div')
 		let save4 = document.createElement('img')
 		save4.src = 'Image/sites/'+sites[i].url+'-32x32.'+sites[i].icon
@@ -672,9 +727,7 @@ function LoadSites(tabId) {
 		save.appendChild(save2)
 	}
 	container.appendChild(save)
-
-
-	tab.Load(token, container, 'Image/favicon-32x32.png', 'Sites')
+	tab.Load(token, container, 'Sites')
 }
 
 function LoadCollections(tabId) {}
@@ -690,12 +743,8 @@ function OpenBookmarks() {}
 function test() {
 	const rule = new rule34xxx()
 
-	// rule.Page(1, (err, result) => {
-	// 	console.log(err, result)
-	// })
+	rule.Page(1, (err, result) => { console.log(err, result) })
 
 	// 5859610 => pic | 5859608 => vid
-	rule.Post(5859610, (err, result) => {
-		console.log(err, result)
-	})
+	// rule.Post(5859610, (err, result) => { console.log(err, result) })
 }

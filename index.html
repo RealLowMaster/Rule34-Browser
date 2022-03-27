@@ -12,6 +12,7 @@
 	<link rel="stylesheet" type="text/css" href="css/context-menu.css">
 	<link rel="stylesheet" type="text/css" href="css/action.css">
 	<link rel="stylesheet" type="text/css" href="css/public.css">
+	<link rel="stylesheet" type="text/css" href="css/rule34.xxx.css">
 	<!-- Scripts -->
 	<script type="text/javascript">
 		if (typeof module === 'object') { window.module = module; module = undefined; }
@@ -55,8 +56,8 @@
 					</div>
 				</div>
 				<div id="mb-tools">
-					<div lt="prev-page"><i ic="prev"></i></div>
-					<div lt="next-page"><i ic="next"></i></div>
+					<div lt="prev-page" onclick="browser.Prev(browser.selectedTab)"><i ic="prev"></i></div>
+					<div lt="next-page" onclick="browser.Next(browser.selectedTab)"><i ic="next"></i></div>
 					<div lt="reload" onclick="browser.ReloadTab(browser.selectedTab)"><i ic="reload"></i></div>
 
 					<form id="mb-search">

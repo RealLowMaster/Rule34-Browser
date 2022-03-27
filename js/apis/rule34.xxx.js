@@ -8,7 +8,7 @@ class rule34xxx {
 		return new String(txt).replace(/%/g, '%25')
 			.replace(/'/g, '%27')
 			.replace(/\(/g, '%28')
-			.replace(/)/g, '%29')
+			.replace(/\)/g, '%29')
 			.replace(/\?/g, '%3f')
 			.replace(/&/g, '%26')
 			.replace(/\//g, '%2f')
@@ -21,6 +21,7 @@ class rule34xxx {
 			.replace(/\^/g, '%5e')
 			.replace(/=/g, '%3d')
 			.replace(/\+/g, '%2b')
+			.replace(/ /g, '+')
 			.replace(/{/g, '%7b')
 			.replace(/}/g, '%7d')
 			.replace(/\[/g, '%5b')
@@ -28,13 +29,12 @@ class rule34xxx {
 			.replace(/:/g, '%3a')
 			.replace(/;/g, '%3b')
 			.replace(/`/g, '%60')
-			// .replace(/./g, '%')
-			// .replace(/,/g, '%')
-			// .replace(/\|/g, '%')
+			.replace(/,/g, '%2c')
+			.replace(/\|/g, '%7c')
 	}
 
-	#GetTags(html) {
-		const arr = [
+	#GetTags(html, arr, p = 0) {
+		const data = [
 			[], // 0 Copyright
 			[], // 1 Character
 			[], // 2 Artist
@@ -45,7 +45,9 @@ class rule34xxx {
 		for (let i = 0, l = html.length; i < l; i++) {
 			if (html[i].hasAttribute('class')) {
 				const save = html[i].children
-				arr[index].push([save[0].innerText, Number(save[1].innerText)])
+				let value = save[0+p].innerText.replace(/\n/g, '')
+				if (value[value.length-1] == ' ') value = LastChar(' ', value, true)
+				data[index].push([value, Number(save[1+p].innerText)])
 			} else {
 				const save = html[i].innerText
 				if (save == "Copyright") index = 0
@@ -56,13 +58,21 @@ class rule34xxx {
 			}
 		}
 
+		if (data[0].length > 0) arr.parody = data[0]
+		if (data[1].length > 0) arr.character = data[1]
+		if (data[2].length > 0) arr.artist = data[2]
+		if (data[3].length > 0) arr.tag = data[3]
+		if (data[4].length > 0) arr.meta = data[4]
+
 		return arr
 	}
 
-	Page(page, callback) {
+	Page(page, search, callback) {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		page--
-		const url = this.baseURL+'index.php?page=post&s=list&tags=all&pid='+(page * 42)
+		if (search == null) search = 'all'
+		else search = this.#ToURL(search)
+		const url = this.baseURL+'index.php?page=post&s=list&tags='+search+'&pid='+(page * 42)
 
 		fetch(url).then(response => {
 			if (response.status != 200) {
@@ -73,10 +83,7 @@ class rule34xxx {
 			return response.text()
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
-			const arr = { maxPages: null }
-			let save
-
-			console.log(html.getElementById('tag-sidebar'))
+			let arr = { maxPages: null }, save
 
 			// Posts
 			arr.posts = []
@@ -133,6 +140,16 @@ class rule34xxx {
 				}
 			}
 
+			// Tags
+			try {
+				save = html.getElementById('tag-sidebar').children
+				if (save.length == 0) save = null
+			} catch(err) {
+				console.error(err)
+				save = null
+			}
+			if (save != null) arr = this.#GetTags(save, arr, 2)
+
 			callback(null, arr)
 
 		}).catch(err => {
@@ -154,8 +171,7 @@ class rule34xxx {
 			return response.text()
 		}).then(htm => {
 			const html = new DOMParser().parseFromString(htm, 'text/html')
-			const arr = {}
-			let save
+			let arr = {}, save
 
 			save = html.getElementById('image') || null
 			if (save == null) {
@@ -182,6 +198,7 @@ class rule34xxx {
 			else last = LastChar('_', arr.srcresize)
 			arr.thumb = this.baseURL+'thumbnails/'+LastChar('/', LastChar('/', arr.srcresize, true))+'/thumbnail_'+LastChar('.', last, true)+'.jpg?'+LastChar('?', last)
 
+			// Tags
 			try {
 				save = html.getElementById('tag-sidebar').children
 				if (save.length == 0) save = null
@@ -189,15 +206,7 @@ class rule34xxx {
 				console.error(err)
 				save = null
 			}
-
-			if (save != null) {
-				save = this.#GetTags(save)
-				if (save[0].length > 0) arr.parody = save[0]
-				if (save[1].length > 0) arr.character = save[1]
-				if (save[2].length > 0) arr.artist = save[2]
-				if (save[3].length > 0) arr.tag = save[3]
-				if (save[4].length > 0) arr.meta = save[4]
-			}
+			if (save != null) arr = this.#GetTags(save, arr)
 			
 			callback(null, arr)
 
@@ -220,8 +229,7 @@ class rule34xxx {
 			return response.text()
 		}).then(htm => {
 			const html = new DOMParser().parseFromString(htm, 'text/html')
-			const arr = {}
-			let save
+			let arr = {}, save
 			
 
 		}).catch(err => {
