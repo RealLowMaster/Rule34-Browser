@@ -171,6 +171,7 @@ class BrowserManager {
 		this.tabs = []
 		this.tabsIds = []
 		this.selectedTab = null
+		this.copied = null;
 		this.backward = false
 		this.timeout = null
 		window.addEventListener('resize', () => this.ResizeTabs())
@@ -247,7 +248,7 @@ class BrowserManager {
 		this.ResizeTabs()
 	}
 
-	ClearTabs() {
+	CloseAllTabs() {
 		for (let i = this.tabsIds.length - 1; i >= 0; i--) this.tabs[i].Close()
 		this.tabs = []
 		this.tabsIds = []
@@ -317,11 +318,32 @@ class BrowserManager {
 		}
 	}
 
-	CopyTab(index) {}
+	CopyTab(index) {
+		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
+			this.copied = [
+				[...this.tabs[i].history],
+				[...this.tabs[i].historyValue],
+				this.tabs[i].selectedHistory
+			]
+			PopAlert(Language('tabcopied'))
+			return
+		}
+	}
 
-	PasteTab() {}
+	PasteTab() {
+		if (this.copied == null) {
+			PopAlert(Language('n-tab-copy'), 'warning')
+			return
+		}
+		this.Link(this.AddTab(), this.copied[0][this.copied[2]], this.copied[1][this.copied[2]])
+	}
 
-	DuplicateTab(index) {}
+	DuplicateTab(index) {
+		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
+			this.Link(this.AddTab(), this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
+			return
+		}
+	}
 
 	PinTab(index) {}
 }

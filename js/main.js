@@ -147,11 +147,19 @@ function SetContextMenus() {
 	ContextManager.AddItem(i, { text:'copy', click: () => browser.CopyTab(ContextManager.save) })
 	ContextManager.AddItem(i, { text:'reload', click: () => browser.ReloadTab(ContextManager.save) })
 	ContextManager.AddItem(i, { text:'duplicate', click: () => browser.DuplicateTab(ContextManager.save) })
-	ContextManager.AddItem(i, { text:'pin', click: () => browser.PinTab(ContextManager.save) })
+	// ContextManager.AddItem(i, { text:'pin', click: () => browser.PinTab(ContextManager.save) })
 	// ContextManager.AddItem(i, { text:'add-bookmarks', click: () =>  })
 	ContextManager.AddItem(i, {})
 	ContextManager.AddItem(i, { text:'close', click: () => browser.CloseTab(ContextManager.save) })
 	ContextManager.AddItem(i, { text:'cls-other-tabs', click: () => browser.CloseOtherTabs(ContextManager.save) })
+
+	i = ContextManager.AddMenu('tab-copy')
+	ContextManager.AddItem(i, { text:'paste', click: () => browser.PasteTab() })
+	ContextManager.AddItem(i, { text:'cls-all-tabs', click: () => browser.CloseAllTabs() })
+	document.getElementById('mb-tabs').oncontextmenu = e => {
+		if (e.target.id != 'mb-tabs') return
+		ContextManager.ShowMenu('tab-copy')
+	}
 
 	i = ContextManager.AddMenu('posts')
 	ContextManager.AddItem(i, { text:'open', click:'' })
