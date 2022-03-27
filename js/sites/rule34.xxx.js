@@ -83,15 +83,34 @@ function Rule34XXXGetTags(tab, arr) {
 	return container
 }
 
+function Rule34XXXGetPosts(tab, arr) {
+	const container = document.createElement('div')
+	container.classList.add('rule34-xxx-posts')
+	arr = arr.posts
+	for (let i = 0, l = arr.length; i < l; i++) {
+		const post = BRPostLinkElement(tab.id, tab.AddLink(9, arr[i].id), 0, arr[i].id)
+		if (arr[i].video) post.setAttribute('v', '')
+		const img = document.createElement('img')
+		img.src = arr[i].thumb
+		post.appendChild(img)
+		container.appendChild(post)
+	}
+	return container
+}
+
 function Rule34XXXHome(tabId, page = 1, search = null) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading(0)
 	tab.AddHistory(4, [page, search])
-
+	tab.search = search
+	if (browser.selectedTab == tab.id) {
+		mbs.value = search
+	}
 
 	r34xxx.Page(page, search, (err, arr) => {
 		if (err) {
 			console.error(err)
+			tab.Error(err)
 			return
 		}
 		const container = document.createElement('div')
@@ -111,14 +130,15 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 		sides.appendChild(side)
 
 		side = document.createElement('div')
+		side.appendChild(Rule34XXXGetPosts(tab, arr))
 		sides.appendChild(side)
-
 
 		container.appendChild(sides)
 		tab.Load(token, container, 'Page '+page, 'var(--r34x-primary-bg)')
 	})
 }
 
+function Rule34XXXPost(tabId, id) {}
 function Rule34XXXArtists(tabId, page) {}
 function Rule34XXXTags(tabId, page) {}
 function Rule34XXXPools(tabId, page) {}

@@ -62,6 +62,7 @@ class Tab {
 		this.token = null
 		this.site = -1
 		this.needReload = false
+		this.reloading = false
 		this.links = []
 		this.linksValue = []
 		this.tab = document.createElement('div')
@@ -106,6 +107,7 @@ class Tab {
 		this.page.innerHTML = null
 		this.page.appendChild(html)
 		this.loading = false
+		this.reloading = false
 		let icon
 		if (this.site == -1) icon = 'Image/favicon-32x32.png'
 		else icon = 'Image/sites/'+sites[this.site].url+'-32x32.'+sites[this.site].icon
@@ -147,6 +149,7 @@ class Tab {
 	Prev() {
 		if (this.selectedHistory <= 0) return
 		this.loading = true
+		this.reloading = false
 		this.needReload = false
 		this.customizing = true
 		this.selectedHistory--
@@ -157,6 +160,7 @@ class Tab {
 	Next() {
 		if (this.selectedHistory >= this.history.length - 1) return
 		this.loading = true
+		this.reloading = false
 		this.needReload = false
 		this.customizing = true
 		this.selectedHistory++
@@ -165,7 +169,8 @@ class Tab {
 	}
 
 	Reload() {
-		if (this.loading) return
+		if (this.reloading) return
+		this.reloading = true
 		this.loading = true
 		this.needReload = false
 		this.customizing = true
@@ -184,6 +189,20 @@ class Tab {
 	Close() {
 		this.tab.remove()
 		this.page.remove()
+	}
+
+	Error(err) {
+		this.Change('Image/alert-24x24.png', 'Error')
+		let save = document.createElement('div')
+		save.classList.add('alert')
+		save.classList.add('alert-danger')
+		save.innerText = err
+		this.page.style.backgroundColor = 'var(--primary-bg)'
+		this.page.innerHTML = null
+		this.page.appendChild(save)
+		this.loading = false
+		this.needReload = true
+		this.reloading = false
 	}
 }
 
@@ -252,6 +271,7 @@ class BrowserManager {
 
 			if (this.tabs[i].needReload) this.tabs[i].Reload()
 
+			mbs.value = this.tabs[i].search
 			this.tabs[i].tab.setAttribute('active','')
 			this.tabs[i].page.style.display = 'block'
 			return
@@ -322,6 +342,9 @@ class BrowserManager {
 				return
 			case 8:
 				Rule34XXXStats(tabId)
+				return
+			case 9:
+				Rule34XXXPost(tabId, value)
 				return
 		}
 	}
@@ -573,6 +596,27 @@ function LoadDatabase() {
 	KeyManager.ChangeCategory('default')
 	NewTab()
 }
+
+function BRLink(tabId, link, site, id) {
+	const e = window.event, key = e.which
+	e.preventDefault()
+	if (key == 1) browser.LinkClick(tabId, link)
+	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
+	else {
+		ContextManager.save = [tabId, link, site, id]
+		ContextManager.ShowMenu('br-posts')
+	}
+}
+
+function BRPostLinkElement(tabId, link, site, id) {
+	const element = document.createElement('div')
+	element.onmousedown = () => BRLink(tabId, link, site, id)
+	return element
+}
+
+function AddToDownloads(site, id) {}
+function RemoveFromDownloads(site, id) {}
+function DownloadClick(site, id) {}
 
 function NormalLink(tabId, link, notNormal) {
 	const e = window.event, key = e.which
