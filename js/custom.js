@@ -4,6 +4,7 @@ const sharp = require('sharp')
 const loading_img = new Image()
 loading_img.src = 'Image/loading.gif'
 
+const mb_pages = document.getElementById('mb-pages')
 const mb_search = document.getElementById('mb-search')
 const mb_jump_page = document.getElementById('mb-jump-page')
 
@@ -79,17 +80,19 @@ class Tab {
 		this.tab.appendChild(save)
 		document.getElementById('mb-tabs').appendChild(this.tab)
 		this.page = document.createElement('div')
-		document.getElementById('mb-pages').appendChild(this.page)
+		mb_pages.appendChild(this.page)
 	}
 
 	Loading(site = -1, jumpPage = -1) {
 		this.loading = true
 		this.needReload = false
+		this.scroll = 0
 		this.site = site
 		this.jumpPage = jumpPage
 		this.links = []
 		this.linksValue = []
 		if (browser.selectedTab == this.id) {
+			mb_pages.scrollTop = 0
 			if (this.site == -1) mb_search.style.display = 'none'
 			else mb_search.style.display = 'block'
 			mb_jump_page.style.display = 'none'
@@ -115,11 +118,14 @@ class Tab {
 		if (bg == null) this.page.style.backgroundColor = 'var(--primary-bg)'
 		else this.page.style.backgroundColor = bg
 
-		if (browser.selectedTab == this.id && this.jumpPage != -1) {
-			mbjp.value = this.tabs[i].pageNumber
-			mb_jump_page.children[1].innerText = '/ '+this.tabs[i].maxPages
-			mb_jump_page.style.display = 'block'
-		} else mb_jump_page.style.display = 'none'
+		if (browser.selectedTab == this.id) {
+			mb_pages.scrollTop = 0
+			if (this.jumpPage != -1) {
+				mbjp.value = this.tabs[i].pageNumber
+				mb_jump_page.children[1].innerText = '/ '+this.tabs[i].maxPages
+				mb_jump_page.style.display = 'block'
+			} else mb_jump_page.style.display = 'none'
+		} 
 	}
 
 	AddLink(index, value = null) {
@@ -211,10 +217,17 @@ class BrowserManager {
 		this.tabs = []
 		this.tabsIds = []
 		this.selectedTab = null
+		this.selectedTabIndex = null
 		this.copied = null;
 		this.backward = false
 		this.timeout = null
 		window.addEventListener('resize', () => this.ResizeTabs())
+		mb_pages.onscroll = () => this.SetTabScroll()
+	}
+
+	SetTabScroll() {
+		if (this.selectedTabIndex == null) return
+		this.tabs[this.selectedTabIndex].scroll = mb_pages.scrollTop
 	}
 
 	AddTab() {
@@ -257,8 +270,10 @@ class BrowserManager {
 			}
 		}
 		this.selectedTab = null
+		this.selectedTabIndex = null
 		for (let i = 0, l = this.tabsIds.length; i < l; i++) if (this.tabsIds[i] == index) {
 			this.selectedTab = index
+			this.selectedTabIndex = i
 
 			if (this.tabs[i].site == -1) mb_search.style.display = 'none'
 			else mb_search.style.display = 'block'
@@ -274,9 +289,11 @@ class BrowserManager {
 			mbs.value = this.tabs[i].search
 			this.tabs[i].tab.setAttribute('active','')
 			this.tabs[i].page.style.display = 'block'
+			mb_pages.scrollTop = this.tabs[i].scroll
 			return
 		}
 		this.selectedTab = null
+		this.selectedTabIndex = null
 	}
 
 	CloseOtherTabs(index) {
