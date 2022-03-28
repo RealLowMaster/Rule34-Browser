@@ -1,4 +1,4 @@
-const sharp = require('sharp')
+const sharp = require('sharp'), request = require('request')
 // sharp('Image/sites/rule34.xyz-72x72.png').resize(24, 24).png({ quality: 100 }).toFile('Image/sites/img.png')
 
 const loading_img = new Image()
@@ -437,6 +437,18 @@ class BrowserManager {
 
 	PinTab(index) {}
 
+	ChangeButtonsToDownloading(site, id, back) {
+		if (back) {
+			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+
+			}
+		} else {
+			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+
+			}
+		}
+	}
+
 	AddLinkToBookmarks() {}
 }
 
@@ -612,6 +624,27 @@ function LoadDatabase() {
 	loading.Close()
 	KeyManager.ChangeCategory('default')
 	NewTab()
+}
+
+function BRPostDL(site, id) {
+	const container = document.createElement('dl')
+	container.setAttribute('pid', id)
+	if (downloader.IsDownloading(site, id)) {
+		container.setAttribute('dli','')
+		container.innerHTML = `<img src="${loading_img.src}">`
+	} else if (IsHave(site, id)) {
+		if (IsDownloaded(site, id)) {
+			container.setAttribute('dl','')
+			container.innerText = 'Downloaded'
+		} else {
+			container.setAttribute('have','')
+			container.innerText = 'InDownloads'
+		}
+	} else {
+		container.innerText = 'Download'
+		// DownloadClick(site, id)
+	}
+	return container
 }
 
 function BRLink(tabId, link, site, id) {

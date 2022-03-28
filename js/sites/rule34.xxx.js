@@ -90,6 +90,7 @@ function Rule34XXXGetPosts(tab, arr) {
 	for (let i = 0, l = arr.length; i < l; i++) {
 		const post = BRPostLinkElement(tab.id, tab.AddLink(9, arr[i].id), 0, arr[i].id)
 		if (arr[i].video) post.setAttribute('v', '')
+		post.appendChild(BRPostDL(0, arr[i].id))
 		const img = document.createElement('img')
 		img.src = arr[i].thumb
 		img.loading = 'lazy'
