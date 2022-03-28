@@ -35,8 +35,7 @@ const sites = [
 
 const db = {
 	post: [],
-	have_ids: [],
-	have_site: [],
+	have: [],
 	collection: [],
 	artist: [],
 	tag: [],
@@ -440,11 +439,49 @@ class BrowserManager {
 	ChangeButtonsToDownloading(site, id, back) {
 		if (back) {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+				const elements = document.querySelectorAll(`[pid="${id}"]`)
+				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
+					elements[i].setAttribute('onclick', '')
+					elements[i].removeAttribute('dli')
+				} else {
 
+				}
 			}
 		} else {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+				const elements = document.querySelectorAll(`[pid="${id}"]`)
+				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
+					elements[i].setAttribute('onclick', '')
+					elements[i].setAttribute('dli','')
+				} else {
+					
+				}
+			}
+		}
+	}
 
+	ChangeButtonsToHave(site, id, back) {
+		if (back) {
+			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+				const elements = document.querySelectorAll(`[pid="${id}"]`)
+				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
+					elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+					elements[i].removeAttribute('have')
+					elements[i].innerText = 'Download'
+				} else {
+
+				}
+			}
+		} else {
+			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+				const elements = document.querySelectorAll(`[pid="${id}"]`)
+				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
+					elements[i].setAttribute('onclick', `RemoveFromHave(${site}, ${id})`)
+					elements[i].setAttribute('have','')
+					elements[i].innerText = 'In Downloads'
+				} else {
+					
+				}
 			}
 		}
 	}
@@ -547,16 +584,19 @@ function LoadDatabase() {
 	}
 
 	// have
-	if (!existsSync(paths.db+'have')) try { jsonfile.writeFileSync(paths.db+'have', {i:[],s:[]}) } catch(err) {
+	if (!existsSync(paths.db+'have')) try {
+		const have = []
+		for (let i = 0, l = sites.length; i < l; i++) have.push([])
+		jsonfile.writeFileSync(paths.db+'have', {a:have})
+	} catch(err) {
 		console.error(err)
 		error('CreatingHaveDB->'+err)
 	} else try {
-		const save = jsonfile.readFileSync(paths.db+'have')
-		db.have_ids = save.i
-		db.have_site = save.s
+		db.have = jsonfile.readFileSync(paths.db+'have').a
+		for (let i = 0, l = sites.length; i < l; i++) if (typeof db.have[i] !== 'object') db.have[i] = []
 	} catch(err) {
-		db.have_ids = []
-		db.have_site = []
+		db.have = []
+		for (let i = 0, l = sites.length; i < l; i++) db.have.push([])
 		console.error(err)
 		error('LoadingHaveDB->'+err)
 	}
@@ -637,12 +677,13 @@ function BRPostDL(site, id) {
 			container.setAttribute('dl','')
 			container.innerText = 'Downloaded'
 		} else {
+			container.setAttribute('onclick', `RemoveFromHave(${site}, ${id})`)
 			container.setAttribute('have','')
-			container.innerText = 'InDownloads'
+			container.innerText = 'In Downloads'
 		}
 	} else {
+		container.setAttribute('onclick', `DownloadClick(${site}, ${id})`)
 		container.innerText = 'Download'
-		// DownloadClick(site, id)
 	}
 	return container
 }
@@ -664,8 +705,6 @@ function BRPostLinkElement(tabId, link, site, id) {
 	return element
 }
 
-function AddToDownloads(site, id) {}
-function RemoveFromDownloads(site, id) {}
 function DownloadClick(site, id) {}
 
 function NormalLink(tabId, link, notNormal) {

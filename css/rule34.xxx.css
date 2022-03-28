@@ -81,6 +81,7 @@
 	text-align: center;
 	vertical-align: top;
 	cursor: pointer;
+	user-select: none;
 }
 
 .rule34-xxx-posts > div:hover { background-color: var(--r34x-interactive-hover) }

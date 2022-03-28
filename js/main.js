@@ -183,8 +183,8 @@ function SetContextMenus() {
 	ContextManager.AddItem(i, { text:'open', click: () => browser.LinkClick(ContextManager.save[0], ContextManager.save[1]) })
 	ContextManager.AddItem(i, { text:'open-in-ntab', click: () => browser.OpenLinkInNewTab(ContextManager.save[0], ContextManager.save[1]) })
 	ContextManager.AddItem(i, { text:'add-bookmarks', click: () => browser.AddLinkToBookmarks() })
-	ContextManager.AddItem(i, { text:'add-to-dls', click: () => AddToDownloads(ContextManager.save[2], ContextManager.save[3]) })
-	ContextManager.AddItem(i, { text:'remove-from-dls', click: () => RemoveFromDownloads(ContextManager.save[2], ContextManager.save[3]) })
+	ContextManager.AddItem(i, { text:'add-to-dls', click: () => AddToHave(ContextManager.save[2], ContextManager.save[3]) })
+	ContextManager.AddItem(i, { text:'remove-from-dls', click: () => RemoveFromHave(ContextManager.save[2], ContextManager.save[3]) })
 	ContextManager.AddItem(i, { text:'dl', click: () =>  DownloadClick(ContextManager.save[2], ContextManager.save[3]) })
 
 }
