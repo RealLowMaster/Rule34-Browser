@@ -171,6 +171,13 @@ class DownloadManager {
 		this.Download(index)
 	}
 
+	SendToAddPost(i) {
+		i = this.ids.indexOf(index)
+		if (i < 0) return
+		const data = this.dls[i]
+		AddPost(data.site, data.id, data.save, data.format, data.data)
+	}
+
 	Download(index) {
 		const dl_index = this.ids.indexOf(index)
 		if (dl_index < 0) return
@@ -182,11 +189,7 @@ class DownloadManager {
 		this.dls[dl_index].dl = new Download(this.dls[dl_index].url, paths.tmp+this.dls[dl_index].save+'.'+this.dls[dl_index].format)
 		this.dls[dl_index].dl.OnError(err => {
 			console.error(err)
-			const i = this.ids.indexOf(index)
-			if (i < 0) return
-			try { unlinkSync(paths.tmp+this.dls[i].save) } catch(e) {}
-			const data = this.dls[i]
-			AddPost(data.site, data.id, data.save, data.format, data.data)
+			this.SendToAddPost(index)
 		})
 
 		this.dls[dl_index].dl.OnComplete(filename => {
@@ -195,7 +198,7 @@ class DownloadManager {
 				try { unlinkSync(filename) } catch(e) {}
 				return
 			}
-			this.Optimize(index)
+			this.Optimize(index, filename)
 		})
 
 		this.dls[dl_index].dl.OnResponse(resp => {
@@ -218,9 +221,63 @@ class DownloadManager {
 		this.dls[dl_index].dl.Start()
 	}
 
-	Optimize(i) {
-		i = this.ids.indexOf(i)
+	Optimize(index, path) {
+		let i = this.ids.indexOf(index)
 		if (i < 0) return
+		const order = this.dl_order.indexOf(index)
+		if (order >= 0) this.dl_order.splice(order, 1)
+		this.dls[i].btn1.remove()
+		this.dls[i].btn2.remove()
+		this.dls[i].span.innerText = Language('optimizing')+'...'
+		const save_path = paths.dl+this.dls[i].save+'.'+this.dls[i].format
+		if (this.dls[i].format == 'jpeg') this.dls[i].format = 'jpg'
+		switch(this.dls[i].format) {
+			case 'jpg':
+				sharp(path).jpeg({ mozjpeg: true }).toFile(save_path).then(() => {
+					const opt_size = statSync(save_path).size
+					if (this.dls[i].dl_size < opt_size) {
+						try {
+							unlinkSync(save_path)
+							renameSync(path, save_path)
+						} catch(err) { console.error(err) }
+						this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)
+					} else this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)+' To '+FormatBytes(opt_size)
+					sharp(save_path).resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
+						console.error(err)
+						this.SendToAddPost(index)
+					})
+				}).catch(err => {
+					console.error(err)
+					try { unlinkSync(path) } catch(err) {}
+					this.SendToAddPost(index)
+				})
+				return
+			case 'png':
+				sharp(path).png({ quality: 100 }).toFile(save_path).then(() => {
+					const opt_size = statSync(save_path).size
+					if (this.dls[i].dl_size < opt_size) {
+						try {
+							unlinkSync(save_path)
+							renameSync(path, save_path)
+						} catch(err) { console.error(err) }
+						this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)
+					} else this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)+' To '+FormatBytes(opt_size)
+					sharp(save_path).resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
+						console.error(err)
+						this.SendToAddPost(index)
+					})
+				}).catch(err => {
+					console.error(err)
+					try { unlinkSync(path) } catch(err) {}
+					this.SendToAddPost(index)
+				})
+				return
+			case 'webp':
+				// .webp()
+				return
+			default:
+				return
+		}
 	}
 
 	OpenURL(url) {

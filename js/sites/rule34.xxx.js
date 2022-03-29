@@ -126,7 +126,6 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 
 	r34xxx.Page(page, search, (err, arr) => {
 		if (err) {
-			console.error(err)
 			tab.Error(err)
 			return
 		}

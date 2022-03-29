@@ -1,5 +1,5 @@
 const { remote } = require('electron')
-const { existsSync, mkdirSync, writeFileSync, readFileSync, unlinkSync, createWriteStream } = require('fs')
+const { existsSync, mkdirSync, writeFileSync, readFileSync, unlinkSync, createWriteStream, statSync, renameSync } = require('fs')
 const jsonfile = require('jsonfile')
 const KeyManager = new HotKeyManager()
 const ContextManager = new ContextMenuManager()

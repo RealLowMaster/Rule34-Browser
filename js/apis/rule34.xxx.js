@@ -78,7 +78,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[index]
+				if (i > -1) throw statusMsg[i]
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
@@ -167,7 +167,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[index]
+				if (i > -1) throw statusMsg[i]
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
@@ -189,7 +189,7 @@ class rule34xxx {
 			} else {
 				arr.srcresize = save.src
 				save = html.getElementsByClassName('link-list')[0].children[1].children
-				for (let i = 0, l = save.length; i < l; i++) if (save[i].children[0].innerText.replace(/\n/g, '') == 'Original image') {
+				for (let i = 0, l = save.length; i < l; i++) if (save[i].children[0].innerText.replace(/\n/g, '').replace(/ /g, '').toLowerCase() == 'originalimage') {
 					arr.src = save[i].children[0].href
 					break
 				}
@@ -200,7 +200,10 @@ class rule34xxx {
 			else last = LastChar('_', arr.srcresize)
 
 			// Thumb
-			arr.thumb = this.baseURL+'thumbnails/'+LastChar('/', LastChar('/', arr.srcresize, true))+'/thumbnail_'+LastChar('.', last, true)+'.jpg?'+LastChar('?', last)
+			arr.thumb = ''
+			try {
+				arr.thumb = this.baseURL+'thumbnails/'+LastChar('/', LastChar('/', arr.srcresize, true))+'/thumbnail_'+LastChar('.', last, true)+'.jpg?'+LastChar('?', last)
+			} catch(err) { console.error(err) }
 
 			// Made => https://rule34.xxx/thumbnails/5121/thumbnail_https://us.rule34.xxx//images/5121/1f7aefd17a68f290b4c21f3f37758230.jpg?5871972
 			// Real => https://us.rule34.xxx/thumbnails/5121/thumbnail_1f7aefd17a68f290b4c21f3f37758230.jpg?5871972
@@ -232,7 +235,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[index]
+				if (i > -1) throw statusMsg[i]
 				else throw "Error::Code::"+response.status
 			}
 			
