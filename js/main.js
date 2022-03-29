@@ -1,5 +1,5 @@
 const { remote } = require('electron')
-const { existsSync, mkdirSync, writeFileSync, readFileSync } = require('fs')
+const { existsSync, mkdirSync, writeFileSync, readFileSync, unlinkSync, createWriteStream } = require('fs')
 const jsonfile = require('jsonfile')
 const KeyManager = new HotKeyManager()
 const ContextManager = new ContextMenuManager()
@@ -107,10 +107,15 @@ function SetHotKeys() {
 	KeyManager.use_public = true
 
 	KeyManager.AddCategory('default')
+	KeyManager.AddHotKey('default', true, false, false, 74, 'downloader.OpenPanel()')
 	KeyManager.AddHotKey('default', true, false, false, 78, 'NewTab()')
+	KeyManager.AddHotKey('default', true, false, false, 82, 'browser.ReloadTab(browser.selectedTab)')
 	KeyManager.AddHotKey('default', true, false, false, 82, 'browser.ReloadTab(browser.selectedTab)')
 	KeyManager.AddHotKey('default', true, false, false, 87, 'browser.CloseTab(browser.selectedTab)')
 	KeyManager.AddHotKey('default', false, false, false, 27, 'AskForQuitApp()')
+	
+	KeyManager.AddCategory('downloads')
+	KeyManager.AddHotKey('downloads', false, false, false, 27, 'downloader.ClosePanel()')
 
 	KeyManager.AddCategory('setting')
 	KeyManager.AddHotKey('setting', true, false, false, 83, 'SaveSetting()')
@@ -131,7 +136,7 @@ function SetContextMenus() {
 	ContextManager.AddItem(i, { text:'newtab', click: () => NewTab() })
 	ContextManager.AddItem(i, {})
 	ContextManager.AddItem(i, { text:'history', click: () => OpenHistory() })
-	ContextManager.AddItem(i, { text:'downloads', click: () => OpenDownloads() })
+	ContextManager.AddItem(i, { text:'downloads', click: () => downloader.OpenPanel() })
 	ContextManager.AddItem(i, { text:'bookmarks', click: () => OpenBookmarks() })
 	ContextManager.AddItem(i, {})
 	ContextManager.AddItem(i, { text:'settings', click: () => OpenSettings() })
@@ -160,15 +165,6 @@ function SetContextMenus() {
 		if (e.target.id != 'mb-tabs') return
 		ContextManager.ShowMenu('tab-copy')
 	}
-
-	i = ContextManager.AddMenu('posts')
-	ContextManager.AddItem(i, { text:'open', click:'' })
-	ContextManager.AddItem(i, { text:'open-in-ntab', click:'' })
-	ContextManager.AddItem(i, { text:'Pack', click:'' })
-	ContextManager.AddItem(i, { text:'UnPack', click:'' })
-	ContextManager.AddItem(i, { text:'Delete', click:'' })
-	ContextManager.AddItem(i, { text:'Properties', click:'' })
-
 
 	i = ContextManager.AddMenu('nor-links')
 	ContextManager.AddItem(i, { text:'open', click: () => browser.LinkClick(ContextManager.save[0], ContextManager.save[1]) })

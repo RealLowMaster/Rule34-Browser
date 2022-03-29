@@ -173,7 +173,7 @@ class rule34xxx {
 			return response.text()
 		}).then(htm => {
 			const html = new DOMParser().parseFromString(htm, 'text/html')
-			let arr = {}, save
+			let arr = {url:url}, save
 
 			save = html.getElementById('image') || null
 			if (save == null) {
@@ -198,7 +198,14 @@ class rule34xxx {
 			let last
 			if (arr.video) last = LastChar('/', arr.src)
 			else last = LastChar('_', arr.srcresize)
+
+			// Thumb
 			arr.thumb = this.baseURL+'thumbnails/'+LastChar('/', LastChar('/', arr.srcresize, true))+'/thumbnail_'+LastChar('.', last, true)+'.jpg?'+LastChar('?', last)
+
+			// Made => https://rule34.xxx/thumbnails/5121/thumbnail_https://us.rule34.xxx//images/5121/1f7aefd17a68f290b4c21f3f37758230.jpg?5871972
+			// Real => https://us.rule34.xxx/thumbnails/5121/thumbnail_1f7aefd17a68f290b4c21f3f37758230.jpg?5871972
+			// Imag => https://us.rule34.xxx//images/5121/1f7aefd17a68f290b4c21f3f37758230.jpeg?5871972
+			// id   => 5871972
 
 			// Tags
 			try {
@@ -211,7 +218,6 @@ class rule34xxx {
 			if (save != null) arr = this.#GetTags(save, arr)
 			
 			callback(null, arr)
-
 		}).catch(err => {
 			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
 			callback(err, null)

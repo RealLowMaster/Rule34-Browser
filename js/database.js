@@ -38,3 +38,7 @@ function RemoveFromHave(site, id) {
 		}
 	} else PopAlert(Language('pwn-in-dls'), 'warning')
 }
+
+function AddPost(site, id, save, format, data) {
+	console.log('Post Added')
+}

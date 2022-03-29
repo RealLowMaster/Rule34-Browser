@@ -40,12 +40,12 @@ class Download {
 	}
 
 	Start() {
-		this.#file = fs.createWriteStream(this.#savepath)
+		this.#file = createWriteStream(this.#savepath)
 		this.#stream = request(this.#url, { followRedirect:true, followAllRedirects:true })
 		this.#stream.pipe(this.#file)
 		this.#stream.on('error', err => {
 			this.#file.close()
-			try { fs.unlinkSync(this.#savepath) } catch(e) {}
+			try { unlinkSync(this.#savepath) } catch(e) {}
 			if (this.#onerror != null) this.#onerror(err)
 		})
 		this.#stream.on('response', resp => {
@@ -71,9 +71,7 @@ class Download {
 	Stop() {
 		this.#stream.destroy()
 		this.#file.close()
-		try {
-			fs.unlinkSync(this.#savepath)
-		} catch(err) { console.error('StopingDownload->'+err) }
+		try { unlinkSync(this.#savepath) } catch(err) { console.error('StopingDownload->'+err) }
 	}
 }
 
@@ -82,7 +80,7 @@ class DownloadManager {
 		this.ids = []
 		this.dls = []
 		this.dl_order = []
-
+		this.dled = []
 	}
 
 	HasDownload() {
@@ -98,10 +96,12 @@ class DownloadManager {
 	Starting(site, id) {
 		if (this.IsDownloading(site, id)) return null
 		const i = this.ids.length
-		this.ids[i] = `${new Date().getTime()}-${Math.floor(Math.random() * 999)}`
+		const date = new Date().getTime()
+		this.ids[i] = `${date}-${Math.floor(Math.random() * 999)}`
 		this.dls[i] = {
 			site: site,
-			id: id
+			id: id,
+			save: Number(`${date}${Math.floor(Math.random() * 9)}`)
 		}
 		browser.ChangeButtonsToDownloading(site, id)
 		return this.ids[i]
@@ -115,34 +115,174 @@ class DownloadManager {
 		this.dls.splice(i, 1)
 	}
 	
-	Add(i, thumb, list, data) {
-		i = this.ids.indexOf(i)
+	Add(index, thumb, page_url, dl_url, data) {
+		let i = this.ids.indexOf(index)
 		if (i < 0) return
-		this.dls[i].dl_list = list
+		this.dls[i].url = dl_url
 		this.dls[i].data = data
-		
-		const container = document.createElement('div')
+		this.dls[i].pause = false
+		this.dls[i].format = LastChar('?', LastChar('.', dl_url), true)
+		this.dls[i].dl_size = 0
+		this.dls[i].total_size = 0
+		this.dls[i].percent = 0
+		this.dls[i].container = document.createElement('div')
 
+		let save = document.createElement('div')
+		let save2 = document.createElement('img')
+		save2.src = thumb
+		save.appendChild(save2)
+		save2 = document.createElement('img')
+		save2.src = `Image/sites/${sites[this.dls[i].site].url}-32x32.${sites[this.dls[i].site].icon}`
+		save.appendChild(save2)
+		this.dls[i].container.appendChild(save)
+
+		save = document.createElement('div')
+		save2 = document.createElement('p')
+		save2.innerText = page_url
+		save2.onclick = () => downloader.OpenURL(page_url)
+		save.appendChild(save2)
+		this.dls[i].span = document.createElement('span')
+		this.dls[i].span.innerText = 'Downloading'
+		save.appendChild(this.dls[i].span)
+		save2 = document.createElement('div')
+		this.dls[i].procress = document.createElement('div')
+		save2.appendChild(this.dls[i].procress)
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		this.dls[i].btn1 = document.createElement('div')
+		this.dls[i].btn1.classList.add('btn')
+		this.dls[i].btn1.classList.add('btn-primary')
+		this.dls[i].btn1.setAttribute('l', 'pause')
+		this.dls[i].btn1.innerText = Language('pause')
+		this.dls[i].btn1.onclick = () => downloader.TogglePause(index)
+		save2.appendChild(this.dls[i].btn1)
+		this.dls[i].btn2 = document.createElement('div')
+		this.dls[i].btn2.classList.add('btn')
+		this.dls[i].btn2.classList.add('btn-danger')
+		this.dls[i].btn2.setAttribute('l', 'cancel')
+		this.dls[i].btn2.innerText = Language('cancel')
+		this.dls[i].btn2.onclick = () => downloader.Cancel(index)
+		save2.appendChild(this.dls[i].btn2)
+		save.appendChild(save2)
+		this.dls[i].container.appendChild(save)
+		document.getElementById('dl-container').appendChild(this.dls[i].container)
+		PopAlert(Language('dls'))
+		this.dl_order.push(index)
+		this.Download(index)
 	}
 
 	Download(index) {
-		index = this.ids.indexOf(index)
-		if (index < 0) return
+		const dl_index = this.ids.indexOf(index)
+		if (dl_index < 0) return
+		const order = this.dl_order.indexOf(index)
+		if (setting.dl_limit > 0 && setting.dl_limit <= order) {
+			setTimeout(() => this.Download(index), 900)
+			return
+		}
+		this.dls[dl_index].dl = new Download(this.dls[dl_index].url, paths.tmp+this.dls[dl_index].save+'.'+this.dls[dl_index].format)
+		this.dls[dl_index].dl.OnError(err => {
+			console.error(err)
+			const i = this.ids.indexOf(index)
+			if (i < 0) return
+			try { unlinkSync(paths.tmp+this.dls[i].save) } catch(e) {}
+			const data = this.dls[i]
+			AddPost(data.site, data.id, data.save, data.format, data.data)
+		})
+
+		this.dls[dl_index].dl.OnComplete(filename => {
+			const i = this.ids.indexOf(index)
+			if (i < 0) {
+				try { unlinkSync(filename) } catch(e) {}
+				return
+			}
+			this.Optimize(index)
+		})
+
+		this.dls[dl_index].dl.OnResponse(resp => {
+			const i = this.ids.indexOf(index)
+			if (i < 0) return
+			const bytes = parseInt(resp.headers['content-length'])
+			this.dls[i].total_size = FormatBytes(bytes)
+			this.dls[i].percent = 100 / bytes
+			this.dls[i].span.innerText = '0 / '+this.dls[i].total_size
+		})
+		
+		this.dls[dl_index].dl.OnData(data => {
+			const i = this.ids.indexOf(index)
+			if (i < 0) return
+			this.dls[i].dl_size += data
+			this.dls[i].procress.style.width = this.dls[i].percent * this.dls[i].dl_size+'%'
+			this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)+' / '+this.dls[i].total_size
+		})
+
+		this.dls[dl_index].dl.Start()
 	}
 
-	TogglePause(i) {}
+	Optimize(i) {
+		i = this.ids.indexOf(i)
+		if (i < 0) return
+	}
 
-	PauseAll() {}
+	OpenURL(url) {
+		try { remote.shell.openExternal(url) } catch(err) {
+			console.error(err)
+			error('OpenURL->'+err)
+		}
+	}
 
-	ResumeAll() {}
+	TogglePause(i) {
+		i = this.ids.indexOf(i)
+		if (i < 0) return
+		this.dls[i].pause = !this.dls[i].pause
+		if (this.dls[i].pause) {
+			this.dls[i].btn1.setAttribute('class', 'btn btn-success')
+			this.dls[i].btn1.setAttribute('l', 'resume')
+			this.dls[i].btn1.innerText = Language('resume')
+		} else {
+			this.dls[i].btn1.setAttribute('class', 'btn btn-primary')
+			this.dls[i].btn1.setAttribute('l', 'pause')
+			this.dls[i].btn1.innerText = Language('pause')
+		}
+	}
 
-	Cancel(i) {}
+	PauseAll() {
+		if (this.dls.length == 0) return
+		for (let i = 0, l = this.dls.length; i < l; i++) if (this.dls[i].pause === false) {
+			this.dls[i].pause = true
+			this.dls[i].btn1.setAttribute('class', 'btn btn-success')
+			this.dls[i].btn1.setAttribute('l', 'resume')
+			this.dls[i].btn1.innerText = Language('resume')
+		}
+	}
+
+	ResumeAll() {
+		if (this.dls.length == 0) return
+		for (let i = 0, l = this.dls.length; i < l; i++) if (this.dls[i].pause === true) {
+			this.dls[i].pause = false
+			this.dls[i].btn1.setAttribute('class', 'btn btn-primary')
+			this.dls[i].btn1.setAttribute('l', 'pause')
+			this.dls[i].btn1.innerText = Language('pause')
+		}
+	}
+
+	Cancel(i) {
+		i = this.ids.indexOf(i)
+		if (i < 0) return
+	}
 
 	CancelAll() {}
 
-	OpenPanel() {}
+	OpenPanel() {
+		KeyManager.ChangeCategory('downloads')
+		document.getElementById('dl-window').style.display = 'flex'
+	}
 
-	ClosePanel() {}
+	ClosePanel() {
+		document.getElementById('dl-window').style.display = 'none'
+		KeyManager.BackwardCategory()
+	}
+
+	Clear() {}
 }
 
 const downloader = new DownloadManager()

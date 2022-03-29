@@ -78,6 +78,17 @@
 				<div id="mb-pages"></div>
 			</div>
 
+			<!-- Downloads -->
+			<div id="dl-window">
+				<div>
+					<div class="btn btn-primary" l="resume" onclick="downloader.ResumeAll()"></div>
+					<div class="btn btn-secondary" l="pause" onclick="downloader.PauseAll()"></div>
+					<div class="btn btn-danger" l="clear" onclick="downloader.Clear()"></div>
+					<div class="btn btn-danger" l="close" onclick="downloader.ClosePanel()"></div>
+				</div>
+				<div id="dl-container"></div>
+			</div>
+
 			<!-- Settings -->
 			<div id="setting-window">
 				<div id="setting-tabs">
@@ -100,11 +111,14 @@
 							<h6 l="dl_path"></h6>
 							<div id="sto_dl_path"></div>
 							<hr>
+							<div id="sto_auto_optimize"></div>
+							<hr>
 							<div id="sto_show_unoptimize"></div>
 							<hr>
 							<div id="sto_pic_per_page"></div>
 							<hr>
 							<div id="sto_dl_limit"></div>
+							<!-- <h6>When set to 0, it mean unlimit multi-downloading</h6> -->
 						</div>
 
 						<div id="st_Appearance">

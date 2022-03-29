@@ -7,14 +7,12 @@ const defaultSetting = {
 	pic_per_page: 20,
 	dl_path: null,
 	dl_limit: 5,
-	show_unoptimize: false,
 	full_screen: false,
 	developer_mode: false
 }
 
 // [ 'setting name', 'translate name', 'translate tip' || null ]
 const sto_checkbox = [
-	['show_unoptimize', 'showunopt', 'showunopttip'],
 	['animations', 'animations', 'animationstip'],
 	['not', 'notifications', 'nottip'],
 	['not_sound', 'notsound', 'notsoundtip'],

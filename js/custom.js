@@ -22,6 +22,8 @@ const sites = [
 		url: 'rule34.xxx',
 		icon: 'png',
 		tags: ['All'],
+		ip: '104.26.1.234',
+		location: 'USA - California - San Francisco',
 		home: Rule34XXXHome
 	},
 	{
@@ -29,6 +31,8 @@ const sites = [
 		url: 'rule34.xyz',
 		icon: 'png',
 		tags: ['All'],
+		ip: '31.222.238.177',
+		location: 'Netherlands - Drenthe - 	Meppel',
 		home: Rule34XYZHome
 	}
 ]
@@ -441,8 +445,9 @@ class BrowserManager {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
-					elements[i].setAttribute('onclick', '')
+					elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
 					elements[i].removeAttribute('dli')
+					elements[i].innerText = 'Download'
 				} else {
 
 				}
@@ -453,6 +458,7 @@ class BrowserManager {
 				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
 					elements[i].setAttribute('onclick', '')
 					elements[i].setAttribute('dli','')
+					elements[i].innerHTML = `<img src="${loading_img.src}">`
 				} else {
 					
 				}
@@ -560,16 +566,25 @@ function LoadDatabase() {
 	paths.db = setting.dl_path+'/'
 	paths.dl = paths.db+'DL/'
 	paths.thumb = paths.db+'thumb/'
+	paths.tmp = paths.db+'tmp/'
 
 	// Check Folders
 	if (!existsSync(paths.dl)) try { mkdirSync(paths.dl) } catch(err) {
 		console.error(err)
 		error('MakingDownloadFolder->'+err)
+		return
 	}
 
 	if (!existsSync(paths.thumb)) try { mkdirSync(paths.thumb) } catch(err) {
 		console.error(err)
 		error('MakingThumbFolder->'+err)
+		return
+	}
+
+	if (!existsSync(paths.tmp)) try { mkdirSync(paths.tmp) } catch(err) {
+		console.error(err)
+		error('MakingTempFolder->'+err)
+		return
 	}
 
 	// -------------> Check Databases
@@ -705,7 +720,56 @@ function BRPostLinkElement(tabId, link, site, id) {
 	return element
 }
 
-function DownloadClick(site, id) {}
+function DownloadClick(site, id) {
+	if (IsHave(site, id)) {
+		PopAlert(Language('yadtp'), 'danger')
+		return
+	}
+	const dl_index = downloader.Starting(site, id)
+	if (dl_index == null) {
+		PopAlert(Language('tpid'), 'danger')
+		return
+	}
+	const GetData = (arr) => {
+		const data = {}
+		if (arr.parody != null) {
+			data.parody = []
+			for (let i = 0, l = arr.parody.length; i < l; i++) data.parody.push(arr.parody[i][0])
+		}
+		if (arr.character != null) {
+			data.character = []
+			for (let i = 0, l = arr.character.length; i < l; i++) data.character.push(arr.character[i][0])
+		}
+		if (arr.artist != null) {
+			data.artist = []
+			for (let i = 0, l = arr.artist.length; i < l; i++) data.artist.push(arr.artist[i][0])
+		}
+		if (arr.tag != null) {
+			data.tag = []
+			for (let i = 0, l = arr.tag.length; i < l; i++) data.tag.push(arr.tag[i][0])
+		}
+		if (arr.meta != null) {
+			data.meta = []
+			for (let i = 0, l = arr.meta.length; i < l; i++) data.meta.push(arr.meta[i][0])
+		}
+		return data
+	}
+	switch(site) {
+		case 0:
+			r34xxx.Post(id, (err, arr) => {
+				if (err) {
+					console.error(err)
+					downloader.StopFromStarting(dl_index)
+					PopAlert(Language('cto'), 'danger')
+					return
+				}
+				downloader.Add(dl_index, arr.thumb, arr.url, arr.src, GetData(arr))
+			}, true)
+			return
+		case 1:
+			return
+	}
+}
 
 function NormalLink(tabId, link, notNormal) {
 	const e = window.event, key = e.which
