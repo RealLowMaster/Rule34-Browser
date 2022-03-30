@@ -172,7 +172,7 @@ class DownloadManager {
 	}
 
 	SendToAddPost(i) {
-		i = this.ids.indexOf(index)
+		i = this.ids.indexOf(i)
 		if (i < 0) return
 		const data = this.dls[i]
 		AddPost(data.site, data.id, data.save, data.format, data.data)
@@ -231,6 +231,32 @@ class DownloadManager {
 		this.dls[i].span.innerText = Language('optimizing')+'...'
 		const save_path = paths.dl+this.dls[i].save+'.'+this.dls[i].format
 		if (this.dls[i].format == 'jpeg') this.dls[i].format = 'jpg'
+
+		const videoThumb = async () => {
+			const name = LastChar('.', LastChar('/', path), true)
+			console.log(name)
+			const vid = await new ffmpeg(path).takeScreenshots({
+				count: 1,
+				timemarks: [0],
+				filename: name
+			}, paths.tmp, err => console.error(err))
+			vid.on('error', err => {
+				console.log(err)
+				try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
+				this.SendToAddPost(index)
+			})
+			vid.on('end', () => {
+				sharp(paths.tmp+name+'.png').resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+name+'.jpg').then(() => {
+					try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
+					this.SendToAddPost(index)
+				}).catch(err => {
+					console.error(err)
+					try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
+					this.SendToAddPost(index)
+				})
+			})
+		}
+
 		switch(this.dls[i].format) {
 			case 'jpg':
 				sharp(path).jpeg({ mozjpeg: true }).toFile(save_path).then(() => {
@@ -273,8 +299,41 @@ class DownloadManager {
 				})
 				return
 			case 'webp':
-				// .webp()
+				sharp(path).webp().toFile(save_path).then(() => {
+					const opt_size = statSync(save_path).size
+					if (this.dls[i].dl_size < opt_size) {
+						try {
+							unlinkSync(save_path)
+							renameSync(path, save_path)
+						} catch(err) { console.error(err) }
+						this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)
+					} else this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)+' To '+FormatBytes(opt_size)
+					sharp(save_path).resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
+						console.error(err)
+						this.SendToAddPost(index)
+					})
+				}).catch(err => {
+					console.error(err)
+					try { unlinkSync(path) } catch(err) {}
+					this.SendToAddPost(index)
+				})
 				return
+			case 'gif':
+				try {
+					renameSync(path, save_path)
+					sharp(save_path).resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
+						console.error(err)
+						this.SendToAddPost(index)
+					})
+				} catch(err) {
+					console.error(err)
+					this.SendToAddPost()
+				}
+				return
+			case 'mp4': videoThumb(); return
+			case 'webm': videoThumb(); return
+			case 'ogg': videoThumb(); return
+			case 'ogv': videoThumb(); return
 			default:
 				return
 		}
