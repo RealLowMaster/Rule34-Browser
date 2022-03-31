@@ -1,5 +1,5 @@
 const sharp = require('sharp'), request = require('request'), ffmpeg = require('fluent-ffmpeg')
-// sharp('Image/sites/rule34.xyz-72x72.png').resize(24, 24).png({ quality: 100 }).toFile('Image/sites/img.png')
+// sharp('Image/sites/rule34.xyz-72x72.png').resize(32, 32).png({ quality: 100 }).toFile('Image/sites/img.png')
 
 const loading_img = new Image()
 loading_img.src = 'Image/loading.gif'
@@ -42,10 +42,20 @@ const db = {
 	have: [],
 	collection: [],
 	artist: [],
+	artist_index: [],
+	artist_link: [],
 	tag: [],
+	tag_index: [],
+	tag_link: [],
 	parody: [],
+	parody_index: [],
+	parody_link: [],
 	character: [],
-	meta: []
+	character_index: [],
+	character_link: [],
+	meta: [],
+	meta_index: [],
+	meta_link: []
 }
 
 const paths = {}
@@ -59,6 +69,7 @@ class Tab {
 		this.customizing = false
 		this.scroll = 0
 		this.search = ''
+		this.submit_search = ''
 		this.jumpPage = -1
 		this.pageNumber = 1
 		this.maxPages = 0
@@ -107,7 +118,7 @@ class Tab {
 		return this.token
 	}
 
-	Load(token, html, txt, bg = null) {
+	Load(token, html, txt, bg = null, page = 1, maxPage = 1) {
 		if (token != this.token) return
 		this.needReload = false
 		this.page.innerHTML = null
@@ -120,12 +131,14 @@ class Tab {
 		this.Change(icon, txt)
 		if (bg == null) this.page.style.backgroundColor = 'var(--primary-bg)'
 		else this.page.style.backgroundColor = bg
+		this.pageNumber = page
+		this.maxPages = maxPage
 
 		if (browser.selectedTab == this.id) {
 			mb_pages.scrollTop = 0
 			if (this.jumpPage != -1) {
-				mbjp.value = this.tabs[i].pageNumber
-				mb_jump_page.children[1].innerText = '/ '+this.tabs[i].maxPages
+				mbjp.value = this.pageNumber
+				mb_jump_page.children[1].innerText = '/ '+this.maxPages
 				mb_jump_page.style.display = 'block'
 			} else mb_jump_page.style.display = 'none'
 		} 
@@ -318,6 +331,16 @@ class BrowserManager {
 	GetTab(index) {
 		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) return this.tabs[i]
 		return null
+	}
+
+	GetActiveTab() {
+		if (this.selectedTabIndex == null) return null
+		return this.tabs[this.selectedTabIndex]
+	}
+
+	GetActiveSite() {
+		if (this.selectedTabIndex == null) return null
+		return this.tabs[this.selectedTabIndex].site
 	}
 
 	OpenLinkInNewTab(tabId, link) {
@@ -527,10 +550,26 @@ const browser = new BrowserManager()
 
 mb_search.onsubmit = e => {
 	e.preventDefault()
+	switch(browser.GetActiveSite()) {
+		case 0: Rule34XXXHome(browser.selectedTab, 1, mbs.value); return
+		case 1: return
+	}
 }
 
 mb_jump_page.onsubmit = e => {
 	e.preventDefault()
+	const tab = browser.GetActiveTab()
+	switch(tab.site) {
+		case 0:
+			switch(tab.jumpPage) {
+				case 0:
+					Rule34XXXHome(tab.id, mbjp.value, tab.submit_search)
+					return
+			}
+			return
+		case 1:
+			return
+	}
 }
 
 mbs.onfocus = () => KeyManager.stop = true
@@ -656,51 +695,86 @@ function LoadDatabase() {
 	}
 
 	// artist
-	if (!existsSync(paths.db+'artist')) try { jsonfile.writeFileSync(paths.db+'artist', {a:[]}) } catch(err) {
+	if (!existsSync(paths.db+'artist')) try { jsonfile.writeFileSync(paths.db+'artist', {a:[],l:[],i:[]}) } catch(err) {
 		console.error(err)
 		error('CreatingArtistDB->'+err)
-	} else try { db.artist = jsonfile.readFileSync(paths.db+'artist').a } catch(err) {
+	} else try {
+		const data = jsonfile.readFileSync(paths.db+'artist')
+		db.artist = data.a
+		db.artist_index = data.i
+		db.artist_link = data.l
+	} catch(err) {
 		db.artist = []
+		db.artist_index = []
+		db.artist_link = []
 		console.error(err)
 		error('LoadingArtistDB->'+err)
 	}
 
 	// tag
-	if (!existsSync(paths.db+'tag')) try { jsonfile.writeFileSync(paths.db+'tag', {a:[]}) } catch(err) {
+	if (!existsSync(paths.db+'tag')) try { jsonfile.writeFileSync(paths.db+'tag', {a:[],l:[],i:[]}) } catch(err) {
 		console.error(err)
 		error('CreatingTagDB->'+err)
-	} else try { db.tag = jsonfile.readFileSync(paths.db+'tag').a } catch(err) {
+	} else try {
+		const data = jsonfile.readFileSync(paths.db+'tag')
+		db.tag = data.a
+		db.tag_index = data.i
+		db.tag_link = data.l
+	} catch(err) {
 		db.tag = []
+		db.tag_index = []
+		db.tag_link = []
 		console.error(err)
 		error('LoadingTagDB->'+err)
 	}
 	
 	// parody
-	if (!existsSync(paths.db+'parody')) try { jsonfile.writeFileSync(paths.db+'parody', {a:[]}) } catch(err) {
+	if (!existsSync(paths.db+'parody')) try { jsonfile.writeFileSync(paths.db+'parody', {a:[],l:[],i:[]}) } catch(err) {
 		console.error(err)
 		error('CreatingParodyDB->'+err)
-	} else try { db.parody = jsonfile.readFileSync(paths.db+'parody').a } catch(err) {
+	} else try {
+		const data = jsonfile.readFileSync(paths.db+'parody')
+		db.parody = data.a
+		db.parody_index = data.i
+		db.parody_link = data.l
+	} catch(err) {
 		db.parody = []
+		db.parody_index = []
+		db.parody_link = []
 		console.error(err)
 		error('LoadingParodyDB->'+err)
 	}
 	
 	// character
-	if (!existsSync(paths.db+'character')) try { jsonfile.writeFileSync(paths.db+'character', {a:[]}) } catch(err) {
+	if (!existsSync(paths.db+'character')) try { jsonfile.writeFileSync(paths.db+'character', {a:[],l:[],i:[]}) } catch(err) {
 		console.error(err)
 		error('CreatingCharacterDB->'+err)
-	} else try { db.character = jsonfile.readFileSync(paths.db+'character').a } catch(err) {
+	} else try {
+		const data = jsonfile.readFileSync(paths.db+'character')
+		db.character = data.a
+		db.character_index = data.i
+		db.character_link = data.l
+	} catch(err) {
 		db.character = []
+		db.character_index = []
+		db.character_link = []
 		console.error(err)
 		error('LoadingCharacterDB->'+err)
 	}
 
 	// Meta
-	if (!existsSync(paths.db+'meta')) try { jsonfile.writeFileSync(paths.db+'meta', {a:[]}) } catch(err) {
+	if (!existsSync(paths.db+'meta')) try { jsonfile.writeFileSync(paths.db+'meta', {a:[],l:[],i:[]}) } catch(err) {
 		console.error(err)
 		error('CreatingMetaDB->'+err)
-	} else try { db.meta = jsonfile.readFileSync(paths.db+'meta').a } catch(err) {
+	} else try {
+		const data = jsonfile.readFileSync(paths.db+'meta')
+		db.meta = data.a
+		db.meta_index = data.i
+		db.meta_link = data.l
+	} catch(err) {
 		db.meta = []
+		db.meta_index = []
+		db.meta_link = []
 		console.error(err)
 		error('LoadingMetaDB->'+err)
 	}

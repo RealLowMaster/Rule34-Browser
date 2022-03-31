@@ -136,7 +136,7 @@ class rule34xxx {
 						arr.maxPages = num > this.maxPage ? this.maxPage : num
 					}
 				}
-			}
+			} else arr.maxPages = 1
 
 			// Tags
 			try {

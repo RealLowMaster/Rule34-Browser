@@ -117,12 +117,14 @@ function Rule34XXXGetPagination(tab, arr, linkId) {
 
 function Rule34XXXHome(tabId, page = 1, search = null) {
 	const tab = browser.GetTab(tabId)
-	const token = tab.Loading(0)
+	const token = tab.Loading(0, 0)
 	tab.AddHistory(4, [page, search])
-	tab.search = search
-	if (browser.selectedTab == tab.id) {
-		mbs.value = search
+	if (search != null && (tab.search == null || tab.search.length == 0)) {
+		tab.search = search
+		if (browser.selectedTab == tab.id) mbs.value = search
 	}
+	tab.submit_search = search
+	
 
 	r34xxx.Page(page, search, (err, arr) => {
 		if (err) {
@@ -135,7 +137,7 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 
 		let save = document.createElement('p')
 		save.classList.add('rule34-xxx-title')
-		save.innerText = (search != null ? search : '')+'Page '+page
+		save.innerText = (search != null ? search : '')+' Page '+page
 		container.appendChild(save)
 
 		const sides = document.createElement('div')
@@ -152,11 +154,14 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 		sides.appendChild(side)
 
 		container.appendChild(sides)
-		tab.Load(token, container, 'Page '+page, 'var(--r34x-primary-bg)')
+		tab.Load(token, container, (search != null ? search : '')+' Page '+page, 'var(--r34x-primary-bg)', page, arr.maxPages)
 	})
 }
 
-function Rule34XXXPost(tabId, id) {}
+function Rule34XXXPost(tabId, id) {
+
+}
+
 function Rule34XXXArtists(tabId, page) {}
 function Rule34XXXTags(tabId, page) {}
 function Rule34XXXPools(tabId, page) {}
