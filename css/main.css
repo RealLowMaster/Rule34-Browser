@@ -426,6 +426,8 @@
 	min-height: 220px;
 }
 
+#dl-container > div[d] { border-color: var(--text-brand) }
+
 #dl-container > div > div:first-child {
 	display: flex;
 	justify-content: center;
@@ -453,6 +455,8 @@
 	padding: 20px 70px 20px 15px;
 	border-left: 1px solid var(--secondary-bg-alt);
 }
+
+#dl-container > div[d] > div:last-child { border-left-color: var(--text-brand) }
 
 #dl-container > div > div:last-child > p {
 	display: block;

@@ -81,6 +81,7 @@ class DownloadManager {
 		this.dls = []
 		this.dl_order = []
 		this.dled = []
+		this.dledIds = []
 	}
 
 	HasDownload() {
@@ -171,11 +172,26 @@ class DownloadManager {
 		this.Download(index)
 	}
 
-	SendToAddPost(i) {
-		i = this.ids.indexOf(i)
+	SendToAddPost(index) {
+		const i = this.ids.indexOf(index)
 		if (i < 0) return
 		const data = this.dls[i]
+		data.container.setAttribute('d','')
+		const dled_i = this.dled.length
+		this.dled[dled_i] = data.container
+		this.dledIds[dled_i] = index
+		const btn = document.createElement('div')
+		btn.classList.add('btn')
+		btn.classList.add('btn-primary')
+		btn.onclick = () => downloader.Remove(index)
+		btn.setAttribute('l', 'remove')
+		btn.innerText = Language('remove')
+		data.btn1.parentElement.appendChild(btn)
+		data.btn1.remove()
+		this.dls.splice(i, 1)
+		this.ids.splice(i, 1)
 		AddPost(data.site, data.id, data.save, data.format, data.data)
+		browser.ChangeButtonsToDownloaded(data.site, data.id)
 	}
 
 	Download(index) {
@@ -224,17 +240,18 @@ class DownloadManager {
 	Optimize(index, path) {
 		let i = this.ids.indexOf(index)
 		if (i < 0) return
+		this.dls[i].dl = null
 		const order = this.dl_order.indexOf(index)
 		if (order >= 0) this.dl_order.splice(order, 1)
-		this.dls[i].btn1.remove()
+		this.dls[i].btn1.style.display = 'none'
 		this.dls[i].btn2.remove()
 		this.dls[i].span.innerText = Language('optimizing')+'...'
 		const save_path = paths.dl+this.dls[i].save+'.'+this.dls[i].format
 		if (this.dls[i].format == 'jpeg') this.dls[i].format = 'jpg'
 
 		const videoThumb = async () => {
+			this.dls[i].span.innerText = 'Thumbnailing...'
 			const name = LastChar('.', LastChar('/', path), true)
-			console.log(name)
 			const vid = await new ffmpeg(path).takeScreenshots({
 				count: 1,
 				timemarks: [0],
@@ -246,12 +263,21 @@ class DownloadManager {
 				this.SendToAddPost(index)
 			})
 			vid.on('end', () => {
+				try { renameSync(path, save_path) } catch(err) { console.error(err) }
 				sharp(paths.tmp+name+'.png').resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+name+'.jpg').then(() => {
 					try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
+					try { this.dls[i].span.innerText = FormatBytes(statSync(save_path).size) } catch(err) {
+						this.dls[i].span.setAttribute('l', 'finish')
+						this.dls[i].span.innerText = Language('finish')
+					}
 					this.SendToAddPost(index)
 				}).catch(err => {
 					console.error(err)
 					try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
+					try { this.dls[i].span.innerText = FormatBytes(statSync(save_path).size) } catch(err) {
+						this.dls[i].span.setAttribute('l', 'finish')
+						this.dls[i].span.innerText = Language('finish')
+					}
 					this.SendToAddPost(index)
 				})
 			})
@@ -332,10 +358,11 @@ class DownloadManager {
 				return
 			case 'mp4': videoThumb(); return
 			case 'webm': videoThumb(); return
+			case 'avi': videoThumb(); return
+			case 'mpg': videoThumb(); return
+			case 'mpeg': videoThumb(); return
 			case 'ogg': videoThumb(); return
 			case 'ogv': videoThumb(); return
-			default:
-				return
 		}
 	}
 
@@ -351,10 +378,12 @@ class DownloadManager {
 		if (i < 0) return
 		this.dls[i].pause = !this.dls[i].pause
 		if (this.dls[i].pause) {
+			if (this.dls[i].dl != null) this.dls[i].dl.Pause()
 			this.dls[i].btn1.setAttribute('class', 'btn btn-success')
 			this.dls[i].btn1.setAttribute('l', 'resume')
 			this.dls[i].btn1.innerText = Language('resume')
 		} else {
+			if (this.dls[i].dl != null) this.dls[i].dl.Play()
 			this.dls[i].btn1.setAttribute('class', 'btn btn-primary')
 			this.dls[i].btn1.setAttribute('l', 'pause')
 			this.dls[i].btn1.innerText = Language('pause')
@@ -363,8 +392,9 @@ class DownloadManager {
 
 	PauseAll() {
 		if (this.dls.length == 0) return
-		for (let i = 0, l = this.dls.length; i < l; i++) if (this.dls[i].pause === false) {
+		for (let i = 0, l = this.dls.length; i < l; i++) if (this.dls[i].pause === false && this.dls[i].dl != null) {
 			this.dls[i].pause = true
+			this.dls[i].dl.Pause()
 			this.dls[i].btn1.setAttribute('class', 'btn btn-success')
 			this.dls[i].btn1.setAttribute('l', 'resume')
 			this.dls[i].btn1.innerText = Language('resume')
@@ -373,20 +403,40 @@ class DownloadManager {
 
 	ResumeAll() {
 		if (this.dls.length == 0) return
-		for (let i = 0, l = this.dls.length; i < l; i++) if (this.dls[i].pause === true) {
+		for (let i = 0, l = this.dls.length; i < l; i++) if (this.dls[i].pause === true && this.dls[i].dl != null) {
 			this.dls[i].pause = false
+			this.dls[i].dl.Play()
 			this.dls[i].btn1.setAttribute('class', 'btn btn-primary')
 			this.dls[i].btn1.setAttribute('l', 'pause')
 			this.dls[i].btn1.innerText = Language('pause')
 		}
 	}
 
-	Cancel(i) {
-		i = this.ids.indexOf(i)
+	Cancel(index) {
+		const i = this.ids.indexOf(index)
 		if (i < 0) return
+		if (this.dls[i].dl != null) this.dls[i].dl.Stop()
+		const site = this.dls[i].site, id = this.dls[i].id
+		this.dls[i].container.remove()
+		this.ids.splice(i, 1)
+		this.dls.splice(i, 1)
+		const order = this.dl_order.indexOf(index)
+		if (order >= 0) this.dl_order.splice(order, 1)
+		browser.ChangeButtonsToDownloading(site, id, true)
 	}
 
-	CancelAll() {}
+	CancelAll() {
+		for (let i = 0, l = this.dls.length; i < l; i++) {
+			if (this.dls[i].dl != null) this.dls[i].dl.Stop()
+			const site = this.dls[i].site, id = this.dls[i].id
+			const order = this.dl_order.indexOf(this.ids[i])
+			if (order >= 0) this.dl_order.splice(order, 1)
+			this.dls[i].container.remove()
+			this.ids.splice(i, 1)
+			this.dls.splice(i, 1)
+			browser.ChangeButtonsToDownloading(site, id, true)
+		}
+	}
 
 	OpenPanel() {
 		KeyManager.ChangeCategory('downloads')
@@ -398,7 +448,19 @@ class DownloadManager {
 		KeyManager.BackwardCategory()
 	}
 
-	Clear() {}
+	Remove(i) {
+		i = this.dledIds.indexOf(i)
+		if (i < 0) return
+		this.dled[i].remove()
+		this.dled.splice(i, 1)
+		this.dledIds.splice(i, 1)
+	}
+
+	Clear() {
+		for (let i = 0, l = this.dledIds.length; i < l; i++) this.dled[i].remove()
+		this.dled = []
+		this.dledIds = []
+	}
 }
 
 const downloader = new DownloadManager()

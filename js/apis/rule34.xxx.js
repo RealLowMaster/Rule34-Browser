@@ -104,10 +104,7 @@ class rule34xxx {
 						video: img.getAttribute('style') == null ? false : true
 					})
 				}
-			} else {
-				callback(null, arr)
-				return
-			}
+			} else throw "No Post was Found"
 
 			// Pagination
 			try {
@@ -152,8 +149,8 @@ class rule34xxx {
 			if (save != null) arr = this.#GetTags(save, arr, 2)
 
 			callback(null, arr)
-
 		}).catch(err => {
+			console.error(err)
 			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
 			callback(err, null)
 		})
@@ -222,6 +219,7 @@ class rule34xxx {
 			
 			callback(null, arr)
 		}).catch(err => {
+			console.error(err)
 			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
 			callback(err, null)
 		})
@@ -246,6 +244,7 @@ class rule34xxx {
 			
 
 		}).catch(err => {
+			console.error(err)
 			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
 			callback(err, null)
 		})

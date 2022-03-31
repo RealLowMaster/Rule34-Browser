@@ -456,9 +456,37 @@ class BrowserManager {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
-					elements[i].setAttribute('onclick', '')
+					elements[i].removeAttribute('onclick', '')
 					elements[i].setAttribute('dli','')
 					elements[i].innerHTML = `<img src="${loading_img.src}">`
+				} else {
+					
+				}
+			}
+		}
+	}
+
+	ChangeButtonsToDownloaded(site, id, back) {
+		if (back) {
+			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+				const elements = document.querySelectorAll(`[pid="${id}"]`)
+				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
+					elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+					elements[i].removeAttribute('dli')
+					elements[i].removeAttribute('dl')
+					elements[i].innerText = 'Download'
+				} else {
+
+				}
+			}
+		} else {
+			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+				const elements = document.querySelectorAll(`[pid="${id}"]`)
+				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
+					elements[i].removeAttribute('onclick')
+					elements[i].removeAttribute('dli')
+					elements[i].setAttribute('dl', '')
+					elements[i].innerText = 'Downloaded'
 				} else {
 					
 				}
@@ -603,6 +631,7 @@ function LoadDatabase() {
 		const have = []
 		for (let i = 0, l = sites.length; i < l; i++) have.push([])
 		jsonfile.writeFileSync(paths.db+'have', {a:have})
+		db.have = have
 	} catch(err) {
 		console.error(err)
 		error('CreatingHaveDB->'+err)
@@ -720,6 +749,27 @@ function BRPostLinkElement(tabId, link, site, id) {
 	return element
 }
 
+function IsFormatSupported(src) {
+	src = LastChar('?', LastChar('.', src), true)
+	const supported_formats = [
+		'jpeg',
+		'jpg',
+		'png',
+		'webp',
+		'gif',
+		'mp4',
+		'webm',
+		'avi',
+		'mpg',
+		'mpeg',
+		'ogg',
+		'ogv'
+	]
+
+	if (supported_formats.indexOf(src.toLowerCase()) >= 0) return true
+	return false
+}
+
 function DownloadClick(site, id) {
 	if (IsHave(site, id)) {
 		PopAlert(Language('yadtp'), 'danger')
@@ -761,6 +811,11 @@ function DownloadClick(site, id) {
 					console.error(err)
 					downloader.StopFromStarting(dl_index)
 					PopAlert(Language('cto'), 'danger')
+					return
+				}
+				if (!IsFormatSupported(arr.src)) {
+					downloader.StopFromStarting(dl_index)
+					PopAlert(Language('fns'), 'danger')
 					return
 				}
 				downloader.Add(dl_index, arr.thumb, arr.url, arr.src, GetData(arr))
@@ -934,12 +989,3 @@ function OpenHistory() {}
 function OpenDownloads() {}
 
 function OpenBookmarks() {}
-
-function test() {
-	const rule = new rule34xxx()
-
-	rule.Page(1, (err, result) => { console.log(err, result) })
-
-	// 5859610 => pic | 5859608 => vid
-	// rule.Post(5859610, (err, result) => { console.log(err, result) })
-}
