@@ -559,12 +559,12 @@ mb_search.onsubmit = e => {
 mb_jump_page.onsubmit = e => {
 	e.preventDefault()
 	const tab = browser.GetActiveTab()
+	let value = Math.min(Math.abs(Number(mbjp.value)), tab.maxPages)
+	if (value < 1) value = 1
 	switch(tab.site) {
 		case 0:
 			switch(tab.jumpPage) {
-				case 0:
-					Rule34XXXHome(tab.id, mbjp.value, tab.submit_search)
-					return
+				case 0: Rule34XXXHome(tab.id, value, tab.submit_search); return
 			}
 			return
 		case 1:
