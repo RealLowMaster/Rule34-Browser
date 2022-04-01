@@ -119,10 +119,8 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading(0, 0)
 	tab.AddHistory(4, [page, search])
-	if (search != null && (tab.search == null || tab.search.length == 0)) {
-		tab.search = search
-		if (browser.selectedTab == tab.id) mbs.value = search
-	}
+	tab.search = search
+	if (browser.selectedTab == tab.id) mbs.value = search
 	tab.submit_search = search
 	
 
@@ -159,7 +157,48 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 }
 
 function Rule34XXXPost(tabId, id) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading(0)
+	tab.AddHistory(9, id)
 
+	r34xxx.Post(id, (err, arr) => {
+		if (err) {
+			tab.Error(err)
+			return
+		}
+		const container = document.createElement('div')
+		container.classList.add('rule34-xxx-page')
+		container.appendChild(Rule34XXXMenu(tab))
+
+		const sides = document.createElement('div')
+		sides.classList.add('rule34-xxx-sides')
+		let side = document.createElement('div')
+		side.appendChild(Rule34XXXGetTags(tab, arr))
+		sides.appendChild(side)
+		side = document.createElement('div')
+		if (arr.video) {
+			const vid = document.createElement('video')
+			vid.loop = true
+			vid.muted = false
+			vid.autoplay = false
+			vid.controls = true
+			vid.setAttribute('controlsList', 'nodownload')
+			vid.classList.add('rule34-xxx-image')
+			vid.src = arr.src
+			side.appendChild(vid)
+		} else {
+			const img = document.createElement('img')
+			img.classList.add('rule34-xxx-image')
+			img.loading = 'lazy'
+			if (setting.r34_xxx_original_size) img.src = arr.src
+			else img.src = arr.srcresize
+			side.appendChild(img)
+		}
+		side.appendChild(BRDownloadElement(0, id))
+		sides.appendChild(side)
+		container.appendChild(sides)
+		tab.Load(token, container, arr.title, 'var(--r34x-primary-bg)')
+	})
 }
 
 function Rule34XXXArtists(tabId, page) {}

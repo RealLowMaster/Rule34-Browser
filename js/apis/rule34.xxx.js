@@ -172,6 +172,7 @@ class rule34xxx {
 			const html = new DOMParser().parseFromString(htm, 'text/html')
 			let arr = {url:url}, save
 
+			arr.title = html.title
 			save = html.getElementById('image') || null
 			if (save == null) {
 				save = html.getElementById('gelcomVideoPlayer') || null
@@ -199,13 +200,14 @@ class rule34xxx {
 			// Thumb
 			arr.thumb = ''
 			try {
-				arr.thumb = this.baseURL+'thumbnails/'+LastChar('/', LastChar('/', arr.srcresize, true))+'/thumbnail_'+LastChar('.', last, true)+'.jpg?'+LastChar('?', last)
+				arr.thumb = this.baseURL+'thumbnails/'+LastChar('/', LastChar('/', arr.srcresize.replace(/\/\//g, '/'), true))+'/thumbnail_'+LastChar('.', LastChar('/', arr.srcresize).replace(/sample_/g, ''), true)+'.jpg?'+id
 			} catch(err) { console.error(err) }
 
-			// Made => https://rule34.xxx/thumbnails/5121/thumbnail_https://us.rule34.xxx//images/5121/1f7aefd17a68f290b4c21f3f37758230.jpg?5871972
-			// Real => https://us.rule34.xxx/thumbnails/5121/thumbnail_1f7aefd17a68f290b4c21f3f37758230.jpg?5871972
-			// Imag => https://us.rule34.xxx//images/5121/1f7aefd17a68f290b4c21f3f37758230.jpeg?5871972
-			// id   => 5871972
+			// false thumb = https://rule34.xxx/thumbnails/5163/thumbnail_sample_a1b402c7e6ab4df3b52812877630a3c7.jpg?5884378
+
+			// thumb       = https://rule34.xxx/thumbnails/5163/thumbnail_a1b402c7e6ab4df3b52812877630a3c7.jpg?5884378
+
+			// srcresuze   = https://rule34.xxx//samples/5163/sample_a1b402c7e6ab4df3b52812877630a3c7.jpg?5884378
 
 			// Tags
 			try {

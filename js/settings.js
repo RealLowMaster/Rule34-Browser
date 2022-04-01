@@ -1,4 +1,6 @@
 const defaultSetting = {
+	r34_xxx_original_size: false,
+	// Default
 	theme: 0,
 	language: 0,
 	animations: true,
@@ -13,6 +15,7 @@ const defaultSetting = {
 
 // [ 'setting name', 'translate name', 'translate tip' || null ]
 const sto_checkbox = [
+	['r34_xxx_original_size', 'originalsize', 'originalsizetip'],
 	['animations', 'animations', 'animationstip'],
 	['not', 'notifications', 'nottip'],
 	['not_sound', 'notsound', 'notsoundtip'],

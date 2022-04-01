@@ -1,4 +1,5 @@
 const sharp = require('sharp'), request = require('request'), ffmpeg = require('fluent-ffmpeg')
+sharp.cache(false)
 // sharp('Image/sites/rule34.xyz-72x72.png').resize(32, 32).png({ quality: 100 }).toFile('Image/sites/img.png')
 
 const loading_img = new Image()
@@ -467,24 +468,38 @@ class BrowserManager {
 		if (back) {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
-				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
-					elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+				for (let j = 0, n = elements.length; j < n; j++) {
 					elements[i].removeAttribute('dli')
-					elements[i].innerText = 'Download'
-				} else {
-
+					if (elements[i].tagName == 'DL') {
+						elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+						elements[i].setAttribute('l', 'dl')
+						elements[i].title = ''
+						elements[i].innerText = Language('dl')
+					} else {
+						elements[i].innerHTML = null
+						let save = document.createElement('div')
+						save.onclick = () => DownloadClick(site, id)
+						save.setAttribute('l', 'dl')
+						save.innerText = Language('dl')
+						elements[i].appendChild(save)
+						save = document.createElement('div')
+						save.onclick = () => AddToHave(site, id)
+						save.setAttribute('l', 'add-to-dls')
+						save.innerText = Language('add-to-dls')
+						elements[i].appendChild(save)
+					}
 				}
 			}
 		} else {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
-					elements[i].removeAttribute('onclick', '')
+					elements[i].removeAttribute('onclick')
+					elements[i].removeAttribute('l')
 					elements[i].setAttribute('dli','')
+					elements[i].title = ''
 					elements[i].innerHTML = `<img src="${loading_img.src}">`
-				} else {
-					
-				}
+				} else elements[i].innerHTML = `<img src="${loading_img.src}"> Downloading...`
 			}
 		}
 	}
@@ -493,25 +508,47 @@ class BrowserManager {
 		if (back) {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
-				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
-					elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+				for (let j = 0, n = elements.length; j < n; j++) {
 					elements[i].removeAttribute('dli')
 					elements[i].removeAttribute('dl')
-					elements[i].innerText = 'Download'
-				} else {
-
+					if (elements[i].tagName == 'DL') {
+						elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+						elements[i].setAttribute('l', 'dl')
+						elements[i].title = ''
+						elements[i].innerText = Language('dl')
+					} else {
+						elements[i].innerHTML = null
+						let save = document.createElement('div')
+						save.onclick = () => DownloadClick(site, id)
+						save.setAttribute('l', 'dl')
+						save.innerText = Language('dl')
+						elements[i].appendChild(save)
+						save = document.createElement('div')
+						save.onclick = () => AddToHave(site, id)
+						save.setAttribute('l', 'add-to-dls')
+						save.innerText = Language('add-to-dls')
+						elements[i].appendChild(save)
+					}
 				}
 			}
 		} else {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
-				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
-					elements[i].removeAttribute('onclick')
+				for (let j = 0, n = elements.length; j < n; j++) {
 					elements[i].removeAttribute('dli')
 					elements[i].setAttribute('dl', '')
-					elements[i].innerText = 'Downloaded'
-				} else {
-					
+					if (elements[i].tagName == 'DL') {
+						elements[i].removeAttribute('onclick')
+						elements[i].setAttribute('l', 'dled')
+						elements[i].title = ''
+						elements[i].innerText = Language('dled')
+					} else {
+						elements[i].innerHTML = null
+						const save = document.createElement('div')
+						save.setAttribute('l', 'dled')
+						save.innerText = Language('dled')
+						elements[i].appendChild(save)
+					}
 				}
 			}
 		}
@@ -521,23 +558,47 @@ class BrowserManager {
 		if (back) {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
-				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
-					elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+				for (let j = 0, n = elements.length; j < n; j++) {
 					elements[i].removeAttribute('have')
-					elements[i].innerText = 'Download'
-				} else {
-
+					if (elements[i].tagName == 'DL') {
+						elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+						elements[i].setAttribute('l', 'dl')
+						elements[i].title = ''
+						elements[i].innerText = Language('dl')
+					} else {
+						elements[i].innerHTML = null
+						let save = document.createElement('div')
+						save.onclick = () => DownloadClick(site, id)
+						save.setAttribute('l', 'dl')
+						save.innerText = Language('dl')
+						elements[i].appendChild(save)
+						save = document.createElement('div')
+						save.onclick = () => AddToHave(site, id)
+						save.setAttribute('l', 'add-to-dls')
+						save.innerText = Language('add-to-dls')
+						elements[i].appendChild(save)
+					}
 				}
 			}
 		} else {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
-				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
-					elements[i].setAttribute('onclick', `RemoveFromHave(${site}, ${id})`)
+				for (let j = 0, n = elements.length; j < n; j++) {
 					elements[i].setAttribute('have','')
-					elements[i].innerText = 'In Downloads'
-				} else {
-					
+					if (elements[i].tagName == 'DL') {
+						elements[i].setAttribute('onclick', `RemoveFromHave(${site}, ${id})`)
+						elements[i].setAttribute('l', 'idl')
+						elements[i].setAttribute('lt', 'remove-from-dls')
+						elements[i].title = Language('remove-from-dls')
+						elements[i].innerText = Language('idl')
+					} else {
+						elements[i].innerHTML = null
+						const save = document.createElement('div')
+						save.onclick = () => RemoveFromHave(site, id)
+						save.setAttribute('l', 'remove-from-dls')
+						save.innerText = Language('remove-from-dls')
+						elements[i].appendChild(save)
+					}
 				}
 			}
 		}
@@ -572,15 +633,15 @@ mb_jump_page.onsubmit = e => {
 	}
 }
 
+mbs.oninput = () => {
+	if (browser.selectedTabIndex == null) return
+	browser.tabs[browser.selectedTabIndex].search = mbs.value
+}
 mbs.onfocus = () => KeyManager.stop = true
-mbs.addEventListener('focusout', () => {
-	KeyManager.stop = false
-})
+mbs.addEventListener('focusout', () => KeyManager.stop = false )
 
 mbjp.onfocus = () => KeyManager.stop = true
-mbjp.addEventListener('focusout', () => {
-	KeyManager.stop = false
-})
+mbjp.addEventListener('focusout', () => KeyManager.stop = false )
 
 function NewTab() {
 	const id = browser.AddTab()
@@ -793,16 +854,22 @@ function BRPostDL(site, id) {
 	} else if (IsHave(site, id)) {
 		if (IsDownloaded(site, id)) {
 			container.setAttribute('dl','')
-			container.innerText = 'Downloaded'
+			container.setAttribute('l', 'dled')
+			container.innerText = Language('dled')
 		} else {
 			container.setAttribute('onclick', `RemoveFromHave(${site}, ${id})`)
 			container.setAttribute('have','')
-			container.innerText = 'In Downloads'
+			container.setAttribute('l', 'idl')
+			container.setAttribute('lt', 'remove-from-dls')
+			container.title = Language('remove-from-dls')
+			container.innerText = Language('idl')
 		}
 	} else {
 		container.setAttribute('onclick', `DownloadClick(${site}, ${id})`)
-		container.innerText = 'Download'
+		container.setAttribute('l', 'dl')
+		container.innerText = Language('dl')
 	}
+	container.onmouseup = e => e.stopPropagation()
 	return container
 }
 
@@ -819,8 +886,43 @@ function BRLink(tabId, link, site, id) {
 
 function BRPostLinkElement(tabId, link, site, id) {
 	const element = document.createElement('div')
-	element.onmousedown = () => BRLink(tabId, link, site, id)
+	element.onmouseup = () => BRLink(tabId, link, site, id)
 	return element
+}
+
+function BRDownloadElement(site, id) {
+	const container = document.createElement('dlr')
+	container.setAttribute('pid', id)
+	if (downloader.IsDownloading(site, id)) {
+		container.setAttribute('dli','')
+		container.innerHTML = `<img src="${loading_img.src}"> Downloading...`
+	} else if (IsHave(site, id)) {
+		if (IsDownloaded(site, id)) {
+			container.setAttribute('dl','')
+			const save = document.createElement('div')
+			save.setAttribute('l', 'dled')
+			save.innerText = Language('dled')
+			container.appendChild(save)
+		} else {
+			const save = document.createElement('div')
+			save.onclick = () => RemoveFromHave(site, id)
+			save.setAttribute('l', 'remove-from-dls')
+			save.innerText = Language('remove-from-dls')
+			container.appendChild(save)
+		}
+	} else {
+		let save = document.createElement('div')
+		save.onclick = () => DownloadClick(site, id)
+		save.setAttribute('l', 'dl')
+		save.innerText = Language('dl')
+		container.appendChild(save)
+		save = document.createElement('div')
+		save.onclick = () => AddToHave(site, id)
+		save.setAttribute('l', 'add-to-dls')
+		save.innerText = Language('add-to-dls')
+		container.appendChild(save)
+	}
+	return container
 }
 
 function IsFormatSupported(src) {
@@ -920,7 +1022,7 @@ function NormalLinkElement(name, inner, tabId, link, notNormal = true, lang = fa
 			element.innerText = Language(inner)
 		} else element.innerText = inner
 	}
-	element.onmousedown = () => NormalLink(tabId, link, notNormal)
+	element.onmouseup = () => NormalLink(tabId, link, notNormal)
 	return element
 }
 

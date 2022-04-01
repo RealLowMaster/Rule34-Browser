@@ -464,3 +464,36 @@ class DownloadManager {
 }
 
 const downloader = new DownloadManager()
+
+function test() {
+	const path = paths.tmp+'load.gif'
+	const save_path = paths.tmp+'save.'
+
+	// sharp(path).png({ quality: 100 }).toFile(save_path+'png').then(() => {
+	// 	console.log('Complete')
+	// }).catch(err => {
+	// 	console.error(err)
+	// })
+
+	// sharp(path).jpeg({ mozjpeg: true }).toFile(save_path+'jpg').then(() => {
+	// 	console.log('Complete')
+	// }).catch(err => {
+	// 	console.error(err)
+	// })
+
+	// sharp(path).webp({ quality: 100 }).toFile(save_path+'webp').then(() => {
+	// 	console.log('Complete')
+	// }).catch(err => {
+	// 	console.error(err)
+	// })
+
+	sharp(path, { animated: true, quality: 100 }).webp().toFile(save_path+'webp').then(() => {
+		console.log('Complete')
+	}).catch(err => console.error(err))
+
+	sharp(path).gif({ animated: true }).toFile(save_path+'gif').then(() => {
+		console.log('Complete')
+	}).catch(err => {
+		console.error(err)
+	})
+}
