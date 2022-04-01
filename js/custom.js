@@ -267,7 +267,12 @@ class BrowserManager {
 					if (i == 0) this.ActivateTab(this.tabs[0].id)
 					else if (i == this.tabs.length) this.ActivateTab(this.tabs[i-1].id)
 					else this.ActivateTab(this.tabs[i].id)
-				} else this.selectedTab = null
+				} else {
+					this.selectedTab = null
+					this.selectedTabIndex = null
+					mb_jump_page.style.display = 'none'
+					mb_search.style.display = 'none'
+				}
 			}
 
 			this.timeout = setTimeout(() => this.ResizeTabs(), 1000)
