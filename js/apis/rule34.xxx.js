@@ -67,7 +67,7 @@ class rule34xxx {
 		return arr
 	}
 
-	#GetPagination(html, perPage = 42) {
+	#GetPagination(html, perPage = 42, limit = true) {
 		let save
 		try {
 			save = html.getElementById('paginator').children[0]
@@ -96,7 +96,8 @@ class rule34xxx {
 					if (isNaN(num)) arr[0] = 1
 					else {
 						num = num / perPage + 1
-						arr[0] = num > this.maxPage ? this.maxPage : num
+						if (limit) arr[0] = num > this.maxPage ? this.maxPage : num
+						else arr[0] = num
 					}
 					break
 				}
@@ -274,6 +275,58 @@ class rule34xxx {
 
 			// Pagination
 			save = this.#GetPagination(html, 25)
+			arr.maxPages = save[0]
+			arr.pagination = save[1]
+			
+			callback(null, arr)
+		}).catch(err => {
+			console.error(err)
+			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			callback(err, null)
+		})
+	}
+
+	Tags(page, search, callback) {
+		if (typeof callback !== 'function') throw "Callback should be Function."
+		page--
+		const url = this.baseURL+'index.php?page=tags&s=list&pid='+(page * 50)+(search == null ? '' : '&sort=asc&order_by=tag&tags='+this.#ToURL(search))
+
+		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
+		fetch(url).then(response => {
+			if (response.status != 200) {
+				const i = status.indexOf(response.status)
+				if (i > -1) throw statusMsg[i]
+				else throw "Error::Code::"+response.status
+			}
+			return response.text()
+		}).then(htm => {
+			const html = new DOMParser().parseFromString(htm, 'text/html')
+			let arr = {}, save
+			arr.title = 'Tags > '+(search == null ? '' : search+' > ')+'Page '+(page + 1)
+
+			// List
+			try {
+				save = html.getElementsByClassName('highlightable')[0].children[0].children
+				if (save.length == 0) save = null
+			} catch(err) {
+				console.error(err)
+				save = null
+			}
+			if (save != null) {
+				arr.list = []
+				let save2
+				for (let i = 1, l = save.length; i < l; i++) {
+					save2 = save[i].children
+					arr.list.push([
+						save2[0].innerText,
+						save2[1].innerText.replace(/ /g, ''),
+						save2[2].innerText.replace(' (edit)', '')
+					])
+				}
+			} else arr.list = null
+
+			// Pagination
+			save = this.#GetPagination(html, 50, false)
 			arr.maxPages = save[0]
 			arr.pagination = save[1]
 			

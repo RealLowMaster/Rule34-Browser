@@ -384,7 +384,7 @@ class BrowserManager {
 				Rule34XXXArtists(tabId, value[0], value[1])
 				return
 			case 6:
-				Rule34XXXTags(tabId, value)
+				Rule34XXXTags(tabId, value[0], value[1])
 				return
 			case 7:
 				Rule34XXXPools(tabId, value)
@@ -632,6 +632,7 @@ mb_jump_page.onsubmit = e => {
 			switch(tab.jumpPage) {
 				case 0: Rule34XXXHome(tab.id, value, tab.submit_search); return
 				case 1: Rule34XXXArtists(tab.id, value, tab.submit_search); return
+				case 2: Rule34XXXTags(tab.id, value, tab.submit_search); return
 			}
 			return
 		case 1:
@@ -648,6 +649,8 @@ mbs.addEventListener('focusout', () => KeyManager.stop = false )
 
 mbjp.onfocus = () => KeyManager.stop = true
 mbjp.addEventListener('focusout', () => KeyManager.stop = false )
+
+window.onmousedown = e => { if (e.which == 2) e.preventDefault() }
 
 function NewTab() {
 	const id = browser.AddTab()
@@ -875,7 +878,7 @@ function BRPostDL(site, id) {
 		container.setAttribute('l', 'dl')
 		container.innerText = Language('dl')
 	}
-	container.onmouseup = e => e.stopPropagation()
+	container.onmousedown = e => e.stopPropagation()
 	return container
 }
 
@@ -892,7 +895,7 @@ function BRLink(tabId, link, site, id) {
 
 function BRPostLinkElement(tabId, link, site, id) {
 	const element = document.createElement('div')
-	element.onmouseup = () => BRLink(tabId, link, site, id)
+	element.onmousedown = () => BRLink(tabId, link, site, id)
 	return element
 }
 
@@ -1028,7 +1031,7 @@ function NormalLinkElement(name, inner, tabId, link, notNormal = true, lang = fa
 			element.innerText = Language(inner)
 		} else element.innerText = inner
 	}
-	element.onmouseup = () => NormalLink(tabId, link, notNormal)
+	element.onmousedown = () => NormalLink(tabId, link, notNormal)
 	return element
 }
 

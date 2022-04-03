@@ -158,8 +158,9 @@
 
 .rule34-xxx-pagination {
 	width: 100%;
-	margin-bottom: 30px;
+	height: 70px;
 	text-align: center;
+	user-select: none;
 }
 
 .rule34-xxx-pagination > div {
