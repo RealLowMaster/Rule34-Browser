@@ -7,7 +7,6 @@ function Rule34XXXMenu(tab) {
 	save.appendChild(NormalLinkElement('div', 'Artists', tab.id, tab.AddLink(5, [1, null]), false))
 	save.appendChild(NormalLinkElement('div', 'Tags', tab.id, tab.AddLink(6, 1), false))
 	save.appendChild(NormalLinkElement('div', 'Pools', tab.id, tab.AddLink(7, 1), false))
-	save.appendChild(NormalLinkElement('div', 'Stats', tab.id, tab.AddLink(8), false))
 	return save
 }
 
@@ -88,7 +87,7 @@ function Rule34XXXGetPosts(tab, arr) {
 	container.classList.add('rule34-xxx-posts')
 	arr = arr.posts
 	for (let i = 0, l = arr.length; i < l; i++) {
-		const post = BRPostLinkElement(tab.id, tab.AddLink(9, arr[i].id), 0, arr[i].id)
+		const post = BRPostLinkElement(tab.id, tab.AddLink(8, arr[i].id), 0, arr[i].id)
 		if (arr[i].video) post.setAttribute('v', '')
 		post.appendChild(BRPostDL(0, arr[i].id))
 		const img = document.createElement('img')
@@ -165,7 +164,7 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 function Rule34XXXPost(tabId, id) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading(0)
-	tab.AddHistory(9, id)
+	tab.AddHistory(8, id)
 
 	r34xxx.Post(id, (err, arr) => {
 		if (err) {
@@ -359,7 +358,7 @@ function Rule34XXXPools(tabId, page) {
 		for (let i = 0, l = arr.list.length; i < l; i++) {
 			save2 = document.createElement('div')
 			save3 = document.createElement('div')
-			save3.appendChild(NormalLinkElement('p', arr.list[i][0], tabId, tab.AddLink(10, arr.list[i][1])))
+			save3.appendChild(NormalLinkElement('p', arr.list[i][0], tabId, tab.AddLink(9, arr.list[i][1])))
 			save2.appendChild(save3)
 			save3 = document.createElement('div')
 			save3.innerText = arr.list[i][2]
@@ -382,7 +381,7 @@ function Rule34XXXPools(tabId, page) {
 function Rule34XXXPool(tabId, id) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading(0, -1)
-	tab.AddHistory(10, id)
+	tab.AddHistory(9, id)
 	
 	r34xxx.Pool(id, (err, arr) => {
 		if (err) {
@@ -417,5 +416,3 @@ function Rule34XXXPool(tabId, id) {
 		tab.Load(token, container, arr.title, 'var(--r34x-primary-bg)')
 	})
 }
-
-function Rule34XXXStats(tabId) {}

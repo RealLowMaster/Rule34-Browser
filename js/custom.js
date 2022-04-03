@@ -373,9 +373,8 @@ class BrowserManager {
 			case 5: Rule34XXXArtists(tabId, value[0], value[1]); return
 			case 6: Rule34XXXTags(tabId, value[0], value[1]); return
 			case 7: Rule34XXXPools(tabId, value); return
-			case 8: Rule34XXXStats(tabId); return
-			case 9: Rule34XXXPost(tabId, value); return
-			case 10: Rule34XXXPool(tabId, value); return
+			case 8: Rule34XXXPost(tabId, value); return
+			case 9: Rule34XXXPool(tabId, value); return
 		}
 	}
 
