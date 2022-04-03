@@ -444,12 +444,29 @@ class ContextMenuManager {
 		const obj = {}
 		if (typeof config.text === 'string' && config.text.replace(/ /g, '').length > 0) {
 			obj.text = config.text
+			if (typeof config.active === 'boolean') obj.active = config.active
+			else obj.active = true
 			if (config.click != null) {
 				if (typeof config.click === 'string' || typeof config.click === 'function') obj.click = config.click
 				else throw "Click Should Be String or Function!"
 			}
 		}
 		this.#menu[menu].push(obj)
+	}
+
+	SetActiveItem(menu, index, state) {
+		if (typeof menu === 'number') {
+			if (this.#menu[menu] == undefined || this.#menu[menu] == null) throw "Menu Not Found."
+		} else if (typeof menu === 'string') {
+			const cat_index = this.#menuNames.indexOf(menu.toLowerCase())
+			if (cat_index < 0) throw "Menu Not Found"
+			menu = cat_index
+		} else throw "Menu Type Should Be Number (int) Or String"
+		if (typeof index !== 'number') throw "Index should be Number (int)"
+		if (typeof state !== 'boolean') throw "State should be boolean"
+		if (this.#menu[menu][index] != null) {
+			this.#menu[menu][index].active = state
+		}
 	}
 
 	RemoveMenu(menu) {
@@ -490,6 +507,8 @@ class ContextMenuManager {
 		const obj = {}
 		if (typeof config.text === 'string' || config.text.replace(/ /g, '').length > 0) {
 			obj.text = config.text
+			if (typeof config.active === 'boolean') obj.active = config.active
+			else obj.active = true
 			if (config.click != null) {
 				if (typeof config.click === 'string' || typeof config.click === 'function') obj.click = config.click
 				else throw "Click Should Be String or Function!"
@@ -514,21 +533,23 @@ class ContextMenuManager {
 		let save
 
 		for (let i = 0, l = this.#menu[menu].length; i < l; i++) {
-			if (this.#menu[menu][i].text != undefined) {
-				if (this.#menu[menu][i].click != undefined) {
-					save = document.createElement('div')
-					save.innerText = Language(this.#menu[menu][i].text)
-					if (typeof this.#menu[menu][i].click === 'string') save.onclick = () => { eval(this.#menu[menu][i].click); this.CloseMenu() }
-					else if (typeof this.#menu[menu][i].click === 'function') save.onclick = () => { this.#menu[menu][i].click(); this.CloseMenu() }
-					container.appendChild(save)
+			if (this.#menu[menu][i].active) {
+				if (this.#menu[menu][i].text != undefined) {
+					if (this.#menu[menu][i].click != undefined) {
+						save = document.createElement('div')
+						save.innerText = Language(this.#menu[menu][i].text)
+						if (typeof this.#menu[menu][i].click === 'string') save.onclick = () => { eval(this.#menu[menu][i].click); this.CloseMenu() }
+						else if (typeof this.#menu[menu][i].click === 'function') save.onclick = () => { this.#menu[menu][i].click(); this.CloseMenu() }
+						container.appendChild(save)
+					} else {
+						save = document.createElement('p')
+						save.innerText = Language(this.#menu[menu][i].text)
+						container.appendChild(save)
+					}
 				} else {
-					save = document.createElement('p')
-					save.innerText = Language(this.#menu[menu][i].text)
+					save = document.createElement('span')
 					container.appendChild(save)
 				}
-			} else {
-				save = document.createElement('span')
-				container.appendChild(save)
 			}
 		}
 		if (saver != null) this.save = saver

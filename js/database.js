@@ -40,8 +40,6 @@ function RemoveFromHave(site, id) {
 	} else PopAlert(Language('pwn-in-dls'), 'warning')
 }
 
-
-
 // Parody
 function GetParodyIndex(list) {
 	const arr = []
@@ -60,7 +58,34 @@ function GetParodyIndex(list) {
 		}
 	}
 	if (save) try { jsonfile.writeFileSync(paths.db+'parody', {a:db.parody,l:db.parody_link,i:db.parody_index}) } catch(err) { console.error(err) }
-	return arr
+	return NoLoopArray(arr)
+}
+
+function LinkParody(name1, name2) {
+	name1 = name1.toLowerCase()
+	name2 = name2.toLowerCase()
+	let i1 = db.parody.indexOf(name1)
+	let i2 = db.parody.indexOf(name2)
+	if (i1 < 0) {
+		i1 = db.parody.length
+		db.parody[i1] = name1
+	}
+	if (i2 < 0) {
+		i2 = db.parody.length
+		db.parody[i2] = name2
+	}
+
+	let ii1 = db.parody_index.indexOf(i1)
+	if (ii1 >= 0) db.parody_link[ii1] = i2
+	else {
+		ii1 = db.parody_index.length
+		db.parody_index[ii1] = i1
+		db.parody_link[ii1] = i2
+	}
+
+	try { jsonfile.writeFileSync(paths.db+'parody', {a:db.parody,l:db.parody_link,i:db.parody_index}) } catch(err) { console.error(err) }
+
+	PopAlert('Linked: '+name1+' To '+name2)
 }
 
 // Character
@@ -81,7 +106,34 @@ function GetCharacterIndex(list) {
 		}
 	}
 	if (save) try { jsonfile.writeFileSync(paths.db+'character', {a:db.character,l:db.character_link,i:db.character_index}) } catch(err) { console.error(err) }
-	return arr
+	return NoLoopArray(arr)
+}
+
+function LinkCharacter(name1, name2) {
+	name1 = name1.toLowerCase()
+	name2 = name2.toLowerCase()
+	let i1 = db.character.indexOf(name1)
+	let i2 = db.character.indexOf(name2)
+	if (i1 < 0) {
+		i1 = db.character.length
+		db.character[i1] = name1
+	}
+	if (i2 < 0) {
+		i2 = db.character.length
+		db.character[i2] = name2
+	}
+
+	let ii1 = db.character_index.indexOf(i1)
+	if (ii1 >= 0) db.character_link[ii1] = i2
+	else {
+		ii1 = db.character_index.length
+		db.character_index[ii1] = i1
+		db.character_link[ii1] = i2
+	}
+
+	try { jsonfile.writeFileSync(paths.db+'character', {a:db.character,l:db.character_link,i:db.character_index}) } catch(err) { console.error(err) }
+
+	PopAlert('Linked: '+name1+' To '+name2)
 }
 
 // Artist
@@ -102,7 +154,34 @@ function GetArtistIndex(list) {
 		}
 	}
 	if (save) try { jsonfile.writeFileSync(paths.db+'artist', {a:db.artist,l:db.artist_link,i:db.artist_index}) } catch(err) { console.error(err) }
-	return arr
+	return NoLoopArray(arr)
+}
+
+function LinkArtist(name1, name2) {
+	name1 = name1.toLowerCase()
+	name2 = name2.toLowerCase()
+	let i1 = db.artist.indexOf(name1)
+	let i2 = db.artist.indexOf(name2)
+	if (i1 < 0) {
+		i1 = db.artist.length
+		db.artist[i1] = name1
+	}
+	if (i2 < 0) {
+		i2 = db.artist.length
+		db.artist[i2] = name2
+	}
+
+	let ii1 = db.artist_index.indexOf(i1)
+	if (ii1 >= 0) db.artist_link[ii1] = i2
+	else {
+		ii1 = db.artist_index.length
+		db.artist_index[ii1] = i1
+		db.artist_link[ii1] = i2
+	}
+
+	try { jsonfile.writeFileSync(paths.db+'artist', {a:db.artist,l:db.artist_link,i:db.artist_index}) } catch(err) { console.error(err) }
+
+	PopAlert('Linked: '+name1+' To '+name2)
 }
 
 // Tag
@@ -123,7 +202,34 @@ function GetTagIndex(list) {
 		}
 	}
 	if (save) try { jsonfile.writeFileSync(paths.db+'tag', {a:db.tag,l:db.tag_link,i:db.tag_index}) } catch(err) { console.error(err) }
-	return arr
+	return NoLoopArray(arr)
+}
+
+function LinkTag(name1, name2) {
+	name1 = name1.toLowerCase()
+	name2 = name2.toLowerCase()
+	let i1 = db.tag.indexOf(name1)
+	let i2 = db.tag.indexOf(name2)
+	if (i1 < 0) {
+		i1 = db.tag.length
+		db.tag[i1] = name1
+	}
+	if (i2 < 0) {
+		i2 = db.tag.length
+		db.tag[i2] = name2
+	}
+
+	let ii1 = db.tag_index.indexOf(i1)
+	if (ii1 >= 0) db.tag_link[ii1] = i2
+	else {
+		ii1 = db.tag_index.length
+		db.tag_index[ii1] = i1
+		db.tag_link[ii1] = i2
+	}
+
+	try { jsonfile.writeFileSync(paths.db+'tag', {a:db.tag,l:db.tag_link,i:db.tag_index}) } catch(err) { console.error(err) }
+
+	PopAlert('Linked: '+name1+' To '+name2)
 }
 
 // Meta
@@ -144,7 +250,34 @@ function GetMetaIndex(list) {
 		}
 	}
 	if (save) try { jsonfile.writeFileSync(paths.db+'meta', {a:db.meta,l:db.meta_link,i:db.meta_index}) } catch(err) { console.error(err) }
-	return arr
+	return NoLoopArray(arr)
+}
+
+function LinkMeta(name1, name2) {
+	name1 = name1.toLowerCase()
+	name2 = name2.toLowerCase()
+	let i1 = db.meta.indexOf(name1)
+	let i2 = db.meta.indexOf(name2)
+	if (i1 < 0) {
+		i1 = db.meta.length
+		db.meta[i1] = name1
+	}
+	if (i2 < 0) {
+		i2 = db.meta.length
+		db.meta[i2] = name2
+	}
+
+	let ii1 = db.meta_index.indexOf(i1)
+	if (ii1 >= 0) db.meta_link[ii1] = i2
+	else {
+		ii1 = db.meta_index.length
+		db.meta_index[ii1] = i1
+		db.meta_link[ii1] = i2
+	}
+
+	try { jsonfile.writeFileSync(paths.db+'meta', {a:db.meta,l:db.meta_link,i:db.meta_index}) } catch(err) { console.error(err) }
+
+	PopAlert('Linked: '+name1+' To '+name2)
 }
 
 // Post

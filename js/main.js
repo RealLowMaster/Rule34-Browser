@@ -102,6 +102,13 @@ function LastChar(char, txt, backward = false) {
 	else return new String(txt).substring(txt.lastIndexOf(char) + 1)
 }
 
+function NoLoopArray(arr) {
+	if (!Array.isArray(arr)) return arr
+	const new_arr = []
+	for (let i = 0, l = arr.length; i < l; i++) if (new_arr.indexOf(arr[i]) < 0) new_arr.push(arr[i])
+	return new_arr
+}
+
 function SetHotKeys() {
 	KeyManager.AddPublicHotKey(false, false, false, 122, 'ChangeScreenMode()')
 	KeyManager.use_public = true
@@ -182,5 +189,6 @@ function SetContextMenus() {
 	ContextManager.AddItem(i, { text:'add-to-dls', click: () => AddToHave(ContextManager.save[2], ContextManager.save[3]) })
 	ContextManager.AddItem(i, { text:'remove-from-dls', click: () => RemoveFromHave(ContextManager.save[2], ContextManager.save[3]) })
 	ContextManager.AddItem(i, { text:'dl', click: () =>  DownloadClick(ContextManager.save[2], ContextManager.save[3]) })
+	ContextManager.AddItem(i, { text:'delete', click: () => {} })
 
 }

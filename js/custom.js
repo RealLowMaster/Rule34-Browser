@@ -870,6 +870,29 @@ function BRLink(tabId, link, site, id) {
 	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
 	else {
 		ContextManager.save = [tabId, link, site, id]
+		if (downloader.IsDownloading(site, id)) {
+			ContextManager.SetActiveItem('br-posts', 3, false)
+			ContextManager.SetActiveItem('br-posts', 4, false)
+			ContextManager.SetActiveItem('br-posts', 5, false)
+			ContextManager.SetActiveItem('br-posts', 6, false)
+		} else if (IsHave(site, id)) {
+			if (IsDownloaded(site, id)) {
+				ContextManager.SetActiveItem('br-posts', 3, false)
+				ContextManager.SetActiveItem('br-posts', 4, false)
+				ContextManager.SetActiveItem('br-posts', 5, false)
+				ContextManager.SetActiveItem('br-posts', 6, true)
+			} else {
+				ContextManager.SetActiveItem('br-posts', 3, false)
+				ContextManager.SetActiveItem('br-posts', 4, true)
+				ContextManager.SetActiveItem('br-posts', 5, false)
+				ContextManager.SetActiveItem('br-posts', 6, false)
+			}
+		} else {
+			ContextManager.SetActiveItem('br-posts', 3, true)
+			ContextManager.SetActiveItem('br-posts', 4, false)
+			ContextManager.SetActiveItem('br-posts', 5, true)
+			ContextManager.SetActiveItem('br-posts', 6, false)
+		}
 		ContextManager.ShowMenu('br-posts')
 	}
 }
@@ -1070,19 +1093,26 @@ function GetPagination(total_pages, page) {
 	return arr
 }
 
+function GetMainMenu(tab, page) {
+	const container = document.createElement('div')
+	container.classList.add('main-page-menu')
+
+	if (page != 0) container.appendChild(NormalLinkElement('div', 'home', tab.id, tab.AddLink(0), false, true))
+	if (page != 1) container.appendChild(NormalLinkElement('div', 'sites', tab.id, tab.AddLink(1), false, true))
+	if (page != 2) container.appendChild(NormalLinkElement('div', 'collections', tab.id, tab.AddLink(2), false, true))
+
+	return container
+}
+
 function LoadPage(tabId, page = 1) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading()
 	tab.AddHistory(0, page)
 	const container = document.createElement('div')
 	container.classList.add('main-page')
-	let save = document.createElement('div')
-	save.classList.add('main-page-menu')
-	save.appendChild(NormalLinkElement('div', 'sites', tabId, tab.AddLink(1), false, true))
-	save.appendChild(NormalLinkElement('div', 'collections', tabId, tab.AddLink(2), false, true))
-	container.appendChild(save)
+	container.appendChild(GetMainMenu(tab, 0))
 
-	save = document.createElement('div')
+	let save = document.createElement('div')
 	save.classList.add('main-page-filter')
 	let save2 = document.createElement('div')
 	save2.innerHTML = Icon('new-to-old')
@@ -1120,13 +1150,9 @@ function LoadSites(tabId) {
 	tab.AddHistory(1)
 	const container = document.createElement('div')
 	container.classList.add('main-page')
-	let save = document.createElement('div')
-	save.classList.add('main-page-menu')
-	save.appendChild(NormalLinkElement('div', 'home', tabId, tab.AddLink(0), false, true))
-	save.appendChild(NormalLinkElement('div', 'collections', tabId, tab.AddLink(2), false, true))
-	container.appendChild(save)
+	container.appendChild(GetMainMenu(tab, 1))
 
-	save = document.createElement('div')
+	let save = document.createElement('div')
 	save.classList.add('main-page-sites')
 	for (let i = 0, l = sites.length; i < l; i++) {
 		const save2 = NormalLinkElement('div', null, tabId, tab.AddLink(3, i), false, true)
@@ -1155,7 +1181,5 @@ function LoadSites(tabId) {
 function LoadCollections(tabId) {}
 
 function OpenHistory() {}
-
-function OpenDownloads() {}
 
 function OpenBookmarks() {}

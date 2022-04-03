@@ -57,8 +57,12 @@ class rule34xxx {
 				else if (save == "Meta") index = 4
 			}
 		}
+		
 
-		if (data[0].length > 0) arr.parody = data[0]
+		if (data[0].length > 0) {
+			for (let i = 0, l = data[0].length; i < l; i++) data[0][i][0] = data[0][i][0].replace(' (series)', '')
+			arr.parody = data[0]
+		}
 		if (data[1].length > 0) arr.character = data[1]
 		if (data[2].length > 0) arr.artist = data[2]
 		if (data[3].length > 0) arr.tag = data[3]
