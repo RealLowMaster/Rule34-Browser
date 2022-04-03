@@ -365,36 +365,17 @@ class BrowserManager {
 
 	Link(tabId, index, value) {
 		switch(index) {
-			case 0:
-				LoadPage(tabId, value)
-				return
-			case 1:
-				LoadSites(tabId)
-				return
-			case 2:
-				LoadCollections(tabId)
-				return
-			case 3:
-				sites[value].home(tabId, 1)
-				return
-			case 4:
-				Rule34XXXHome(tabId, value[0], value[1])
-				return
-			case 5:
-				Rule34XXXArtists(tabId, value[0], value[1])
-				return
-			case 6:
-				Rule34XXXTags(tabId, value[0], value[1])
-				return
-			case 7:
-				Rule34XXXPools(tabId, value)
-				return
-			case 8:
-				Rule34XXXStats(tabId)
-				return
-			case 9:
-				Rule34XXXPost(tabId, value)
-				return
+			case 0: LoadPage(tabId, value); return
+			case 1: LoadSites(tabId); return
+			case 2: LoadCollections(tabId); return
+			case 3: sites[value].home(tabId, 1); return
+			case 4: Rule34XXXHome(tabId, value[0], value[1]); return
+			case 5: Rule34XXXArtists(tabId, value[0], value[1]); return
+			case 6: Rule34XXXTags(tabId, value[0], value[1]); return
+			case 7: Rule34XXXPools(tabId, value); return
+			case 8: Rule34XXXStats(tabId); return
+			case 9: Rule34XXXPost(tabId, value); return
+			case 10: Rule34XXXPool(tabId, value); return
 		}
 	}
 
@@ -633,6 +614,7 @@ mb_jump_page.onsubmit = e => {
 				case 0: Rule34XXXHome(tab.id, value, tab.submit_search); return
 				case 1: Rule34XXXArtists(tab.id, value, tab.submit_search); return
 				case 2: Rule34XXXTags(tab.id, value, tab.submit_search); return
+				case 3: Rule34XXXPools(tab.id, value); return
 			}
 			return
 		case 1:
@@ -956,6 +938,10 @@ function IsFormatSupported(src) {
 }
 
 function DownloadClick(site, id) {
+	if (isNaN(id)) {
+		PopAlert(Language('link-crashed'), 'danger')
+		return
+	}
 	if (IsHave(site, id)) {
 		PopAlert(Language('yadtp'), 'danger')
 		return

@@ -33,8 +33,8 @@
 
 .rule34-xxx-title {
 	display: block;
-	width: 100%;
-	margin: 15px 0;
+	width: 90%;
+	margin: 15px auto;
 	padding: 10px;
 	text-align: center;
 	font-size: 18px;
@@ -54,7 +54,7 @@
 	width: 100%;
 	padding: 10px;
 	margin: 10px 0;
-	color: #fff;
+	color: #222;
 	user-select: none;
 }
 
@@ -63,6 +63,7 @@
 	margin: 0 10px;
 	padding: 8px 10px;
 	border-radius: 4px;
+	color: #fff;
 	cursor: pointer;
 	box-shadow: 1px 1px 3px 0 #000a;
 	transition: background-color ease .2s;
@@ -72,6 +73,7 @@
 	width: 32px;
 	height: 32px;
 	padding: 0;
+	background-color: var(--r34x-link);
 	cursor: default;
 	box-shadow: none;
 	transition: none;
@@ -112,7 +114,7 @@
 }
 .rule34-xxx-tags > div > span:first-child:hover { color: var(--r34x-link-hover); }
 .rule34-xxx-tags > div > span:last-child { font-size: 14px }
-.rule34-xxx-posts { display: block; width: 100% }
+.rule34-xxx-posts { display: block; width: 100%; padding-left: 10px }
 
 .rule34-xxx-posts > div {
 	display: inline-block;
@@ -205,7 +207,7 @@
 
 .rule34-xxx-table {
 	display: block;
-	width: 95%;
+	width: 96%;
 	margin: 10px auto 40px auto;
 	color: #222;
 	font-size: 14px;
@@ -225,7 +227,6 @@
 }
 
 .rule34-xxx-table > div:nth-child(even) { background-color: var(--r34x-interactive-normal) }
-
 .rule34-xxx-table > div:hover { background-color: var(--r34x-interactive-hover) }
 
 .rule34-xxx-table > div:first-child {
@@ -238,7 +239,19 @@
 	user-select: none;
 }
 
-.rule34-xxx-table > div > div { padding: 1px solid }
-
+.rule34-xxx-table > div > div { padding: 1px 4px; border-left: 1px dotted #eee }
+.rule34-xxx-table > div > div:first-child { border: none }
 .rule34-xxx-table > div > div > p { color: var(--r34x-link); cursor: pointer }
 .rule34-xxx-table > div > div > p:hover { color: var(--r34x-link-hover) }
+
+.r34x-pool > div { grid-template-columns: 7fr 2fr 2fr 1fr }
+
+.rule34-xxx-alert {
+	display: block;
+	width: 90%;
+	padding: 10px 0;
+	margin: 20px auto;
+	text-align: center;
+	background-color: var(--r34x-secondary-bg);
+	color: #222;
+}

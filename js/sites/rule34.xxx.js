@@ -105,12 +105,18 @@ function Rule34XXXGetPagination(tab, arr, linkId) {
 	container.classList.add('rule34-xxx-pagination')
 	arr = arr.pagination
 	for (let i = 0, l = arr.length; i < l; i++) {
-		if (arr[i][0][0] != null) container.appendChild(NormalLinkElement('div', arr[i][1], tab.id, tab.AddLink(linkId, arr[i][0]), false))
-		else {
+		if (arr[i][0] == null) {
 			const save = document.createElement('span')
 			save.innerText = arr[i][1]
 			container.appendChild(save)
-		}
+		} else if (typeof arr[i][0] === 'object') {
+			if (arr[i][0][0] != null) container.appendChild(NormalLinkElement('div', arr[i][1], tab.id, tab.AddLink(linkId, arr[i][0]), false))
+			else {
+				const save = document.createElement('span')
+				save.innerText = arr[i][1]
+				container.appendChild(save)
+			}
+		} else container.appendChild(NormalLinkElement('div', arr[i][1], tab.id, tab.AddLink(linkId, arr[i][0]), false))
 	}
 	return container
 }
@@ -325,5 +331,91 @@ function Rule34XXXTags(tabId, page = 1, search = null) {
 	})
 }
 
-function Rule34XXXPools(tabId, page) {}
+function Rule34XXXPools(tabId, page) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading(0, 3)
+	tab.AddHistory(7, page)
+
+	r34xxx.Pools(page, (err, arr) => {
+		if (err) {
+			tab.Error(err)
+			return
+		}
+		const container = document.createElement('div')
+		container.classList.add('rule34-xxx-page')
+		container.appendChild(Rule34XXXMenu(tab))
+
+		let save = document.createElement('p'), save2, save3
+		save.classList.add('rule34-xxx-title')
+		save.innerText = arr.title
+		container.appendChild(save)
+
+		save = document.createElement('div')
+		save.classList.add('rule34-xxx-table')
+		save.classList.add('r34x-pool')
+		save2 = document.createElement('div')
+		save2.innerHTML = '<div>Name</div><div>Creator</div><div>Posts</div><div>Public</div>'
+		save.appendChild(save2)
+		for (let i = 0, l = arr.list.length; i < l; i++) {
+			save2 = document.createElement('div')
+			save3 = document.createElement('div')
+			save3.appendChild(NormalLinkElement('p', arr.list[i][0], tabId, tab.AddLink(10, arr.list[i][1])))
+			save2.appendChild(save3)
+			save3 = document.createElement('div')
+			save3.innerText = arr.list[i][2]
+			save2.appendChild(save3)
+			save3 = document.createElement('div')
+			save3.innerText = arr.list[i][3]
+			save2.appendChild(save3)
+			save3 = document.createElement('div')
+			save3.innerText = arr.list[i][4]
+			save2.appendChild(save3)
+			save.appendChild(save2)
+		}
+		container.appendChild(save)
+		container.appendChild(Rule34XXXGetPagination(tab, arr, 7))
+
+		tab.Load(token, container, arr.title, 'var(--r34x-primary-bg)', page, arr.maxPages)
+	})
+}
+
+function Rule34XXXPool(tabId, id) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading(0, -1)
+	tab.AddHistory(10, id)
+	
+	r34xxx.Pool(id, (err, arr) => {
+		if (err) {
+			tab.Error(err)
+			return
+		}
+		const container = document.createElement('div')
+		container.classList.add('rule34-xxx-page')
+		container.appendChild(Rule34XXXMenu(tab))
+
+		let save = document.createElement('p'), save2
+		save.classList.add('rule34-xxx-title')
+		save.style.textAlign = 'left'
+		save.style.fontSize = '20px'
+		save.innerText = arr.title
+		save2 = document.createElement('br')
+		save.appendChild(save2)
+		save2 = document.createElement('span')
+		save2.style.fontSize = '13px'
+		save2.innerText = arr.sub_title
+		save.appendChild(save2)
+		container.appendChild(save)
+
+		if (arr.posts.length == 0) {
+			save = document.createElement('div')
+			save.classList.add('rule34-xxx-alert')
+			save.setAttribute('l', 'npost')
+			save.innerText = Language('npost')
+			container.appendChild(save)
+		} else container.appendChild(Rule34XXXGetPosts(tab, arr))
+
+		tab.Load(token, container, arr.title, 'var(--r34x-primary-bg)')
+	})
+}
+
 function Rule34XXXStats(tabId) {}

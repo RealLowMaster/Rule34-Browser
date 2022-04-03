@@ -143,7 +143,7 @@ class rule34xxx {
 						video: img.getAttribute('style') == null ? false : true
 					})
 				}
-			} else throw "No Post was Found"
+			} else throw Language('npost')
 
 			// Pagination
 			save = this.#GetPagination(html)
@@ -205,9 +205,6 @@ class rule34xxx {
 				}
 				arr.video = false
 			}
-			let last
-			if (arr.video) last = LastChar('/', arr.src)
-			else last = LastChar('_', arr.srcresize)
 
 			// Thumb
 			arr.thumb = ''
@@ -274,7 +271,7 @@ class rule34xxx {
 			} else arr.list = null
 
 			// Pagination
-			save = this.#GetPagination(html, 25)
+			save = this.#GetPagination(html, 25, false)
 			arr.maxPages = save[0]
 			arr.pagination = save[1]
 			
@@ -338,6 +335,107 @@ class rule34xxx {
 		})
 	}
 
+	Pools(page, callback) {
+		if (typeof callback !== 'function') throw "Callback should be Function."
+		page--
+		const url = this.baseURL+'index.php?page=pool&s=list&pid='+(page * 25)
+
+		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
+		fetch(url).then(response => {
+			if (response.status != 200) {
+				const i = status.indexOf(response.status)
+				if (i > -1) throw statusMsg[i]
+				else throw "Error::Code::"+response.status
+			}
+			return response.text()
+		}).then(htm => {
+			const html = new DOMParser().parseFromString(htm, 'text/html')
+			let arr = {}, save
+			arr.title = 'Pools > Page '+(page + 1)
+
+			// List
+			try {
+				save = html.getElementsByClassName('highlightable')[0].children[1].children
+				if (save.length == 0) save = null
+			} catch(err) {
+				console.error(err)
+				save = null
+			}
+			if (save != null) {
+				arr.list = []
+				let save2, save3
+				for (let i = 0, l = save.length; i < l; i++) {
+					save2 = save[i].children
+					save3 = save2[0].children[0]
+					arr.list.push([
+						save3.innerText,
+						Number(LastChar('=', save3.href)),
+						save2[1].children[0].innerText,
+						save2[2].innerText,
+						save2[3].innerText
+					])
+				}
+			} else arr.list = null
+
+			// Pagination
+			save = this.#GetPagination(html, 25, false)
+			arr.maxPages = save[0]
+			arr.pagination = save[1]
+			
+			callback(null, arr)
+		}).catch(err => {
+			console.error(err)
+			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			callback(err, null)
+		})
+	}
+
+	Pool(id, callback) {
+		if (typeof callback !== 'function') throw "Callback should be Function."
+		const url = this.baseURL+'index.php?page=pool&s=show&id='+id
+
+		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
+		fetch(url).then(response => {
+			if (response.status != 200) {
+				const i = status.indexOf(response.status)
+				if (i > -1) throw statusMsg[i]
+				else throw "Error::Code::"+response.status
+			}
+			return response.text()
+		}).then(htm => {
+			const html = new DOMParser().parseFromString(htm, 'text/html')
+			let arr = {}, save
+			save = html.getElementById('pool-show').children
+			arr.title = save[0].innerText.replace('Pool: ', '')
+			arr.sub_title = save[1].innerText
+
+			try {
+				save = html.getElementsByClassName('thumb')
+				if (save.length == 0) save = null
+			} catch(err) {
+				console.error(err)
+				save = null
+			}
+			arr.posts = []
+			if (save != null) {
+				for (let i = 0, l = save.length; i < l; i++) {
+					const img = save[i].children[0].children[0]
+					arr.posts.push({
+						id: Number(save[i].id.replace('p', '')),
+						thumb: img.src,
+						video: img.getAttribute('style') == null ? false : true
+					})
+				}
+			}
+			
+			callback(null, arr)
+		}).catch(err => {
+			console.error(err)
+			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			callback(err, null)
+		})
+	}
+
 	save(id, callback) {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		const url = this.baseURL+'index.php?page=post&s=view&id='+id
@@ -349,7 +447,6 @@ class rule34xxx {
 				if (i > -1) throw statusMsg[i]
 				else throw "Error::Code::"+response.status
 			}
-			
 			return response.text()
 		}).then(htm => {
 			const html = new DOMParser().parseFromString(htm, 'text/html')
