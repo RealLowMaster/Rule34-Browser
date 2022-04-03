@@ -4,7 +4,7 @@ function Rule34XXXMenu(tab) {
 	let save = document.createElement('div')
 	save.classList.add('rule34-xxx-menu')
 	save.appendChild(NormalLinkElement('div', 'Posts', tab.id, tab.AddLink(4, [1,null]), false))
-	save.appendChild(NormalLinkElement('div', 'Artists', tab.id, tab.AddLink(5, 1), false))
+	save.appendChild(NormalLinkElement('div', 'Artists', tab.id, tab.AddLink(5, [1, null]), false))
 	save.appendChild(NormalLinkElement('div', 'Tags', tab.id, tab.AddLink(6, 1), false))
 	save.appendChild(NormalLinkElement('div', 'Pools', tab.id, tab.AddLink(7, 1), false))
 	save.appendChild(NormalLinkElement('div', 'Stats', tab.id, tab.AddLink(8), false))
@@ -201,7 +201,68 @@ function Rule34XXXPost(tabId, id) {
 	})
 }
 
-function Rule34XXXArtists(tabId, page) {}
+function Rule34XXXArtists(tabId, page = 1, search = null) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading(0, 1)
+	tab.submit_search = search
+	tab.AddHistory(5, [page, search])
+
+	r34xxx.Artists(page, search, (err, arr) => {
+		if (err) {
+			tab.Error(err)
+			return
+		}
+		const container = document.createElement('div')
+		container.classList.add('rule34-xxx-page')
+		container.appendChild(Rule34XXXMenu(tab))
+
+		let save = document.createElement('p'), save2, save3, save4
+		save.classList.add('rule34-xxx-title')
+		save.innerText = arr.title
+		container.appendChild(save)
+
+		save = document.createElement('form')
+		save.classList.add('rule34-xxx-search')
+		const form_id = 'ras-'+token
+		save.onsubmit = e => {
+			e.preventDefault()
+			Rule34XXXArtists(tabId, 1, document.getElementById(form_id).value || null)
+		}
+		save2 = document.createElement('input')
+		save2.type = 'text'
+		save2.id = form_id
+		save2.setAttribute('lp', 'search')
+		save2.placeholder = Language('search')
+		if (search != null) save2.value = search
+		save.appendChild(save2)
+		container.appendChild(save)
+
+		save = document.createElement('div')
+		save.classList.add('rule34-xxx-table')
+		save2 = document.createElement('div')
+		save2.innerHTML = '<div></div><div>Name</div><div>Updated By</div>'
+		save.appendChild(save2)
+		for (let i = 0, l = arr.list.length; i < l; i++) {
+			save2 = document.createElement('div')
+			save3 = document.createElement('div')
+			save2.appendChild(save3)
+			save3 = document.createElement('div')
+			if (arr.list[i][2]) save3.appendChild(NormalLinkElement('p', arr.list[i][0], tabId, tab.AddLink(4, [1, arr.list[i][0]])))
+			else save3.innerText = arr.list[i][0]
+			save2.appendChild(save3)
+			save3 = document.createElement('div')
+			save3.innerText = arr.list[i][1]
+			save2.appendChild(save3)
+			save.appendChild(save2)
+		}
+		container.appendChild(save)
+		for (let i = 0, l = arr.pagination.length; i < l; i++) arr.pagination[i][0] = [arr.pagination[i][0], search]
+		container.appendChild(Rule34XXXGetPagination(tab, arr, 5))
+
+		tab.Load(token, container, arr.title, 'var(--r34x-primary-bg)', page, arr.maxPages)
+	})
+}
+
 function Rule34XXXTags(tabId, page) {}
 function Rule34XXXPools(tabId, page) {}
 function Rule34XXXStats(tabId) {}

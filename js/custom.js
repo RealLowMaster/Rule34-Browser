@@ -381,7 +381,7 @@ class BrowserManager {
 				Rule34XXXHome(tabId, value[0], value[1])
 				return
 			case 5:
-				Rule34XXXArtists(tabId, value)
+				Rule34XXXArtists(tabId, value[0], value[1])
 				return
 			case 6:
 				Rule34XXXTags(tabId, value)
@@ -631,6 +631,7 @@ mb_jump_page.onsubmit = e => {
 		case 0:
 			switch(tab.jumpPage) {
 				case 0: Rule34XXXHome(tab.id, value, tab.submit_search); return
+				case 1: Rule34XXXArtists(tab.id, value, tab.submit_search); return
 			}
 			return
 		case 1:

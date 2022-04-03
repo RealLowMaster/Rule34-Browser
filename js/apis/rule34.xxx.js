@@ -67,6 +67,44 @@ class rule34xxx {
 		return arr
 	}
 
+	#GetPagination(html, perPage = 42) {
+		let save
+		try {
+			save = html.getElementById('paginator').children[0]
+			if (save.classList.contains('pagination')) {
+				save = save.children
+				if (save.length < 2) save = null
+			} else save = null
+		} catch(err) {
+			console.error(err)
+			save = null
+		}
+
+		const arr = [0, []]
+		if (save != null) {
+			for (let i = 0, l = save.length; i < l; i++) {
+				if (save[i].tagName == 'A') arr[1].push([Number(LastChar('=', save[i].href)) / perPage + 1, save[i].innerText])
+				else if (save[i].tagName == 'B') arr[1].push([null, save[i].innerText])
+			}
+			for (let i = save.length - 1; i >= 0; i--) {
+				if (save[i].tagName == 'B') {
+					arr[0] = Number(save[i].innerHTML)
+					break
+				}
+				if (save[i].tagName == 'A') {
+					let num = Number(LastChar('=', save[i].href))
+					if (isNaN(num)) arr[0] = 1
+					else {
+						num = num / perPage + 1
+						arr[0] = num > this.maxPage ? this.maxPage : num
+					}
+					break
+				}
+			}
+		} else arr[0] = 1
+		return arr
+	}
+
 	Page(page, search, callback) {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		page--
@@ -107,36 +145,9 @@ class rule34xxx {
 			} else throw "No Post was Found"
 
 			// Pagination
-			try {
-				save = html.getElementById('paginator').children[0]
-				if (save.classList.contains('pagination')) {
-					save = save.children
-					if (save.length < 2) save = null
-				} else save = null
-			} catch(err) {
-				console.error(err)
-				save = null
-			}
-
-			arr.maxPages = null
-			if (save != null) {
-				arr.pagination = []
-				
-				for (let i = 0, l = save.length; i < l; i++) {
-					if (save[i].tagName == 'A') arr.pagination.push([Number(LastChar('=', save[i].href)) / 42 + 1, save[i].innerText])
-					else if (save[i].tagName == 'B') arr.pagination.push([null, save[i].innerText])
-				}
-				save = save[save.length - 3]
-				if (save.tagName == 'B') arr.maxPages = Number(save.innerHTML)
-				else if (save.tagName == 'A') {
-					let num = Number(LastChar('=', save.href))
-					if (isNaN(num)) arr.maxPages = null
-					else {
-						num = num / 42 + 1
-						arr.maxPages = num > this.maxPage ? this.maxPage : num
-					}
-				}
-			} else arr.maxPages = 1
+			save = this.#GetPagination(html)
+			arr.maxPages = save[0]
+			arr.pagination = save[1]
 
 			// Tags
 			try {
@@ -203,12 +214,6 @@ class rule34xxx {
 				arr.thumb = this.baseURL+'thumbnails/'+LastChar('/', LastChar('/', arr.srcresize.replace(/\/\//g, '/'), true))+'/thumbnail_'+LastChar('.', LastChar('/', arr.srcresize).replace(/sample_/g, ''), true)+'.jpg?'+id
 			} catch(err) { console.error(err) }
 
-			// false thumb = https://rule34.xxx/thumbnails/5163/thumbnail_sample_a1b402c7e6ab4df3b52812877630a3c7.jpg?5884378
-
-			// thumb       = https://rule34.xxx/thumbnails/5163/thumbnail_a1b402c7e6ab4df3b52812877630a3c7.jpg?5884378
-
-			// srcresuze   = https://rule34.xxx//samples/5163/sample_a1b402c7e6ab4df3b52812877630a3c7.jpg?5884378
-
 			// Tags
 			try {
 				save = html.getElementById('tag-sidebar').children
@@ -218,6 +223,59 @@ class rule34xxx {
 				save = null
 			}
 			if (save != null) arr = this.#GetTags(save, arr)
+			
+			callback(null, arr)
+		}).catch(err => {
+			console.error(err)
+			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			callback(err, null)
+		})
+	}
+
+	Artists(page, search, callback) {
+		if (typeof callback !== 'function') throw "Callback should be Function."
+		page--
+		const url = this.baseURL+'index.php?page=artist&s=list&search='+(search == null ? '' : this.#ToURL(search))+'&pid='+(page * 25)
+
+		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
+		fetch(url).then(response => {
+			if (response.status != 200) {
+				const i = status.indexOf(response.status)
+				if (i > -1) throw statusMsg[i]
+				else throw "Error::Code::"+response.status
+			}
+			return response.text()
+		}).then(htm => {
+			const html = new DOMParser().parseFromString(htm, 'text/html')
+			let arr = {}, save
+			arr.title = 'Artists > '+(search == null ? '' : search+' > ')+'Page '+(page + 1)
+
+			// List
+			try {
+				save = html.getElementsByClassName('highlightable')[0] || null
+				save = save.children[0].children
+				if (save.length == 0) save = null
+			} catch(err) {
+				console.error(err)
+				save = null
+			}
+			if (save != null) {
+				arr.list = []
+				let save2
+				for (let i = 1, l = save.length; i < l; i++) {
+					save2 = save[i].children
+					arr.list.push([
+						save2[1].children[0].innerText,
+						save2[2].innerText,
+						save2[0].children[0].innerText.replace(/ /g, '') != 'P' ? false : true
+					])
+				}
+			} else arr.list = null
+
+			// Pagination
+			save = this.#GetPagination(html, 25)
+			arr.maxPages = save[0]
+			arr.pagination = save[1]
 			
 			callback(null, arr)
 		}).catch(err => {
