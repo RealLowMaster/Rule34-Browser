@@ -331,6 +331,7 @@
 	width: 100%;
 	margin: 0 0 20px 0;
 	text-align: center;
+	color: #fff;
 }
 
 .main-page-posts > div {
@@ -347,6 +348,41 @@
 	display: block;
 	width: 225px;
 	height: 225px;
+}
+
+.main-page-posts > div > span {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+}
+
+.main-page-posts > div > p {
+	position: absolute;
+	bottom: 5px;
+	left: 5px;
+}
+
+.main-page-pagination {
+	display: block;
+	width: 100%;
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+.main-page-pagination > div {
+	display: inline-block;
+	min-width: 34px;
+	padding: 7px 10px;
+	margin: 0 4px;
+	background-color: var(--text-brand);
+	color: #fff;
+	border-radius: 50px;
+	user-select: none;
+	cursor: pointer;
+}
+
+.main-page-pagination > div:hover {
+
 }
 
 .alert {

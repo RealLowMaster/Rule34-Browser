@@ -609,6 +609,10 @@ mb_jump_page.onsubmit = e => {
 	let value = Math.min(Math.abs(Number(mbjp.value)), tab.maxPages)
 	if (value < 1) value = 1
 	switch(tab.site) {
+		case -1:
+			switch(tab.jumpPage) {
+				case 0: LoadPage(tab.id, value); return
+			}
 		case 0:
 			switch(tab.jumpPage) {
 				case 0: Rule34XXXHome(tab.id, value, tab.submit_search); return
@@ -866,7 +870,6 @@ function BRPostDL(site, id) {
 
 function BRLink(tabId, link, site, id) {
 	const e = window.event, key = e.which
-	e.preventDefault()
 	if (key == 1) browser.LinkClick(tabId, link)
 	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
 	else {
@@ -960,6 +963,21 @@ function IsFormatSupported(src) {
 	return false
 }
 
+function IsFormatVideo(str) {
+	const supported_formats = [
+		'mp4',
+		'webm',
+		'avi',
+		'mpg',
+		'mpeg',
+		'ogg',
+		'ogv'
+	]
+
+	if (supported_formats.indexOf(str.toLowerCase()) >= 0) return true
+	return false
+}
+
 function DownloadClick(site, id) {
 	if (isNaN(id)) {
 		PopAlert(Language('link-crashed'), 'danger')
@@ -1022,7 +1040,6 @@ function DownloadClick(site, id) {
 
 function NormalLink(tabId, link, notNormal) {
 	const e = window.event, key = e.which
-	e.preventDefault()
 	if (key == 1) browser.LinkClick(tabId, link)
 	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
 	else {
@@ -1049,7 +1066,50 @@ function ChangeFilter(backward) {
 	browser.SetNeedReload(-1)
 }
 
-function GetPagination(total_pages, page) {
+function GetMainMenu(tab, page) {
+	const container = document.createElement('div')
+	container.classList.add('main-page-menu')
+
+	if (page != 0) container.appendChild(NormalLinkElement('div', 'home', tab.id, tab.AddLink(0), false, true))
+	if (page != 1) container.appendChild(NormalLinkElement('div', 'sites', tab.id, tab.AddLink(1), false, true))
+	if (page != 2) container.appendChild(NormalLinkElement('div', 'collections', tab.id, tab.AddLink(2), false, true))
+
+	return container
+}
+
+function PostLink(tabId, link, site, id) {
+	const e = window.event, key = e.which
+	if (key == 1) browser.LinkClick(tabId, link)
+	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
+	else {
+		ContextManager.save = [tabId, link, site, id]
+		ContextManager.ShowMenu('posts')
+	}
+}
+
+function GetPostElement(tab, i, date = 0) {
+	const container = document.createElement('div')
+	container.onmousedown = () => PostLink(tab.id, tab.AddLink(10, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1])
+	let save = document.createElement('img')
+	const src = paths.thumb+db.post[i][2]+'.jpg'
+	if (existsSync(src)) save.src = src+'?'+date
+	else save.src = 'Image/no-img-225x225.webp'
+	container.appendChild(save)
+
+	if (db.post[i][3] == 'gif') {
+		save = document.createElement('p')
+		save.innerHTML = Icon('gif-format')
+		container.appendChild(save)
+	} else if (IsFormatVideo(db.post[i][3])) {
+		save = document.createElement('span')
+		save.innerHTML = Icon('play')
+		container.appendChild(save)
+	}
+
+	return container
+}
+
+function GetPaginationList(total_pages, page) {
 	let min = 1, max = 1, bdot = false, fdot = false, bfirst = false, ffirst = false, pagination_width = 5
 	if (total_pages > pagination_width - 1) {
 		if (page == 1) {
@@ -1094,42 +1154,27 @@ function GetPagination(total_pages, page) {
 	return arr
 }
 
-function GetMainMenu(tab, page) {
+function GetPagination(tab, link, total_pages, page) {
+	const pagination = GetPaginationList(total_pages, page)
 	const container = document.createElement('div')
-	container.classList.add('main-page-menu')
+	container.classList.add('main-page-pagination')
 
-	if (page != 0) container.appendChild(NormalLinkElement('div', 'home', tab.id, tab.AddLink(0), false, true))
-	if (page != 1) container.appendChild(NormalLinkElement('div', 'sites', tab.id, tab.AddLink(1), false, true))
-	if (page != 2) container.appendChild(NormalLinkElement('div', 'collections', tab.id, tab.AddLink(2), false, true))
-
-	return container
-}
-
-function PostLink(tabId, link, site, id) {
-	const e = window.event, key = e.which
-	e.preventDefault()
-	if (key == 1) browser.LinkClick(tabId, link)
-	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
-	else {
-		ContextManager.save = [tabId, link, site, id]
-		ContextManager.ShowMenu('posts')
+	for (let i = 0, l = pagination.length; i < l; i++) {
+		if (pagination[i][1] != null) container.appendChild(NormalLinkElement('div', pagination[i][0], tab.id, tab.AddLink(link, pagination[i][1])))
+		else {
+			const btn = document.createElement('div')
+			btn.setAttribute('active', '')
+			btn.innerText = pagination[i][0]
+			container.appendChild(btn)
+		}
 	}
-}
 
-function GetPostElement(tab, i, date = 0) {
-	const container = document.createElement('div')
-	container.onmousedown = () => PostLink(tab.id, tab.AddLink(10, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1])
-	const img = document.createElement('img')
-	const src = paths.thumb+db.post[i][2]+'.jpg'
-	if (existsSync(src)) img.src = src+'?'+date
-	else img.src = 'Image/no-img-225x225.webp'
-	container.appendChild(img)
 	return container
 }
 
 function LoadPage(tabId, page = 1) {
 	const tab = browser.GetTab(tabId)
-	const token = tab.Loading()
+	const token = tab.Loading(-1, 0)
 	tab.AddHistory(0, page)
 	const container = document.createElement('div')
 	container.classList.add('main-page')
@@ -1178,9 +1223,8 @@ function LoadPage(tabId, page = 1) {
 			}
 			for (let i = min; i < max; i++) save.appendChild(GetPostElement(tab, i, date))
 		}
-
-		const pagination = GetPagination(total_pages, page)
 		container.appendChild(save)
+		container.appendChild(GetPagination(tab, 0, total_pages, page))
 	} else {
 		page = 1
 		save = document.createElement('div')
@@ -1191,7 +1235,7 @@ function LoadPage(tabId, page = 1) {
 		container.appendChild(save)
 	}
 
-	tab.Load(token, container, 'Page '+page)
+	tab.Load(token, container, 'Page '+page, null, page, total_pages)
 }
 
 function Post(tabId, site, id) {}
