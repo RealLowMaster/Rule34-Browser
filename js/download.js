@@ -268,7 +268,7 @@ class DownloadManager {
 			})
 			vid.on('end', () => {
 				try { renameSync(path, save_path) } catch(err) { console.error(err) }
-				sharp(paths.tmp+name+'.png').resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+name+'.jpg').then(() => {
+				sharp(paths.tmp+name+'.png').resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+name+'.jpg').then(() => {
 					try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
 					try { this.dls[i].span.innerText = FormatBytes(statSync(save_path).size) } catch(err) {
 						this.dls[i].span.setAttribute('l', 'finish')
@@ -304,7 +304,7 @@ class DownloadManager {
 						try { unlinkSync(path) } catch(err) {}
 						this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)+' To '+FormatBytes(opt_size)
 					}
-					sharp(save_path).resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
+					sharp(save_path).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
 						console.error(err)
 						this.SendToAddPost(index)
 					})
@@ -332,7 +332,7 @@ class DownloadManager {
 						this.dls[i].format = 'webp'
 						this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)+' To '+FormatBytes(opt_size)
 					}
-					sharp(save_path+this.dls[i].format).resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
+					sharp(save_path+this.dls[i].format).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
 						console.error(err)
 						this.SendToAddPost(index)
 					})
@@ -360,7 +360,7 @@ class DownloadManager {
 						try { unlinkSync(path) } catch(err) {}
 						this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)+' To '+FormatBytes(opt_size)
 					}
-					sharp(save_path).resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
+					sharp(save_path).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
 						console.error(err)
 						this.SendToAddPost(index)
 					})
@@ -388,7 +388,7 @@ class DownloadManager {
 						this.dls[i].format = 'webp'
 						this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)+' To '+FormatBytes(opt_size)
 					}
-					sharp(save_path+this.dls[i].format).resize(200, 200).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
+					sharp(save_path+this.dls[i].format).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+this.dls[i].save+'.jpg').then(() => this.SendToAddPost(index)).catch(err => {
 						console.error(err)
 						this.SendToAddPost(index)
 					})

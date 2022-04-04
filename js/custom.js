@@ -215,7 +215,7 @@ class Tab {
 	}
 
 	Error(err) {
-		this.Change('Image/alert-24x24.png', 'Error')
+		this.Change('Image/alert-24x24.webp', 'Error')
 		let save = document.createElement('div')
 		save.classList.add('alert')
 		save.classList.add('alert-danger')
@@ -235,7 +235,7 @@ class BrowserManager {
 		this.selectedTab = null
 		this.selectedTabIndex = null
 		this.copied = null;
-		this.backward = false
+		this.backward = true
 		this.timeout = null
 		window.addEventListener('resize', () => this.ResizeTabs())
 		mb_pages.onscroll = () => this.SetTabScroll()
@@ -375,6 +375,7 @@ class BrowserManager {
 			case 7: Rule34XXXPools(tabId, value); return
 			case 8: Rule34XXXPost(tabId, value); return
 			case 9: Rule34XXXPool(tabId, value); return
+			case 10: Post(tabId, value[0], value[1]); return
 		}
 	}
 
@@ -454,37 +455,37 @@ class BrowserManager {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) {
-					elements[i].removeAttribute('dli')
-					if (elements[i].tagName == 'DL') {
-						elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
-						elements[i].setAttribute('l', 'dl')
-						elements[i].title = ''
-						elements[i].innerText = Language('dl')
+					elements[j].removeAttribute('dli')
+					if (elements[j].tagName == 'DL') {
+						elements[j].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+						elements[j].setAttribute('l', 'dl')
+						elements[j].title = ''
+						elements[j].innerText = Language('dl')
 					} else {
-						elements[i].innerHTML = null
+						elements[j].innerHTML = null
 						let save = document.createElement('div')
 						save.onclick = () => DownloadClick(site, id)
 						save.setAttribute('l', 'dl')
 						save.innerText = Language('dl')
-						elements[i].appendChild(save)
+						elements[j].appendChild(save)
 						save = document.createElement('div')
 						save.onclick = () => AddToHave(site, id)
 						save.setAttribute('l', 'add-to-dls')
 						save.innerText = Language('add-to-dls')
-						elements[i].appendChild(save)
+						elements[j].appendChild(save)
 					}
 				}
 			}
 		} else {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
-				for (let j = 0, n = elements.length; j < n; j++) if (elements[i].tagName == 'DL') {
-					elements[i].removeAttribute('onclick')
-					elements[i].removeAttribute('l')
-					elements[i].setAttribute('dli','')
-					elements[i].title = ''
-					elements[i].innerHTML = `<img src="${loading_img.src}">`
-				} else elements[i].innerHTML = `<img src="${loading_img.src}"> Downloading...`
+				for (let j = 0, n = elements.length; j < n; j++) if (elements[j].tagName == 'DL') {
+					elements[j].removeAttribute('onclick')
+					elements[j].removeAttribute('l')
+					elements[j].setAttribute('dli','')
+					elements[j].title = ''
+					elements[j].innerHTML = `<img src="${loading_img.src}">`
+				} else elements[j].innerHTML = `<img src="${loading_img.src}"> Downloading...`
 			}
 		}
 	}
@@ -494,25 +495,25 @@ class BrowserManager {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) {
-					elements[i].removeAttribute('dli')
-					elements[i].removeAttribute('dl')
-					if (elements[i].tagName == 'DL') {
-						elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
-						elements[i].setAttribute('l', 'dl')
-						elements[i].title = ''
-						elements[i].innerText = Language('dl')
+					elements[j].removeAttribute('dli')
+					elements[j].removeAttribute('dl')
+					if (elements[j].tagName == 'DL') {
+						elements[j].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+						elements[j].setAttribute('l', 'dl')
+						elements[j].title = ''
+						elements[j].innerText = Language('dl')
 					} else {
-						elements[i].innerHTML = null
+						elements[j].innerHTML = null
 						let save = document.createElement('div')
 						save.onclick = () => DownloadClick(site, id)
 						save.setAttribute('l', 'dl')
 						save.innerText = Language('dl')
-						elements[i].appendChild(save)
+						elements[j].appendChild(save)
 						save = document.createElement('div')
 						save.onclick = () => AddToHave(site, id)
 						save.setAttribute('l', 'add-to-dls')
 						save.innerText = Language('add-to-dls')
-						elements[i].appendChild(save)
+						elements[j].appendChild(save)
 					}
 				}
 			}
@@ -520,19 +521,19 @@ class BrowserManager {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) {
-					elements[i].removeAttribute('dli')
-					elements[i].setAttribute('dl', '')
-					if (elements[i].tagName == 'DL') {
-						elements[i].removeAttribute('onclick')
-						elements[i].setAttribute('l', 'dled')
-						elements[i].title = ''
-						elements[i].innerText = Language('dled')
+					elements[j].removeAttribute('dli')
+					elements[j].setAttribute('dl', '')
+					if (elements[j].tagName == 'DL') {
+						elements[j].removeAttribute('onclick')
+						elements[j].setAttribute('l', 'dled')
+						elements[j].title = ''
+						elements[j].innerText = Language('dled')
 					} else {
-						elements[i].innerHTML = null
+						elements[j].innerHTML = null
 						const save = document.createElement('div')
 						save.setAttribute('l', 'dled')
 						save.innerText = Language('dled')
-						elements[i].appendChild(save)
+						elements[j].appendChild(save)
 					}
 				}
 			}
@@ -544,24 +545,24 @@ class BrowserManager {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) {
-					elements[i].removeAttribute('have')
-					if (elements[i].tagName == 'DL') {
-						elements[i].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
-						elements[i].setAttribute('l', 'dl')
-						elements[i].title = ''
-						elements[i].innerText = Language('dl')
+					elements[j].removeAttribute('have')
+					if (elements[j].tagName == 'DL') {
+						elements[j].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+						elements[j].setAttribute('l', 'dl')
+						elements[j].title = ''
+						elements[j].innerText = Language('dl')
 					} else {
-						elements[i].innerHTML = null
+						elements[j].innerHTML = null
 						let save = document.createElement('div')
 						save.onclick = () => DownloadClick(site, id)
 						save.setAttribute('l', 'dl')
 						save.innerText = Language('dl')
-						elements[i].appendChild(save)
+						elements[j].appendChild(save)
 						save = document.createElement('div')
 						save.onclick = () => AddToHave(site, id)
 						save.setAttribute('l', 'add-to-dls')
 						save.innerText = Language('add-to-dls')
-						elements[i].appendChild(save)
+						elements[j].appendChild(save)
 					}
 				}
 			}
@@ -569,20 +570,20 @@ class BrowserManager {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) {
-					elements[i].setAttribute('have','')
-					if (elements[i].tagName == 'DL') {
-						elements[i].setAttribute('onclick', `RemoveFromHave(${site}, ${id})`)
-						elements[i].setAttribute('l', 'idl')
-						elements[i].setAttribute('lt', 'remove-from-dls')
-						elements[i].title = Language('remove-from-dls')
-						elements[i].innerText = Language('idl')
+					elements[j].setAttribute('have','')
+					if (elements[j].tagName == 'DL') {
+						elements[j].setAttribute('onclick', `RemoveFromHave(${site}, ${id})`)
+						elements[j].setAttribute('l', 'idl')
+						elements[j].setAttribute('lt', 'remove-from-dls')
+						elements[j].title = Language('remove-from-dls')
+						elements[j].innerText = Language('idl')
 					} else {
-						elements[i].innerHTML = null
+						elements[j].innerHTML = null
 						const save = document.createElement('div')
 						save.onclick = () => RemoveFromHave(site, id)
 						save.setAttribute('l', 'remove-from-dls')
 						save.innerText = Language('remove-from-dls')
-						elements[i].appendChild(save)
+						elements[j].appendChild(save)
 					}
 				}
 			}
@@ -1104,6 +1105,28 @@ function GetMainMenu(tab, page) {
 	return container
 }
 
+function PostLink(tabId, link, site, id) {
+	const e = window.event, key = e.which
+	e.preventDefault()
+	if (key == 1) browser.LinkClick(tabId, link)
+	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
+	else {
+		ContextManager.save = [tabId, link, site, id]
+		ContextManager.ShowMenu('posts')
+	}
+}
+
+function GetPostElement(tab, i, date = 0) {
+	const container = document.createElement('div')
+	container.onmousedown = () => PostLink(tab.id, tab.AddLink(10, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1])
+	const img = document.createElement('img')
+	const src = paths.thumb+db.post[i][2]+'.jpg'
+	if (existsSync(src)) img.src = src+'?'+date
+	else img.src = 'Image/no-img-225x225.webp'
+	container.appendChild(img)
+	return container
+}
+
 function LoadPage(tabId, page = 1) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading()
@@ -1126,11 +1149,38 @@ function LoadPage(tabId, page = 1) {
 	save.appendChild(save2)
 	container.appendChild(save)
 
-	const total_pages = Math.ceil(db.post.length / setting.pic_per_page)
+	const post_cont = db.post.length
+	const date = new Date().getTime()
+	const total_pages = Math.ceil(post_cont / setting.pic_per_page)
 	if (page > total_pages) page = total_pages
 
 	if (total_pages > 0) {
+		save = document.createElement('div')
+		save.classList.add('main-page-posts')
 
+		let min = 0, max
+		if (browser.backward) {
+			if (post_cont < setting.pic_per_page) max = post_cont
+			else {
+				const use_page = page - 1
+				max = use_page * setting.pic_per_page
+				max = post_cont - max
+				min = max - setting.pic_per_page
+				if (min < 0) min = 0
+			}
+			for (let i = max - 1; i >= min; i--) save.appendChild(GetPostElement(tab, i, date))
+		} else {
+			if (post_cont < setting.pic_per_page) max = post_cont
+			else {
+				min = (setting.pic_per_page * page) - setting.pic_per_page
+				max = min + setting.pic_per_page
+				if (max > post_cont) max = post_cont
+			}
+			for (let i = min; i < max; i++) save.appendChild(GetPostElement(tab, i, date))
+		}
+
+		const pagination = GetPagination(total_pages, page)
+		container.appendChild(save)
 	} else {
 		page = 1
 		save = document.createElement('div')
@@ -1143,6 +1193,8 @@ function LoadPage(tabId, page = 1) {
 
 	tab.Load(token, container, 'Page '+page)
 }
+
+function Post(tabId, site, id) {}
 
 function LoadSites(tabId) {
 	const tab = browser.GetTab(tabId)

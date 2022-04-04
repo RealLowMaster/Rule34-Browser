@@ -267,9 +267,6 @@
 	min-height: 100%;
 }
 
-
-
-
 /* Main Page */
 .main-page {
 	width: 100%;
@@ -327,6 +324,29 @@
 	background-color: #0b93c9;
 	border-color: #0b93c9;
 	cursor: default;
+}
+
+.main-page-posts {
+	display: block;
+	width: 100%;
+	margin: 0 0 20px 0;
+	text-align: center;
+}
+
+.main-page-posts > div {
+	display: inline-block;
+	width: 225px;
+	height: 225px;
+	margin: 10px;
+	overflow: hidden;
+	position: relative;
+	cursor: pointer;
+}
+
+.main-page-posts > div > img {
+	display: block;
+	width: 225px;
+	height: 225px;
 }
 
 .alert {
