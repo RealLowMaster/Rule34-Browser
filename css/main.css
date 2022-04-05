@@ -135,6 +135,8 @@
 
 #mb-tabs > div[active] + div::before { display: none }
 
+.dragging { opacity: 0.5 }
+
 #main-browser > div:first-child > div:last-child {
 	display: flex;
 	justify-content: center;

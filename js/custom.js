@@ -5,6 +5,7 @@ sharp.cache(false)
 const loading_img = new Image()
 loading_img.src = 'Image/loading.gif'
 
+const mb_tabs = document.getElementById('mb-tabs')
 const mb_pages = document.getElementById('mb-pages')
 const mb_search = document.getElementById('mb-search')
 const mb_jump_page = document.getElementById('mb-jump-page')
@@ -82,6 +83,10 @@ class Tab {
 		this.links = []
 		this.linksValue = []
 		this.tab = document.createElement('div')
+		this.tab.draggable = true
+		this.tab.ondragstart = e => { browser.SetDragingTab(index); e.target.classList.add('dragging') }
+		this.tab.ondragend = e => { browser.draging = null; e.target.classList.remove('dragging') }
+		this.tab.setAttribute('ti', index)
 		this.tab.onclick = () => browser.ActivateTab(index)
 		this.tab.oncontextmenu = () => ContextManager.ShowMenu('tab', index)
 		this.icon = document.createElement('img')
@@ -93,7 +98,7 @@ class Tab {
 		save.innerText = '⨯'
 		save.onclick = () => browser.CloseTab(index)
 		this.tab.appendChild(save)
-		document.getElementById('mb-tabs').appendChild(this.tab)
+		mb_tabs.appendChild(this.tab)
 		this.page = document.createElement('div')
 		mb_pages.appendChild(this.page)
 	}
@@ -229,6 +234,19 @@ class Tab {
 	}
 }
 
+function GetDragAfterElement(container, x) {
+	const draggableElemnets = [...container.querySelectorAll('[draggable]:not(.dragging)')]
+	return draggableElemnets.reduce((closest, child) => {
+		const box = child.getBoundingClientRect()
+		const offset = x - box.left - box.width / 2
+		if (offset < 0 && offset > closest.offset) {
+			return { offset: offset, element: child }
+		} else {
+			return closest
+		}
+	}, { offset: Number.NEGATIVE_INFINITY }).element
+}
+
 class BrowserManager {
 	constructor() {
 		this.tabs = []
@@ -237,8 +255,35 @@ class BrowserManager {
 		this.copied = null;
 		this.backward = true
 		this.timeout = null
+		this.draging = null
 		window.addEventListener('resize', () => this.ResizeTabs())
 		mb_pages.onscroll = () => this.SetTabScroll()
+		mb_tabs.addEventListener('dragover', e => {
+			e.preventDefault()
+			const afterElement = GetDragAfterElement(mb_tabs, e.clientX)
+			const draggable = document.querySelector('.dragging')
+			if (this.draging == null) return
+			const tab = this.tabs[this.draging]
+			if (afterElement == null) {
+				mb_tabs.append(draggable)
+				this.tabs.splice(this.draging, 1)
+				this.tabs.push(tab)
+			} else {
+				mb_tabs.insertBefore(draggable, afterElement)
+				const afterTabIndex = this.GetTabIndex(Number(afterElement.getAttribute('ti')))
+				this.tabs.splice(this.draging, 1)
+				this.tabs.splice(afterTabIndex, 0, tab)
+			}
+		})
+	}
+
+	SetDragingTab(index) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) this.draging = i
+	}
+
+	GetTabIndex(id) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == id) return i
+		return null
 	}
 
 	SetTabScroll() {
@@ -408,7 +453,6 @@ class BrowserManager {
 	ResizeTabs() {
 		const count = this.tabs.length
 		if (count == 0) return
-		const mb_tabs = document.getElementById('mb-tabs')
 
 		if (mb_tabs.clientWidth < (232 * count)) {
 			const size = mb_tabs.clientWidth / count
@@ -1279,3 +1323,9 @@ function LoadCollections(tabId) {}
 function OpenHistory() {}
 
 function OpenBookmarks() {}
+
+function test() {
+	for (let i = 0, l = browser.tabs.length; i < l; i++) {
+		console.log(browser.tabs[i].tab)
+	}
+}
