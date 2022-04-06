@@ -348,7 +348,7 @@
 	position: relative;
 	cursor: pointer;
 	box-shadow: 1px 1px 3px 0 #0008;
-	transition: background-color ease-in-out .2s;
+	transition: background-color ease-in-out .19s;
 }
 
 .main-page-posts > div:hover { background-color: var(--text-brand) }
@@ -589,4 +589,35 @@
 	margin: 10px 0;
 	background-color: var(--secondary-bg-alt);
 	border-radius: 4px;
+}
+
+/* Post */
+.post-img {
+	display: block;
+	max-width: 95%;
+	height: auto;
+	margin: 20px auto;
+	cursor: zoom-in;
+}
+
+.post-tags {
+	display: block;
+	width: 95%;
+	margin: 5px auto;
+	color: var(--primary-header);
+}
+
+.post-tags > div {
+	display: inline-block;
+	padding: 6px 9px;
+	margin: 3px;
+	background-color: var(--secondary-bg-alt);
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color ease-in .2s;
+}
+
+.post-tags > div:hover {
+	color: #fff;
+	background-color: var(--text-brand);
 }

@@ -421,6 +421,7 @@ class BrowserManager {
 			case 8: Rule34XXXPost(tabId, value); return
 			case 9: Rule34XXXPool(tabId, value); return
 			case 10: Post(tabId, value[0], value[1]); return
+			case 11: return
 		}
 	}
 
@@ -1342,7 +1343,110 @@ function LoadPage(tabId, page = 1) {
 	tab.Load(token, container, 'Page '+page, null, page, total_pages)
 }
 
-function Post(tabId, site, id) {}
+function Post(tabId, site, id) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading()
+	tab.AddHistory(10, [site, id])
+	const container = document.createElement('div')
+	container.classList.add('main-page')
+
+	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
+
+		let save, save2
+		const url = paths.dl+db.post[i][2]+'.'+db.post[i][3]
+		if (existsSync(url)) {
+			if (IsFormatVideo(db.post[i][3])) {
+				save = document.createElement('video')
+				save.classList.add('post-img')
+				save.loop = true
+				save.muted = false
+				save.autoplay = false
+				save.controls = true
+				save.setAttribute('controlsList', 'nodownload')
+				save.src = url
+				container.appendChild(save)
+			} else {
+				save = document.createElement('img')
+				save.classList.add('post-img')
+				save.src = url
+				container.appendChild(save)
+			}
+		} else {
+			save = document.createElement('img')
+			save.classList.add('post-img')
+			save.src = 'Image/no-img-225x225.webp'
+			container.appendChild(save)
+		}
+		
+		let title = ''
+		// parody
+		if (db.post[i][4] != null) {
+			save = document.createElement('div')
+			save.classList.add('post-tags')
+			save.innerText = 'Parody:'
+			for (let j = 0, n = db.post[i][4].length; j < n; j++) {
+				title += db.parody[db.post[i][4][j]]+', '
+				save.appendChild(NormalLinkElement('div', db.parody[db.post[i][4][j]], tabId, tab.AddLink(11, [])))
+			}
+			container.appendChild(save)
+		}
+
+		// character
+		if (db.post[i][5] != null) {
+			save = document.createElement('div')
+			save.classList.add('post-tags')
+			save.innerText = 'Character:'
+			for (let j = 0, n = db.post[i][5].length; j < n; j++) {
+				title += db.character[db.post[i][5][j]]+', '
+				save.appendChild(NormalLinkElement('div', db.character[db.post[i][5][j]], tabId, tab.AddLink(11, [])))
+			}
+			container.appendChild(save)
+		}
+
+		// artist
+		if (db.post[i][6] != null) {
+			save = document.createElement('div')
+			save.classList.add('post-tags')
+			save.innerText = 'Artists:'
+			for (let j = 0, n = db.post[i][6].length; j < n; j++) {
+				title += db.artist[db.post[i][6][j]]+', '
+				save.appendChild(NormalLinkElement('div', db.artist[db.post[i][6][j]], tabId, tab.AddLink(11, [])))
+			}
+			container.appendChild(save)
+		}
+
+		// tag
+		if (db.post[i][7] != null) {
+			save = document.createElement('div')
+			save.classList.add('post-tags')
+			save.innerText = 'Tag:'
+			for (let j = 0, n = db.post[i][7].length; j < n; j++) {
+				title += db.tag[db.post[i][7][j]]+', '
+				save.appendChild(NormalLinkElement('div', db.tag[db.post[i][7][j]], tabId, tab.AddLink(11, [])))
+			}
+			container.appendChild(save)
+		}
+
+		// meta
+		if (db.post[i][8] != null) {
+			save = document.createElement('div')
+			save.classList.add('post-tags')
+			save.innerText = 'Meta:'
+			for (let j = 0, n = db.post[i][8].length; j < n; j++) {
+				title += db.meta[db.post[i][8][j]]+', '
+				save.appendChild(NormalLinkElement('div', db.meta[db.post[i][8][j]], tabId, tab.AddLink(11, [])))
+			}
+			container.appendChild(save)
+		}
+
+		container.appendChild(document.createElement('br'))
+		container.appendChild(document.createElement('br'))
+		
+		tab.Load(token, container, title)
+		return
+	}
+	tab.Error(Language('pnf'))
+}
 
 function LoadSites(tabId) {
 	const tab = browser.GetTab(tabId)
@@ -1383,9 +1487,3 @@ function LoadCollections(tabId) {}
 function OpenHistory() {}
 
 function OpenBookmarks() {}
-
-function test() {
-	for (let i = 0, l = browser.tabs.length; i < l; i++) {
-		console.log(browser.tabs[i].tab)
-	}
-}
