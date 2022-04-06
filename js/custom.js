@@ -1216,6 +1216,66 @@ function GetPagination(tab, link, total_pages, page) {
 	return container
 }
 
+function OpenPostProperties(site, id) {
+	KeyManager.stop = true
+	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
+		const container = document.getElementById('post-properties')
+		const panel = container.children[0], url = paths.dl+db.post[i][2]+'.'+db.post[i][3]
+		panel.innerHTML = null
+		let size = 0, save
+		try { size = statSync(url).size } catch(err) { size = 0 }
+		
+		save = document.createElement('p')
+		save.innerText = FormatBytes(size)
+		panel.appendChild(save)
+
+		save = document.createElement('p')
+		save.innerText = db.post[i][3].toUpperCase()
+		panel.appendChild(save)
+
+		if (existsSync(url)) {
+			const res = document.createElement('p')
+			if (IsFormatVideo(db.post[i][3])) {
+				const vid = document.createElement('video')
+				vid.onloadedmetadata = () => {
+					res.innerText = vid.videoWidth+'x'+vid.videoHeight
+				}
+				vid.src = url
+			} else {
+				const img = new Image()
+				img.onload = () => {
+					res.innerText = img.naturalWidth+'x'+img.naturalHeight
+				}
+				img.src = url
+			}
+			panel.appendChild(res)
+		}
+
+		save = document.createElement('div')
+		save.classList.add('btn')
+		save.classList.add('btn-primary')
+		save.innerText = Language('openfile')
+		save.onclick = () => downloader.OpenURL(url)
+		panel.appendChild(save)
+
+		save = document.createElement('div')
+		save.classList.add('btn')
+		save.classList.add('btn-danger')
+		save.innerText = Language('close')
+		save.onclick = () => {
+			container.style.display = 'none'
+			panel.innerHTML = null
+			KeyManager.stop = false
+		}
+		panel.appendChild(save)
+
+
+
+		container.style.display = 'flex'
+		return
+	}
+}
+
 function LoadPage(tabId, page = 1) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading(-1, 0)

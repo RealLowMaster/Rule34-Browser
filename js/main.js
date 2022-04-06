@@ -23,9 +23,7 @@ function MaximizeApp() {
 	else ThisWindow.maximize()
 }
 
-function MinimizeApp() {
-	ThisWindow.minimize()
-}
+function MinimizeApp() { ThisWindow.minimize() }
 
 function AskForQuitApp() {
 	KeyManager.ChangeCategory(null)
@@ -197,5 +195,5 @@ function SetContextMenus() {
 	ContextManager.AddItem(i, { text:'redownload', click: () => ReDownloadPost(ContextManager.save[2], ContextManager.save[3]) })
 	ContextManager.AddItem(i, { text:'rethumb', click: () => {} })
 	ContextManager.AddItem(i, { text:'delete', click: () => ConfirmDeletingPost(ContextManager.save[2], ContextManager.save[3]) })
-	ContextManager.AddItem(i, { text:'properties', click: () => {} })
+	ContextManager.AddItem(i, { text:'properties', click: () => OpenPostProperties(ContextManager.save[2], ContextManager.save[3]) })
 }

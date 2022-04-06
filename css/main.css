@@ -567,3 +567,26 @@
 }
 
 #dl-container > div > div:last-child > div:last-child > div { margin: 5px }
+
+/* Properties */
+#post-properties {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	background-color: var(--modifier-selected-bg);
+	color: var(--primary-header);
+}
+
+#post-properties > div {
+	width: 500px;
+	padding: 10px;
+	background-color: var(--secondary-bg);
+}
+
+#post-properties > div > p {
+	width: 100%;
+	padding: 10px;
+	margin: 10px 0;
+	background-color: var(--secondary-bg-alt);
+	border-radius: 4px;
+}

@@ -475,7 +475,7 @@ class DownloadManager {
 		switch(format) {
 			case 'jpg':
 				save_path += 'jpg'
-				if (!dl) db.post[i][3] = 'jpg'
+				if (!dl) db.post[index][3] = 'jpg'
 				sharp(path).jpeg({ mozjpeg: true }).toFile(save_path).then(() => {
 					if (dl) {
 						i = this.ids.indexOf(index)
@@ -662,7 +662,7 @@ class DownloadManager {
 		})
 
 		dl.OnComplete(filename => {
-			this.Optimize(filename, paths.db+db.post[i][2]+'.', i, db.post[i][2], false)
+			this.Optimize(filename, paths.dl+db.post[i][2]+'.', i, db.post[i][2], false)
 		})
 
 		dl.OnResponse(resp => {
