@@ -45,7 +45,7 @@ function Confirm(txt, buttons) {
 		save.innerText = text
 		if (typeof buttons[i].click === 'string') save.setAttribute('onclick', buttons[i].click+';this.parentElement.parentElement.remove();KeyManager.stop=false')
 		else if (typeof buttons[i].click === 'function') {
-			save.addEventListener('click', buttons[i].click)
+			save.addEventListener('click', () => { buttons[i].click() })
 			save.setAttribute('onclick', 'this.parentElement.parentElement.remove();KeyManager.stop=false')
 		} else save.setAttribute('onclick', 'this.parentElement.parentElement.remove();KeyManager.stop=false')
 		container.appendChild(save)

@@ -197,10 +197,12 @@ class Loading {
 	}
 
 	Change(index, txt) {
-		if (index < 0) index = 0
-		if (index > this.#max) index = this.#max
-		this.#percent = index
-		this.#slider.style.width = (index * this.#times)+'%'
+		if (index != null) {
+			if (index < 0) index = 0
+			if (index > this.#max) index = this.#max
+			this.#percent = index
+			this.#slider.style.width = (index * this.#times)+'%'
+		}
 		if (txt != null) this.#text.innerText = txt
 	}
 }

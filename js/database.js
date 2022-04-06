@@ -295,6 +295,17 @@ function AddPost(site, id, imgId, format, data) {
 	try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
 }
 
+function ConfirmDeletingPost(site, id) {
+	Confirm(Language('are-ysadp'), [
+		{
+			text: Language('delete'),
+			class: 'btn btn-danger',
+			click: 'DeletePost('+site+','+id+')'
+		},
+		{text: Language('cancel')}
+	])
+}
+
 function DeletePost(site, id) {
 	KeyManager.stop = true
 	loading.Show(1, 'Deleting...')
@@ -306,6 +317,7 @@ function DeletePost(site, id) {
 		if (haveIndex >= 0) db.have[site].splice(haveIndex, 1)
 		try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
 		try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
+		browser.ChangeButtonsToDownloaded(site, id, true)
 		KeyManager.stop = false
 		PopAlert(Language('pd'))
 		loading.Forward()
@@ -317,4 +329,29 @@ function DeletePost(site, id) {
 	PopAlert(Language('pnf'), 'danger')
 	loading.Forward()
 	loading.Close()
+}
+
+function ReDownloadPost(site, id) {
+	KeyManager.stop = true
+	loading.Show(4, 'Finding Post...')
+	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
+		try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
+		try { unlinkSync(paths.dl+db.post[i][2]+'.'+db.post[i][3]) } catch(err) {}
+
+		loading.Forward('Connecting To Page...')
+		switch(site) {
+			case 0: r34xxx.Post(id, (err, arr) => {
+				if (err) {
+					loading.Close()
+					KeyManager.stop = false
+					return
+				}
+				downloader.ReDownload(arr.src, i)
+			}); return
+		}
+	}
+	loading.Forward()
+	loading.Close()
+	KeyManager.stop = false
+	PopAlert(Language('pnf'), 'danger')
 }
