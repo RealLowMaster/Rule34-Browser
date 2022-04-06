@@ -338,18 +338,26 @@
 
 .main-page-posts > div {
 	display: inline-block;
-	width: 225px;
-	height: 225px;
+	width: 235px;
+	height: 235px;
+	padding: 4px;
 	margin: 10px;
+	background-color: var(--secondary-bg-alt);
+	border-radius: 5px;
 	overflow: hidden;
 	position: relative;
 	cursor: pointer;
+	box-shadow: 1px 1px 3px 0 #0008;
+	transition: background-color ease-in-out .2s;
 }
+
+.main-page-posts > div:hover { background-color: var(--text-brand) }
 
 .main-page-posts > div > img {
 	display: block;
 	width: 225px;
 	height: 225px;
+	border-radius: 4px;
 }
 
 .main-page-posts > div > span {
@@ -376,16 +384,23 @@
 	min-width: 34px;
 	padding: 7px 10px;
 	margin: 0 4px;
-	background-color: var(--text-brand);
-	color: #fff;
+	background-color: transparent;
+	color: var(--primary-header);
 	border-radius: 50px;
 	user-select: none;
 	cursor: pointer;
+	transition: background-color ease-in .2s, box-shadow .2s, transform .2s, color .2s;
+	box-shadow: 0 1px 1px 0 #000f;
 }
 
 .main-page-pagination > div:hover {
-
+	background-color: var(--text-brand);
+	color: #fff;
+	box-shadow: 0 5px 5px 0 #000f;
+	transform: translateY(-2px);
 }
+
+.main-page-pagination > div[active] { background-color: var(--text-brand); color: #fff; cursor: default }
 
 .alert {
 	display: block;
