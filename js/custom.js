@@ -84,7 +84,7 @@ class Tab {
 		this.linksValue = []
 		this.tab = document.createElement('div')
 		this.tab.draggable = true
-		this.tab.ondragstart = e => { browser.SetDragingTab(index); e.target.classList.add('dragging') }
+		this.tab.ondragstart = e => { browser.draging = index; e.target.classList.add('dragging') }
 		this.tab.ondragend = e => { browser.draging = null; e.target.classList.remove('dragging') }
 		this.tab.setAttribute('ti', index)
 		this.tab.onclick = () => browser.ActivateTab(index)
@@ -234,16 +234,13 @@ class Tab {
 	}
 }
 
-function GetDragAfterElement(container, x) {
-	const draggableElemnets = [...container.querySelectorAll('[draggable]:not(.dragging)')]
-	return draggableElemnets.reduce((closest, child) => {
+function GetDragAfterElement(x) {
+	let list = [...mb_tabs.querySelectorAll('[ti]:not(.dragging)')]
+	return list.reduce((closest, child) => {
 		const box = child.getBoundingClientRect()
 		const offset = x - box.left - box.width / 2
-		if (offset < 0 && offset > closest.offset) {
-			return { offset: offset, element: child }
-		} else {
-			return closest
-		}
+		if (offset < 0 && offset > closest.offset) return { offset: offset, element: child }
+		else return closest
 	}, { offset: Number.NEGATIVE_INFINITY }).element
 }
 
@@ -260,25 +257,29 @@ class BrowserManager {
 		mb_pages.onscroll = () => this.SetTabScroll()
 		mb_tabs.addEventListener('dragover', e => {
 			e.preventDefault()
-			const afterElement = GetDragAfterElement(mb_tabs, e.clientX)
+			const afterElement = GetDragAfterElement(e.clientX)
 			const draggable = document.querySelector('.dragging')
 			if (this.draging == null) return
-			const tab = this.tabs[this.draging]
+			const index = this.GetTabIndex(this.draging)
+			const tab = this.tabs[index]
 			if (afterElement == null) {
 				mb_tabs.append(draggable)
-				this.tabs.splice(this.draging, 1)
+				this.tabs.splice(index, 1)
 				this.tabs.push(tab)
 			} else {
 				mb_tabs.insertBefore(draggable, afterElement)
 				const afterTabIndex = this.GetTabIndex(Number(afterElement.getAttribute('ti')))
-				this.tabs.splice(this.draging, 1)
-				this.tabs.splice(afterTabIndex, 0, tab)
+				if (index > afterTabIndex) {
+					console.log(true)
+					this.tabs.splice(index, 1)
+					this.tabs.splice(afterTabIndex, 0, tab)
+				} else {
+					this.tabs.splice(afterTabIndex, 0, tab)
+					this.tabs.splice(index, 1)
+				}
 			}
+			if (this.tabs[this.selectedTabIndex].id != this.selectedTab) this.selectedTabIndex = this.GetTabIndex(this.selectedTab)
 		})
-	}
-
-	SetDragingTab(index) {
-		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) this.draging = i
 	}
 
 	GetTabIndex(id) {
@@ -422,6 +423,20 @@ class BrowserManager {
 			case 9: Rule34XXXPool(tabId, value); return
 			case 10: Post(tabId, value[0], value[1]); return
 			case 11: return
+		}
+	}
+	
+	PrevPage() {
+		if (this.tabs[this.selectedTabIndex].jumpPage > -1 && this.tabs[this.selectedTabIndex].pageNumber > 1) {
+			mbjp.value = this.tabs[this.selectedTabIndex].pageNumber - 1
+			JumpPage()
+		}
+	}
+
+	NextPage() {
+		if (this.tabs[this.selectedTabIndex].jumpPage > -1 && this.tabs[this.selectedTabIndex].pageNumber < this.tabs[this.selectedTabIndex].maxPages) {
+			mbjp.value = this.tabs[this.selectedTabIndex].pageNumber + 1
+			JumpPage()
 		}
 	}
 
@@ -648,8 +663,7 @@ mb_search.onsubmit = e => {
 	}
 }
 
-mb_jump_page.onsubmit = e => {
-	e.preventDefault()
+function JumpPage() {
 	const tab = browser.GetActiveTab()
 	let value = Math.min(Math.abs(Number(mbjp.value)), tab.maxPages)
 	if (value < 1) value = 1
@@ -669,6 +683,11 @@ mb_jump_page.onsubmit = e => {
 		case 1:
 			return
 	}
+}
+
+mb_jump_page.onsubmit = e => {
+	e.preventDefault()
+	JumpPage()
 }
 
 mbs.oninput = () => {
@@ -1487,3 +1506,7 @@ function LoadCollections(tabId) {}
 function OpenHistory() {}
 
 function OpenBookmarks() {}
+
+function test() {
+	for (let i = 0, l = browser.tabs.length; i < l; i++) console.log(browser.tabs[i].tab)
+}

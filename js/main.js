@@ -112,6 +112,8 @@ function SetHotKeys() {
 	KeyManager.use_public = true
 
 	KeyManager.AddCategory('default')
+	KeyManager.AddHotKey('default', false, false, false, 37, 'browser.PrevPage()')
+	KeyManager.AddHotKey('default', false, false, false, 39, 'browser.NextPage()')
 	KeyManager.AddHotKey('default', true, false, false, 74, 'downloader.OpenPanel()')
 	KeyManager.AddHotKey('default', true, false, false, 78, 'NewTab()')
 	KeyManager.AddHotKey('default', true, false, false, 82, 'browser.ReloadTab(browser.selectedTab)')
@@ -187,7 +189,7 @@ function SetContextMenus() {
 	ContextManager.AddItem(i, { text:'add-to-dls', click: () => AddToHave(ContextManager.save[2], ContextManager.save[3]) })
 	ContextManager.AddItem(i, { text:'remove-from-dls', click: () => RemoveFromHave(ContextManager.save[2], ContextManager.save[3]) })
 	ContextManager.AddItem(i, { text:'dl', click: () =>  DownloadClick(ContextManager.save[2], ContextManager.save[3]) })
-	ContextManager.AddItem(i, { text:'delete', click: () => {} })
+	ContextManager.AddItem(i, { text:'delete', click: () => ConfirmDeletingPost(ContextManager.save[2], ContextManager.save[3]) })
 	
 	i = ContextManager.AddMenu('posts')
 	ContextManager.AddItem(i, { text:'open', click: () => browser.LinkClick(ContextManager.save[0], ContextManager.save[1]) })
