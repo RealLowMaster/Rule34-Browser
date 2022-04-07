@@ -63,7 +63,7 @@ const db = {
 const paths = {}
 
 class Tab {
-	constructor(index) {
+	constructor(index, before = null) {
 		this.id = index
 		this.history = []
 		this.historyValue = []
@@ -98,7 +98,8 @@ class Tab {
 		save.innerText = '⨯'
 		save.onclick = () => browser.CloseTab(index)
 		this.tab.appendChild(save)
-		mb_tabs.appendChild(this.tab)
+		if (before == null) mb_tabs.appendChild(this.tab)
+		else mb_tabs.insertBefore(this.tab, before)
 		this.page = document.createElement('div')
 		mb_pages.appendChild(this.page)
 	}
@@ -270,7 +271,6 @@ class BrowserManager {
 				mb_tabs.insertBefore(draggable, afterElement)
 				const afterTabIndex = this.GetTabIndex(Number(afterElement.getAttribute('ti')))
 				if (index > afterTabIndex) {
-					console.log(true)
 					this.tabs.splice(index, 1)
 					this.tabs.splice(afterTabIndex, 0, tab)
 				} else {
@@ -292,11 +292,13 @@ class BrowserManager {
 		this.tabs[this.selectedTabIndex].scroll = mb_pages.scrollTop
 	}
 
-	AddTab() {
-		const i = this.tabs.length
+	AddTab(before = null) {
 		const save = new Date().getTime().toString()
 		const id = Number(save.substring(save.length - 8))
-		this.tabs[i] = new Tab(id)
+		if (before == null) {
+			const i = this.tabs.length
+			this.tabs[i] = new Tab(id)
+		} else this.tabs.splice(before, 0, new Tab(id, this.tabs[before].tab))
 		this.ResizeTabs()
 		return id
 	}
@@ -397,7 +399,10 @@ class BrowserManager {
 
 	OpenLinkInNewTab(tabId, link) {
 		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == tabId) {
-			this.Link(this.AddTab(), this.tabs[i].links[link], this.tabs[i].linksValue[link])
+			if (this.selectedTabIndex != null) {
+				if (this.selectedTabIndex == this.tabs.length - 1) this.Link(this.AddTab(), this.tabs[i].links[link], this.tabs[i].linksValue[link])
+				else this.Link(this.AddTab(this.selectedTabIndex + 1), this.tabs[i].links[link], this.tabs[i].linksValue[link])
+			} else this.Link(this.AddTab(), this.tabs[i].links[link], this.tabs[i].linksValue[link])
 			return
 		}
 	}
