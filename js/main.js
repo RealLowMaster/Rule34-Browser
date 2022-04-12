@@ -26,7 +26,6 @@ function MaximizeApp() {
 function MinimizeApp() { ThisWindow.minimize() }
 
 function AskForQuitApp() {
-	KeyManager.ChangeCategory(null)
 	Confirm('Do you want to Quit?', [
 		{
 			text: 'Yes',

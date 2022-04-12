@@ -373,7 +373,8 @@ class BrowserManager {
 		for (let i = this.tabs.length - 1; i >= 0; i--) if (this.tabs[i].id != index) {
 			this.tabs[i].Close()
 			this.tabs.splice(i, 1)
-		} else this.ActivateTab(this.tabs[i].id)
+		}
+		this.ActivateTab(index)
 		this.ResizeTabs()
 	}
 
@@ -1511,7 +1512,3 @@ function LoadCollections(tabId) {}
 function OpenHistory() {}
 
 function OpenBookmarks() {}
-
-function test() {
-	for (let i = 0, l = browser.tabs.length; i < l; i++) console.log(browser.tabs[i].tab)
-}

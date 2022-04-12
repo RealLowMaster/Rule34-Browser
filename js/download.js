@@ -166,7 +166,10 @@ class DownloadManager {
 		save2.appendChild(this.dls[i].btn2)
 		save.appendChild(save2)
 		this.dls[i].container.appendChild(save)
-		document.getElementById('dl-container').appendChild(this.dls[i].container)
+		const dl_container = document.getElementById('dl-container')
+		const dl_childs = dl_container.children
+		if (dl_childs.length > 0) try { dl_container.insertBefore(this.dls[i].container, dl_childs[0]) } catch(err) { dl_container.appendChild(this.dls[i].container) }
+		else dl_container.appendChild(this.dls[i].container)
 		PopAlert(Language('dls'))
 		this.dl_order.push(index)
 		this.Download(index)
@@ -451,8 +454,9 @@ class DownloadManager {
 				try { renameSync(path, save_path) } catch(err) { console.error(err) }
 				sharp(paths.tmp+name+'.png').resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+name+'.jpg').then(() => {
 					try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
-					try { if (dl) this.dls[i].span.innerText = FormatBytes(statSync(save_path).size) } catch(err) {
-						if (dl) {
+					if (dl) {
+						i = this.ids.indexOf(index)
+						if (i >= 0) try { this.dls[i].span.innerText = FormatBytes(statSync(save_path).size) } catch(err) {
 							this.dls[i].span.setAttribute('l', 'finish')
 							this.dls[i].span.innerText = Language('finish')
 						}
@@ -461,8 +465,9 @@ class DownloadManager {
 				}).catch(err => {
 					console.error(err)
 					try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
-					try { if (dl) this.dls[i].span.innerText = FormatBytes(statSync(save_path).size) } catch(err) {
-						if (dl) {
+					if (dl) {
+						i = this.ids.indexOf(index)
+						if (i >= 0) try { this.dls[i].span.innerText = FormatBytes(statSync(save_path).size) } catch(err) {
 							this.dls[i].span.setAttribute('l', 'finish')
 							this.dls[i].span.innerText = Language('finish')
 						}
@@ -505,8 +510,11 @@ class DownloadManager {
 					console.error(err)
 					try { unlinkSync(path) } catch(err) {}
 					if (dl) {
-						this.dls[i].span.setAttribute('l', 'finish')
-						this.dls[i].span.innerText = Language('finish')
+						i = this.ids.indexOf(index)
+						if (i >= 0) {
+							this.dls[i].span.setAttribute('l', 'finish')
+							this.dls[i].span.innerText = Language('finish')
+						}
 					}
 					finished()
 				})
@@ -551,8 +559,11 @@ class DownloadManager {
 					console.error(err)
 					try { unlinkSync(path) } catch(err) {}
 					if (dl) {
-						this.dls[i].span.setAttribute('l', 'finish')
-						this.dls[i].span.innerText = Language('finish')
+						i = this.ids.indexOf(index)
+						if (i >= 0) {
+							this.dls[i].span.setAttribute('l', 'finish')
+							this.dls[i].span.innerText = Language('finish')
+						}
 					}
 					finished()
 				})
@@ -589,8 +600,11 @@ class DownloadManager {
 					console.error(err)
 					try { unlinkSync(path) } catch(err) {}
 					if (dl) {
-						this.dls[i].span.setAttribute('l', 'finish')
-						this.dls[i].span.innerText = Language('finish')
+						i = this.ids.indexOf(index)
+						if (i >= 0) {
+							this.dls[i].span.setAttribute('l', 'finish')
+							this.dls[i].span.innerText = Language('finish')
+						}
 					}
 					finished()
 				})
@@ -631,8 +645,11 @@ class DownloadManager {
 					console.error(err)
 					try { unlinkSync(path) } catch(err) {}
 					if (dl) {
-						this.dls[i].span.setAttribute('l', 'finish')
-						this.dls[i].span.innerText = Language('finish')
+						i = this.ids.indexOf(index)
+						if (i >= 0) {
+							this.dls[i].span.setAttribute('l', 'finish')
+							this.dls[i].span.innerText = Language('finish')
+						}
 					}
 					finished()
 				})
