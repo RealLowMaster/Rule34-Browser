@@ -2,10 +2,10 @@ let tmp_language_value, tmp_language_structure, tmp_languages, tmp_language_opti
 function OpenLanguageManager() {
 	KeyManager.ChangeCategory(null)
 	document.getElementById('language-manager').style.display = 'grid'
-	tmp_language_value = language_values
-	tmp_language_structure = language_structures
-	tmp_languages = languages
-	tmp_language_options = language_options
+	tmp_language_value = language_values.slice()
+	tmp_language_structure = language_structures.slice()
+	tmp_languages = languages.slice()
+	tmp_language_options = language_options.slice()
 	document.getElementById('language-structure-panel').style.display = 'none'
 	LoadLanguageStructures()
 	LoadLanguages()
@@ -90,7 +90,7 @@ function AddLanguage() {
 	name = name.replace(/"/g, "'")
 	if (tmp_language_editing) {
 		if (tmp_languages[tmp_selected_language] != name) {
-			for (let i = 0, l = tmp_languages.length; i < l; i++) if (tmp_languages[i] == name) {
+			if (tmp_languages.indexOf(name) >= 0) {
 				PopAlert('Language already Exists.', 'danger')
 				return
 			}
@@ -99,7 +99,7 @@ function AddLanguage() {
 		tmp_language_options[tmp_selected_language][0] = lapr.value == 0 ? false : true
 		document.getElementById('language-container').children[tmp_selected_language].innerText = name
 	} else {
-		for (let i = 0, l = tmp_languages.length; i < l; i++) if (tmp_languages[i] == name) {
+		if (tmp_languages.indexOf(name) >= 0) {
 			PopAlert('Language already Exists.', 'danger')
 			return
 		}
@@ -186,7 +186,7 @@ function AddLangStructure() {
 	name = name.replace(/\s\s+/g, '-').replace(/ /g, '-').replace(/'/g, '').replace(/"/g, '').toLowerCase()
 	if (tmp_language_editing) {
 		if (tmp_language_structure[tmp_selected_lang_structure] != name) {
-			for (let i = 0, l = tmp_language_structure.length; i < l; i++) if (tmp_language_structure[i][0] == name) {
+			if (tmp_language_structure.indexOf(name) >= 0) {
 				PopAlert('Structure already exists.', 'danger')
 				lasn.value = name
 				return
@@ -195,7 +195,7 @@ function AddLangStructure() {
 		}
 		document.getElementById('language-structures').children[tmp_selected_lang_structure].children[0].innerText = name
 	} else {
-		for (let i = 0, l = tmp_language_structure.length; i < l; i++) if (tmp_language_structure[i][0] == name) {
+		if (tmp_language_structure.indexOf(name) >= 0) {
 			PopAlert('Structure already exists.', 'danger')
 			lasn.value = name
 			return

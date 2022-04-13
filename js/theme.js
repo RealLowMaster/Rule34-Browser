@@ -3,9 +3,9 @@ let tmp_theme_structures, tmp_theme_values, tmp_themes, tmp_selected_theme = nul
 function OpenThemeManager() {
 	KeyManager.ChangeCategory(null)
 	document.getElementById('theme-manager').style.display = 'grid'
-	tmp_theme_values = theme_values
-	tmp_theme_structures = theme_structures
-	tmp_themes = themes
+	tmp_theme_values = theme_values.slice()
+	tmp_theme_structures = theme_structures.slice()
+	tmp_themes = themes.slice()
 	document.getElementById('theme-structure-panel').style.display = 'none'
 	LoadThemeStructures()
 	LoadTheme()
@@ -84,7 +84,7 @@ function AddTheme() {
 	name = name.replace(/"/g, "'")
 	if (tmp_theme_editing) {
 		if (tmp_themes[tmp_selected_theme] != name) {
-			for (let i = 0, l = tmp_themes.length; i < l; i++) if (tmp_themes[i] == name) {
+			if (tmp_themes.indexOf(name) >= 0) {
 				PopAlert('Theme already Exists.', 'danger')
 				return
 			}
@@ -92,7 +92,7 @@ function AddTheme() {
 		}
 		document.getElementById('theme-container').children[tmp_selected_theme].innerText = name
 	} else {
-		for (let i = 0, l = tmp_themes.length; i < l; i++) if (tmp_themes[i] == name) {
+		if (tmp_themes.indexOf(name) >= 0) {
 			PopAlert('Theme already Exists.', 'danger')
 			return
 		}
@@ -175,7 +175,7 @@ function AddThemeStructure() {
 	name = name.replace(/\s\s+/g, '-').replace(/ /g, '-').replace(/'/g, '').replace(/"/g, '').toLowerCase()
 	if (tmp_theme_editing) {
 		if (tmp_theme_structures[tmp_selected_theme_structure] != name) {
-			for (let i = 0, l = tmp_theme_structures.length; i < l; i++) if (tmp_theme_structures[i][0] == name) {
+			if (tmp_theme_structures.indexOf(name) >= 0) {
 				PopAlert('Structure already exists.', 'danger')
 				tasn.value = name
 				return
@@ -184,7 +184,7 @@ function AddThemeStructure() {
 		}
 		document.getElementById('theme-structures').children[tmp_selected_theme_structure].children[0].innerText = name
 	} else {
-		for (let i = 0, l = tmp_theme_structures.length; i < l; i++) if (tmp_theme_structures[i][0] == name) {
+		if (tmp_theme_structures.indexOf(name) >= 0) {
 			PopAlert('Structure already exists.', 'danger')
 			tasn.value = name
 			return

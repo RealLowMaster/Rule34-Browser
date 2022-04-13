@@ -40,6 +40,7 @@ const sites = [
 ]
 
 const db = {
+	history: [],
 	post: [],
 	have: [],
 	collection: [],
@@ -105,6 +106,10 @@ class Tab {
 	}
 
 	Loading(site = -1, jumpPage = -1) {
+		if (!this.customizing) {
+			browser.AddHistory(this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
+			browser.SetNeedReload(-2)
+		}
 		this.loading = true
 		this.needReload = false
 		this.scroll = 0
@@ -114,7 +119,7 @@ class Tab {
 		this.linksValue = []
 		if (browser.selectedTab == this.id) {
 			mb_pages.scrollTop = 0
-			if (this.site == -1) mb_search.style.display = 'none'
+			if (this.site < 0) mb_search.style.display = 'none'
 			else mb_search.style.display = 'block'
 			mb_jump_page.style.display = 'none'
 		}
@@ -133,7 +138,7 @@ class Tab {
 		this.loading = false
 		this.reloading = false
 		let icon
-		if (this.site == -1) icon = 'Image/favicon-32x32.png'
+		if (this.site < 0) icon = 'Image/favicon-32x32.png'
 		else icon = 'Image/sites/'+sites[this.site].url+'-32x32.'+sites[this.site].icon
 		this.Change(icon, txt)
 		if (bg == null) this.page.style.backgroundColor = 'var(--primary-bg)'
@@ -308,12 +313,13 @@ class BrowserManager {
 		try { event.stopPropagation() } catch(err) {}
 		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
 			this.tabs[i].Close()
+			this.AddHistory(this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
 			this.tabs.splice(i, 1)
 
 			if (index == this.selectedTab) {
 				if (this.tabs.length > 0) {
 					if (i == 0) this.ActivateTab(this.tabs[0].id)
-					else if (i == this.tabs.length) this.ActivateTab(this.tabs[i-1].id)
+					else if (i == this.tabs.length) this.ActivateTab(this.tabs[i - 1].id)
 					else this.ActivateTab(this.tabs[i].id)
 				} else {
 					this.selectedTab = null
@@ -347,7 +353,7 @@ class BrowserManager {
 			this.selectedTab = index
 			this.selectedTabIndex = i
 
-			if (this.tabs[i].site == -1) mb_search.style.display = 'none'
+			if (this.tabs[i].site < 0) mb_search.style.display = 'none'
 			else mb_search.style.display = 'block'
 
 			if (!this.tabs[i].loading && this.tabs[i].jumpPage != -1) {
@@ -372,15 +378,30 @@ class BrowserManager {
 		clearTimeout(this.timeout)
 		for (let i = this.tabs.length - 1; i >= 0; i--) if (this.tabs[i].id != index) {
 			this.tabs[i].Close()
+			this.AddHistory(this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
 			this.tabs.splice(i, 1)
 		}
+		this.SetNeedReload(-2)
 		this.ActivateTab(index)
 		this.ResizeTabs()
 	}
 
 	CloseAllTabs() {
-		for (let i = this.tabs.length - 1; i >= 0; i--) this.tabs[i].Close()
+		for (let i = this.tabs.length - 1; i >= 0; i--) {
+			this.AddHistory(this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
+			this.tabs[i].Close()
+		}
 		this.tabs = []
+		this.SetNeedReload(-2)
+	}
+
+	AddHistory(val, val2) {
+		const lhi = db.history.length - 1
+		if (val != undefined && val != db.history[lhi][0]) {
+			if (val2 != undefined) {
+				if (val2 != db.history[lhi][1]) db.history.push([val, val2])
+			} else db.history.push([val])
+		}
 	}
 
 	GetTab(index) {
