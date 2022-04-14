@@ -141,7 +141,11 @@ function SetContextMenus() {
 	let i = ContextManager.AddMenu('menu')
 	ContextManager.AddItem(i, { text:'newtab', click: () => NewTab() })
 	ContextManager.AddItem(i, {})
-	ContextManager.AddItem(i, { text:'history', click: () => OpenHistory() })
+	ContextManager.AddItem(i, { text:'history', click: () => {
+		const id = browser.AddTab()
+		browser.ActivateTab(id)
+		LoadHistory(id, 1)
+	} })
 	ContextManager.AddItem(i, { text:'downloads', click: () => downloader.OpenPanel() })
 	ContextManager.AddItem(i, { text:'bookmarks', click: () => OpenBookmarks() })
 	ContextManager.AddItem(i, {})

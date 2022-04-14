@@ -107,8 +107,9 @@ class Tab {
 
 	Loading(site = -1, jumpPage = -1) {
 		if (!this.customizing) {
-			browser.AddHistory(this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
+			browser.AddHistory(this.title.innerText, this.site, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 			browser.SetNeedReload(-2)
+			try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 		}
 		this.loading = true
 		this.needReload = false
@@ -186,9 +187,12 @@ class Tab {
 		this.reloading = false
 		this.needReload = false
 		this.customizing = true
+		browser.AddHistory(this.title.innerText, this.site, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
+		browser.SetNeedReload(-2)
 		this.selectedHistory--
 		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 		this.customizing = false
+		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 	}
 	
 	Next() {
@@ -197,9 +201,12 @@ class Tab {
 		this.reloading = false
 		this.needReload = false
 		this.customizing = true
+		browser.AddHistory(this.title.innerText, this.site, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
+		browser.SetNeedReload(-2)
 		this.selectedHistory++
 		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 		this.customizing = false
+		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 	}
 
 	Reload() {
@@ -313,7 +320,7 @@ class BrowserManager {
 		try { event.stopPropagation() } catch(err) {}
 		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
 			this.tabs[i].Close()
-			this.AddHistory(this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
+			this.AddHistory(this.tabs[i].title.innerText, this.tabs[i].site, this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
 			this.tabs.splice(i, 1)
 
 			if (index == this.selectedTab) {
@@ -330,6 +337,7 @@ class BrowserManager {
 			}
 
 			this.timeout = setTimeout(() => this.ResizeTabs(), 1000)
+			try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 			return
 		}
 	}
@@ -378,29 +386,30 @@ class BrowserManager {
 		clearTimeout(this.timeout)
 		for (let i = this.tabs.length - 1; i >= 0; i--) if (this.tabs[i].id != index) {
 			this.tabs[i].Close()
-			this.AddHistory(this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
+			this.AddHistory(this.tabs[i].title.innerText, this.tabs[i].site, this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
 			this.tabs.splice(i, 1)
 		}
 		this.SetNeedReload(-2)
 		this.ActivateTab(index)
 		this.ResizeTabs()
+		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 	}
 
 	CloseAllTabs() {
 		for (let i = this.tabs.length - 1; i >= 0; i--) {
-			this.AddHistory(this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
+			this.AddHistory(this.tabs[i].title.innerText, this.tabs[i].site, this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
 			this.tabs[i].Close()
 		}
 		this.tabs = []
 		this.SetNeedReload(-2)
+		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 	}
 
-	AddHistory(val, val2) {
-		const lhi = db.history.length - 1
-		if (val != undefined && val != db.history[lhi][0]) {
-			if (val2 != undefined) {
-				if (val2 != db.history[lhi][1]) db.history.push([val, val2])
-			} else db.history.push([val])
+	AddHistory(txt, site, val, val2) {
+		if (val < 0) return
+		if (val != undefined) {
+			if (val2 != undefined) db.history.push([txt, site, val, val2])
+			else db.history.push([txt, site, val])
 		}
 	}
 
@@ -438,9 +447,10 @@ class BrowserManager {
 
 	Link(tabId, index, value) {
 		switch(index) {
-			case 0: LoadPage(tabId, value); return
-			case 1: LoadSites(tabId); return
-			case 2: LoadCollections(tabId); return
+			case -4: LoadHistory(tabId, value); return
+			case -3: LoadCollections(tabId); return
+			case -2: LoadSites(tabId); return
+			case -1: LoadPage(tabId, value); return
 			case 3: sites[value].home(tabId, 1); return
 			case 4: Rule34XXXHome(tabId, value[0], value[1]); return
 			case 5: Rule34XXXArtists(tabId, value[0], value[1]); return
@@ -695,6 +705,7 @@ function JumpPage() {
 	let value = Math.min(Math.abs(Number(mbjp.value)), tab.maxPages)
 	if (value < 1) value = 1
 	switch(tab.site) {
+		case -2: LoadHistory(tab.id, value)
 		case -1:
 			switch(tab.jumpPage) {
 				case 0: LoadPage(tab.id, value); return
@@ -799,6 +810,16 @@ function LoadDatabase() {
 		console.error(err)
 		error('MakingTempFolder->'+err)
 		return
+	}
+
+	// -------------> Check History
+	if (existsSync(dirDocument+'/history')) try { db.history = jsonfile.readFileSync(dirDocument+'/history').a } catch(err) {
+		console.error(err)
+		error('LoadingHistory->'+err)
+	} else try { jsonfile.writeFileSync(dirDocument+'/history', {a:[]}) } catch(err) {
+		console.log(err)
+		db.history = []
+		error('CreatingHistoryDB->'+err)
 	}
 
 	// -------------> Check Databases
@@ -1161,9 +1182,10 @@ function GetMainMenu(tab, page) {
 	const container = document.createElement('div')
 	container.classList.add('main-page-menu')
 
-	if (page != 0) container.appendChild(NormalLinkElement('div', 'home', tab.id, tab.AddLink(0), false, true))
-	if (page != 1) container.appendChild(NormalLinkElement('div', 'sites', tab.id, tab.AddLink(1), false, true))
-	if (page != 2) container.appendChild(NormalLinkElement('div', 'collections', tab.id, tab.AddLink(2), false, true))
+	if (page != -1) container.appendChild(NormalLinkElement('div', 'home', tab.id, tab.AddLink(-1, 1), false, true))
+	if (page != -2) container.appendChild(NormalLinkElement('div', 'sites', tab.id, tab.AddLink(-2), false, true))
+	if (page != -3) container.appendChild(NormalLinkElement('div', 'collections', tab.id, tab.AddLink(-3), false, true))
+	if (page != -4) container.appendChild(NormalLinkElement('div', 'history', tab.id, tab.AddLink(-4, 1), false, true))
 
 	return container
 }
@@ -1326,10 +1348,10 @@ function OpenPostProperties(site, id) {
 function LoadPage(tabId, page = 1) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading(-1, 0)
-	tab.AddHistory(0, page)
+	tab.AddHistory(-1, page)
 	const container = document.createElement('div')
 	container.classList.add('main-page')
-	container.appendChild(GetMainMenu(tab, 0))
+	container.appendChild(GetMainMenu(tab, -1))
 
 	let save = document.createElement('div')
 	save.classList.add('main-page-filter')
@@ -1375,7 +1397,7 @@ function LoadPage(tabId, page = 1) {
 			for (let i = min; i < max; i++) save.appendChild(GetPostElement(tab, i, date))
 		}
 		container.appendChild(save)
-		container.appendChild(GetPagination(tab, 0, total_pages, page))
+		container.appendChild(GetPagination(tab, -1, total_pages, page))
 	} else {
 		page = 1
 		save = document.createElement('div')
@@ -1398,7 +1420,7 @@ function Post(tabId, site, id) {
 
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
 
-		let save, save2
+		let save
 		const url = paths.dl+db.post[i][2]+'.'+db.post[i][3]
 		if (existsSync(url)) {
 			if (IsFormatVideo(db.post[i][3])) {
@@ -1497,10 +1519,10 @@ function Post(tabId, site, id) {
 function LoadSites(tabId) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading()
-	tab.AddHistory(1)
+	tab.AddHistory(-2)
 	const container = document.createElement('div')
 	container.classList.add('main-page')
-	container.appendChild(GetMainMenu(tab, 1))
+	container.appendChild(GetMainMenu(tab, -2))
 
 	let save = document.createElement('div')
 	save.classList.add('main-page-sites')
@@ -1530,6 +1552,26 @@ function LoadSites(tabId) {
 
 function LoadCollections(tabId) {}
 
-function OpenHistory() {}
+function LoadHistory(tabId, page) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading(-2, 0)
+	tab.AddHistory(-4, page)
+	const container = document.createElement('div')
+	container.classList.add('main-page')
+	container.appendChild(GetMainMenu(tab, -4))
+	let save
+
+	if (db.history.length == 0) {
+		save = document.createElement('div')
+		save.classList.add('alert')
+		save.classList.add('alert-danger')
+		save.setAttribute('l', 'nohistory')
+		save.innerText = Language('nohistory')
+		container.appendChild(save)
+		tab.Load(token, container, 'History - Page 1', null, 1, 1)
+	} else {
+		const total_pages = Math.ceil(db.history.length / 20)
+	}
+}
 
 function OpenBookmarks() {}
