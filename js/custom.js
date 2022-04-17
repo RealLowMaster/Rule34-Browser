@@ -324,19 +324,20 @@ class BrowserManager {
 			this.tabs.splice(i, 1)
 
 			if (index == this.selectedTab) {
+				this.selectedTab = null
+				this.selectedTabIndex = null
 				if (this.tabs.length > 0) {
 					if (i == 0) this.ActivateTab(this.tabs[0].id)
 					else if (i == this.tabs.length) this.ActivateTab(this.tabs[i - 1].id)
 					else this.ActivateTab(this.tabs[i].id)
 				} else {
-					this.selectedTab = null
-					this.selectedTabIndex = null
 					mb_jump_page.style.display = 'none'
 					mb_search.style.display = 'none'
 				}
 			}
 
 			this.timeout = setTimeout(() => this.ResizeTabs(), 1000)
+			browser.SetNeedReload(-2)
 			try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 			return
 		}
@@ -389,9 +390,12 @@ class BrowserManager {
 			this.AddHistory(this.tabs[i].title.innerText, this.tabs[i].site, this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
 			this.tabs.splice(i, 1)
 		}
+		this.selectedTab = null
+		this.selectedTabIndex = null
 		this.SetNeedReload(-2)
 		this.ActivateTab(index)
 		this.ResizeTabs()
+		browser.SetNeedReload(-2)
 		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 	}
 
@@ -401,6 +405,8 @@ class BrowserManager {
 			this.tabs[i].Close()
 		}
 		this.tabs = []
+		this.selectedTab = null
+		this.selectedTabIndex = null
 		this.SetNeedReload(-2)
 		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 	}
@@ -445,8 +451,16 @@ class BrowserManager {
 		}
 	}
 
+	OpenInNewTab(index, value = null) {
+		const id = this.AddTab()
+		this.Link(id, index, value)
+		this.ActivateTab(id)
+	}
+
 	Link(tabId, index, value) {
 		switch(index) {
+			case -6: return
+			case -5: Post(tabId, value[0], value[1]); return
 			case -4: LoadHistory(tabId, value); return
 			case -3: LoadCollections(tabId); return
 			case -2: LoadSites(tabId); return
@@ -458,8 +472,6 @@ class BrowserManager {
 			case 7: Rule34XXXPools(tabId, value); return
 			case 8: Rule34XXXPost(tabId, value); return
 			case 9: Rule34XXXPool(tabId, value); return
-			case 10: Post(tabId, value[0], value[1]); return
-			case 11: return
 		}
 	}
 	
@@ -1202,7 +1214,7 @@ function PostLink(tabId, link, site, id) {
 
 function GetPostElement(tab, i, date = 0) {
 	const container = document.createElement('div')
-	container.onmousedown = () => PostLink(tab.id, tab.AddLink(10, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1])
+	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1])
 	let save = document.createElement('img')
 	const src = paths.thumb+db.post[i][2]+'.jpg'
 	if (existsSync(src)) save.src = src+'?'+date
@@ -1414,7 +1426,7 @@ function LoadPage(tabId, page = 1) {
 function Post(tabId, site, id) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading()
-	tab.AddHistory(10, [site, id])
+	tab.AddHistory(-5, [site, id])
 	const container = document.createElement('div')
 	container.classList.add('main-page')
 
@@ -1454,7 +1466,7 @@ function Post(tabId, site, id) {
 			save.innerText = 'Parody:'
 			for (let j = 0, n = db.post[i][4].length; j < n; j++) {
 				title += db.parody[db.post[i][4][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.parody[db.post[i][4][j]], tabId, tab.AddLink(11, [])))
+				save.appendChild(NormalLinkElement('div', db.parody[db.post[i][4][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1466,7 +1478,7 @@ function Post(tabId, site, id) {
 			save.innerText = 'Character:'
 			for (let j = 0, n = db.post[i][5].length; j < n; j++) {
 				title += db.character[db.post[i][5][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.character[db.post[i][5][j]], tabId, tab.AddLink(11, [])))
+				save.appendChild(NormalLinkElement('div', db.character[db.post[i][5][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1478,7 +1490,7 @@ function Post(tabId, site, id) {
 			save.innerText = 'Artists:'
 			for (let j = 0, n = db.post[i][6].length; j < n; j++) {
 				title += db.artist[db.post[i][6][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.artist[db.post[i][6][j]], tabId, tab.AddLink(11, [])))
+				save.appendChild(NormalLinkElement('div', db.artist[db.post[i][6][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1490,7 +1502,7 @@ function Post(tabId, site, id) {
 			save.innerText = 'Tag:'
 			for (let j = 0, n = db.post[i][7].length; j < n; j++) {
 				title += db.tag[db.post[i][7][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.tag[db.post[i][7][j]], tabId, tab.AddLink(11, [])))
+				save.appendChild(NormalLinkElement('div', db.tag[db.post[i][7][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1502,7 +1514,7 @@ function Post(tabId, site, id) {
 			save.innerText = 'Meta:'
 			for (let j = 0, n = db.post[i][8].length; j < n; j++) {
 				title += db.meta[db.post[i][8][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.meta[db.post[i][8][j]], tabId, tab.AddLink(11, [])))
+				save.appendChild(NormalLinkElement('div', db.meta[db.post[i][8][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1570,8 +1582,71 @@ function LoadHistory(tabId, page) {
 		container.appendChild(save)
 		tab.Load(token, container, 'History - Page 1', null, 1, 1)
 	} else {
-		const total_pages = Math.ceil(db.history.length / 20)
+		const count = db.history.length
+		const total_pages = Math.ceil(count / 20)
+
+		let min = 0, max
+		if (count < 20) max = count
+		else {
+			min = (20 * page) - 20
+			max = min + 20
+			if (max > count) max = count
+		}
+		save = document.createElement('div')
+		save.classList.add('history')
+		let save2, save3
+
+		for (let i = min; i < max; i++) {
+			save2 = document.createElement('div')
+			save2.setAttribute('i', i)
+
+			save3 = document.createElement('img')
+			save3.src = 'Image/sites/'+sites[db.history[i][1]].url+'-32x32.'+sites[db.history[i][1]].icon
+			save2.appendChild(save3)
+
+			save3 = document.createElement('p')
+			save3.innerText = db.history[i][0]
+			save3.title = db.history[i][0]
+			save3.onclick = e => {
+				const parent = e.target.parentElement
+				if (parent.hasAttribute('i')) {
+					const ii = Number(parent.getAttribute('i'))
+					browser.OpenInNewTab(db.history[ii][2], db.history[ii][3])
+					db.history.splice(ii, 1)
+					browser.SetNeedReload(-2)
+					try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+				}
+			}
+			save2.appendChild(save3)
+
+			save3 = document.createElement('div')
+			save3.innerText = '...'
+			save3.onclick = e => {
+				e.preventDefault()
+				e.stopImmediatePropagation()
+				const parent = e.target.parentElement
+				if (parent.hasAttribute('i')) {
+					const ii = Number(parent.getAttribute('i'))
+					ContextManager.ShowMenu('history', ii)
+				}
+			}
+			save2.appendChild(save3)
+			save.appendChild(save2)
+		}
+		container.appendChild(save)
+		container.appendChild(GetPagination(tab, -4, total_pages, page))
+
+		tab.Load(token, container, 'History - Page '+page, null, page, total_pages)
 	}
+}
+
+function OpenLastHistory() {
+	if (db.history.length == 0) return
+	const i = db.history.length - 1
+	browser.OpenInNewTab(db.history[i][2], db.history[i][3])
+	db.history.splice(i, 1)
+	browser.SetNeedReload(-2)
+	try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 }
 
 function OpenBookmarks() {}

@@ -355,3 +355,11 @@ function ReDownloadPost(site, id) {
 	KeyManager.stop = false
 	PopAlert(Language('pnf'), 'danger')
 }
+
+// History
+function DeleteHistory(i) {
+	if (db.history[i] != null) {
+		db.history.splice(i, 1)
+		browser.SetNeedReload(-2)
+	}
+}

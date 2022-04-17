@@ -621,3 +621,70 @@
 	color: #fff;
 	background-color: var(--text-brand);
 }
+
+
+.history {
+	display: block;
+	width: 100%;
+	padding: 30px;
+	color: var(--primary-header);
+}
+
+.history > div {
+	display: block;
+	width: 100%;
+	height: 40px;
+	background-color: var(--secondary-bg);
+	border: 0 solid var(--secondary-bg-alt);
+	border-width: 0 1px 1px 1px;
+	position: relative;
+}
+
+.history > div:first-child { border-width: 1px; border-radius: 4px 4px 0 0 }
+.history > div:last-child { border-radius: 0 0 4px 4px }
+
+.history > div > img {
+	width: 30px;
+	height: 30px;
+	margin: auto 0;
+	position: absolute;
+	top: 0;
+	left: 10px;
+	bottom: 0;
+}
+
+.history > div > p {
+	width: calc(100% - 90px);
+	height: 100%;
+	padding: 10px 0 0 10px;
+	margin-left: 50px;
+	text-align: left;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	cursor: pointer;
+}
+
+.history > div > p:hover { background-color: var(--secondary-bg-alt) }
+
+.history > div > div {
+	width: 30px;
+	height: 30px;
+	margin: auto 0;
+	border-radius: 50%;
+	text-align: center;
+	position: absolute;
+	top: 0;
+	right: 5px;
+	bottom: 0;
+	user-select: none;
+	cursor: pointer;
+	transition: background-color .2s, transform .2s, box-shadow .2s;
+	box-shadow: 0 1px 1px 0 #000f;
+}
+
+.history > div > div:hover {
+	background-color: var(--secondary-bg-alt);
+	box-shadow: 0 5px 5px 0 #000f;
+	transform: translateY(-2px);
+}

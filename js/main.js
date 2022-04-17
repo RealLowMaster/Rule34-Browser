@@ -116,7 +116,7 @@ function SetHotKeys() {
 	KeyManager.AddHotKey('default', true, false, false, 74, 'downloader.OpenPanel()')
 	KeyManager.AddHotKey('default', true, false, false, 78, 'NewTab()')
 	KeyManager.AddHotKey('default', true, false, false, 82, 'browser.ReloadTab(browser.selectedTab)')
-	KeyManager.AddHotKey('default', true, false, false, 82, 'browser.ReloadTab(browser.selectedTab)')
+	KeyManager.AddHotKey('default', true, true, false, 84, 'OpenLastHistory()')
 	KeyManager.AddHotKey('default', true, false, false, 87, 'browser.CloseTab(browser.selectedTab)')
 	KeyManager.AddHotKey('default', false, false, false, 27, 'AskForQuitApp()')
 	
@@ -157,6 +157,17 @@ function SetContextMenus() {
 		e.stopImmediatePropagation()
 		ContextManager.ShowMenu('menu')
 	}
+
+	i = ContextManager.AddMenu('history')
+	// ContextManager.AddItem(i, { text:'open', click: () => {} })
+	ContextManager.AddItem(i, { text:'open-in-ntab', click: () => {
+		browser.OpenInNewTab(db.history[ContextManager.save][2], db.history[ContextManager.save][3])
+		db.history.splice(ContextManager.save, 1)
+		browser.SetNeedReload(-2)
+		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+	} })
+	// ContextManager.AddItem(i, { text:'add-bookmarks', click: () => {} })
+	ContextManager.AddItem(i, { text:'delete', click: () => DeleteHistory(ContextManager.save) })
 
 	i = ContextManager.AddMenu('tab')
 	ContextManager.AddItem(i, { text:'copy', click: () => browser.CopyTab(ContextManager.save) })
