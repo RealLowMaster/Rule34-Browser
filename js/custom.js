@@ -1221,7 +1221,7 @@ function GetPostElement(tab, i, date = 0) {
 	else save.src = 'Image/no-img-225x225.webp'
 	container.appendChild(save)
 
-	if (db.post[i][3] == 'gif') {
+	if (db.post[i][9] == '0') {
 		save = document.createElement('p')
 		save.innerHTML = Icon('gif-format')
 		container.appendChild(save)

@@ -126,6 +126,7 @@ class DownloadManager {
 		this.dls[i].dl_size = 0
 		this.dls[i].total_size = 0
 		this.dls[i].percent = 0
+		this.dls[i].animated = false
 		this.dls[i].container = document.createElement('div')
 
 		let save = document.createElement('div')
@@ -438,7 +439,10 @@ class DownloadManager {
 				i = this.ids.indexOf(index)
 				if (i < 0) return
 				this.dls[i].span.innerText = 'Thumbnailing...'
-			} else db.post[index][3] = format
+			} else {
+				db.post[index][3] = format
+				if (db.post[index][9] != null) db.post[index][9] = null
+			}
 			const name = LastChar('.', LastChar('/', path), true)
 			const vid = await new ffmpeg(path).takeScreenshots({
 				count: 1,
@@ -480,7 +484,10 @@ class DownloadManager {
 		switch(format) {
 			case 'jpg':
 				save_path += 'jpg'
-				if (!dl) db.post[index][3] = 'jpg'
+				if (!dl) {
+					db.post[index][3] = 'jpg'
+					if (db.post[index][9] != null) db.post[index][9] = null
+				}
 				sharp(path).jpeg({ mozjpeg: true }).toFile(save_path).then(() => {
 					if (dl) {
 						i = this.ids.indexOf(index)
@@ -520,6 +527,7 @@ class DownloadManager {
 				})
 				return
 			case 'png':
+				if (!dl && db.post[index][9] != null) db.post[index][9] = null
 				sharp(path).webp({ quality: 100 }).toFile(save_path+'webp').then(() => {
 					if (dl) {
 						i = this.ids.indexOf(index)
@@ -570,7 +578,10 @@ class DownloadManager {
 				return
 			case 'webp':
 				save_path += 'webp'
-				if (!dl) db.post[index][3] = 'webp'
+				if (!dl) {
+					db.post[index][3] = 'webp'
+					if (db.post[index][9] != null) db.post[index][9] = null
+				}
 				sharp(path).webp({ quality: 100 }).toFile(save_path).then(() => {
 					if (dl) {
 						i = this.ids.indexOf(index)
@@ -610,6 +621,8 @@ class DownloadManager {
 				})
 				return
 			case 'gif':
+				if (dl) this.dls[i].animated = true
+				else db.post[index][9] = '0'
 				sharp(path, { animated: true }).webp().toFile(save_path+'webp').then(() => {
 					if (dl) {
 						i = this.ids.indexOf(index)

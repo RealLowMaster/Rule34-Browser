@@ -281,6 +281,14 @@ function LinkMeta(name1, name2) {
 }
 
 // Post
+function GetPost(site, id, index = true) {
+	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
+		if (index) return i
+		else return db.post[i]
+	}
+	return null
+}
+
 function AddPost(site, id, imgId, format, data) {
 	const arr = [site, id, imgId, format, null, null, null, null, null]
 	if (data.parody != null) arr[4] = GetParodyIndex(data.parody)
