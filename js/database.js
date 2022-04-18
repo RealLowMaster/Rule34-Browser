@@ -361,5 +361,6 @@ function DeleteHistory(i) {
 	if (db.history[i] != null) {
 		db.history.splice(i, 1)
 		browser.SetNeedReload(-2)
+		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 	}
 }

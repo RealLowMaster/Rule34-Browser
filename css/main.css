@@ -651,6 +651,7 @@
 	top: 0;
 	left: 10px;
 	bottom: 0;
+	cursor: pointer;
 }
 
 .history > div > p {

@@ -1601,7 +1601,16 @@ function LoadHistory(tabId, page) {
 			save2.setAttribute('i', i)
 
 			save3 = document.createElement('img')
+			save3.setAttribute('lt', 'open-site')
+			save3.title = Language('open-site')
 			save3.src = 'Image/sites/'+sites[db.history[i][1]].url+'-32x32.'+sites[db.history[i][1]].icon
+			save3.onclick = e => {
+				const parent = e.target.parentElement
+				if (parent.hasAttribute('i')) {
+					const ii = Number(parent.getAttribute('i'))
+					browser.OpenInNewTab(3, db.history[ii][1])
+				}
+			}
 			save2.appendChild(save3)
 
 			save3 = document.createElement('p')

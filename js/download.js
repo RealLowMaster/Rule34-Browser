@@ -438,7 +438,7 @@ class DownloadManager {
 				i = this.ids.indexOf(index)
 				if (i < 0) return
 				this.dls[i].span.innerText = 'Thumbnailing...'
-			}
+			} else db.post[index][3] = format
 			const name = LastChar('.', LastChar('/', path), true)
 			const vid = await new ffmpeg(path).takeScreenshots({
 				count: 1,
@@ -536,8 +536,8 @@ class DownloadManager {
 						} catch(err) { console.error(err) }
 						if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
 						else {
-							format = 'webp'
-							db.post[index][3] = 'webp'
+							format = 'png'
+							db.post[index][3] = 'png'
 							loading.Change(null, FormatBytes(dl_size))
 						}
 					} else {
@@ -610,7 +610,7 @@ class DownloadManager {
 				})
 				return
 			case 'gif':
-				sharp(path).webp({ animated: true, quality: 100 }).toFile(save_path+'webp').then(() => {
+				sharp(path, { animated: true }).webp().toFile(save_path+'webp').then(() => {
 					if (dl) {
 						i = this.ids.indexOf(index)
 						if (i < 0) return
@@ -625,7 +625,10 @@ class DownloadManager {
 							renameSync(path, save_path+'gif')
 						} catch(err) { console.error(err) }
 						if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
-						else loading.Change(null, FormatBytes(dl_size))
+						else {
+							db.post[index][3] = 'gif'
+							loading.Change(null, FormatBytes(dl_size))
+						}
 					} else {
 						try { unlinkSync(path) } catch(err) {}
 						format = 'webp'
@@ -794,3 +797,22 @@ class DownloadManager {
 }
 
 const downloader = new DownloadManager()
+
+
+function test() {
+	const path = paths.tmp+'16503118078612.gif'
+	const save_path = paths.tmp+'save.'
+	const sharp = require('sharp')
+
+	sharp(path, { animated: true }).webp().toFile(save_path+'webp').then(() => {
+		console.log('finish')
+	}).catch(err => {
+		console.error(err)
+	})
+
+	sharp(path, { animated: true }).gif().toFile(save_path+'gif').then(() => {
+		console.log('finish')
+	}).catch(err => {
+		console.error(err)
+	})
+}
