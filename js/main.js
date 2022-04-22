@@ -26,13 +26,13 @@ function MaximizeApp() {
 function MinimizeApp() { ThisWindow.minimize() }
 
 function AskForQuitApp() {
-	Confirm('Do you want to Quit?', [
+	Confirm(Language('sure-wanna-quit'), [
 		{
-			text: 'Yes',
+			text: Language('yes'),
 			class: 'btn btn-danger',
 			click: 'remote.app.quit()'
 		},
-		{text: 'No'}
+		{text: Language('no')}
 	])
 }
 

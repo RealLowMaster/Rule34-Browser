@@ -9,6 +9,7 @@ const defaultSetting = {
 	pic_per_page: 20,
 	dl_path: null,
 	dl_limit: 5,
+	default_volume: 100,
 	full_screen: false,
 	developer_mode: false
 }
@@ -32,6 +33,7 @@ const sto_radio = [
 // [ 'setting name', 'translate name', min, max ]
 const sto_range = [
 	['pic_per_page', 'picperpage', 1, 90],
+	['default_volume', 'defaultvolume', 0, 100],
 	['dl_limit', 'dllimit', 0, 20]
 ]
 
@@ -277,5 +279,6 @@ function ApplySetting(prev_setting = null) {
 		if (setting.theme != prev_setting.theme) ApplyTheme(setting.theme)
 		if (setting.language != prev_setting.language) ApplyLanguage(setting.language)
 		if (setting.full_screen != prev_setting.full_screen) ChangeScreenMode(setting.full_screen, false)
+		if (setting.dl_path != prev_setting.dl_path) PopAlert(Language('restart-for-apply-setting'), 'warning')
 	}
 }
