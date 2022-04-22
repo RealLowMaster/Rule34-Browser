@@ -62,7 +62,7 @@
 			"publisherName": "Mehdi Enayatzadeh (LowMaster)",
 			"icon": "Image/favicon.ico"
 		},
-		"asar": true,
+		"asar": false,
 		"nsis": {
 			"allowToChangeInstallationDirectory": true,
 			"oneClick": false

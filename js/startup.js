@@ -3,7 +3,7 @@ loading.Show(8, 'Loading...')
 function Startup() {
 	loading.Forward('Loading App Name...')
 	try {
-		document.getElementById('window-name').children[1].innerText = process.env.npm_package_name.replace(/-/g, ' ')+' '+process.env.npm_package_version
+		document.getElementById('window-name').children[1].innerText = remote.app.getName().replace(/-/g, ' ')+' '+remote.app.getVersion()
 	} catch(err) {
 		console.error(err)
 		Alert('LoadingAppName->ERR: '+err)

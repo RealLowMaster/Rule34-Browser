@@ -437,7 +437,7 @@ class DownloadManager {
 			}
 		}
 
-		const videoThumb = async () => {
+		const videoThumb = () => {
 			save_path += format
 			if (dl) {
 				i = this.ids.indexOf(index)
@@ -448,7 +448,7 @@ class DownloadManager {
 				if (db.post[index][9] != null) db.post[index][9] = null
 			}
 			const name = LastChar('.', LastChar('/', path), true)
-			const vid = await new ffmpeg(path).takeScreenshots({
+			const vid = new ffmpeg(path).takeScreenshots({
 				count: 1,
 				timemarks: [0],
 				filename: name
