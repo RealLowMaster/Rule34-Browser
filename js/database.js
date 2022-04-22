@@ -372,3 +372,21 @@ function DeleteHistory(i) {
 		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 	}
 }
+
+function AskForClearHistory() {
+	Confirm(Language('ask-for-cl-history'), [
+		{
+			text: Language('yes'),
+			class: 'btn btn-danger',
+			click: 'ClearHistory()'
+		},
+		{ text: Language('no') }
+	])
+}
+
+function ClearHistory() {
+	db.history = []
+	try { jsonfile.writeFileSync(dirDocument+'/history', {a:[]}) } catch(err) { console.log(err) }
+	browser.SetNeedReload(-2)
+	PopAlert(Language('all-history-deleted'))
+}

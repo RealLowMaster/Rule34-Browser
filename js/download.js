@@ -419,6 +419,10 @@ class DownloadManager {
 
 	Optimize(path, save_path, index, save, dl) {
 		let format = LastChar('.', path), i
+		if (dl) {
+			i = this.ids.indexOf(index)
+			if (i < 0) return
+		}
 		if (format == 'jpeg') format = 'jpg'
 
 		const finished = () => {
@@ -810,22 +814,3 @@ class DownloadManager {
 }
 
 const downloader = new DownloadManager()
-
-
-function test() {
-	const path = paths.tmp+'16503118078612.gif'
-	const save_path = paths.tmp+'save.'
-	const sharp = require('sharp')
-
-	sharp(path, { animated: true }).webp().toFile(save_path+'webp').then(() => {
-		console.log('finish')
-	}).catch(err => {
-		console.error(err)
-	})
-
-	sharp(path, { animated: true }).gif().toFile(save_path+'gif').then(() => {
-		console.log('finish')
-	}).catch(err => {
-		console.error(err)
-	})
-}

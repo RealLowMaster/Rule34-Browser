@@ -1585,6 +1585,16 @@ function LoadHistory(tabId, page) {
 		const count = db.history.length
 		const total_pages = Math.ceil(count / 20)
 
+		save = document.createElement('div')
+		save.classList.add('btn')
+		save.classList.add('btn-danger')
+		save.classList.add('ml-5')
+		save.classList.add('mt-3')
+		save.setAttribute('l', 'cl-history')
+		save.innerText = Language('cl-history')
+		save.onclick = AskForClearHistory
+		container.appendChild(save)
+
 		let min = 0, max
 		if (count < 20) max = count
 		else {
