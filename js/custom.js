@@ -1305,6 +1305,17 @@ function OpenPostProperties(site, id) {
 		panel.innerHTML = null
 		let size = 0, save
 		try { size = statSync(url).size } catch(err) { size = 0 }
+
+		save = document.createElement('img')
+		save.src = 'Image/sites/'+sites[db.post[i][0]].url+'-32x32.'+sites[db.post[i][0]].icon
+		save.title = Language('open-site')
+		save.onclick = () => {
+			container.style.display = 'none'
+			panel.innerHTML = null
+			KeyManager.stop = false
+			browser.OpenInNewTab(3, db.post[i][0])
+		}
+		panel.appendChild(save)
 		
 		save = document.createElement('p')
 		save.innerText = FormatBytes(size)
@@ -1349,8 +1360,6 @@ function OpenPostProperties(site, id) {
 			KeyManager.stop = false
 		}
 		panel.appendChild(save)
-
-
 
 		container.style.display = 'flex'
 		return
@@ -1443,6 +1452,7 @@ function Post(tabId, site, id) {
 				save.autoplay = false
 				save.controls = true
 				save.setAttribute('controlsList', 'nodownload')
+				save.volume = 1 / 100 * setting.default_volume
 				save.src = url
 				container.appendChild(save)
 			} else {

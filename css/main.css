@@ -580,6 +580,7 @@
 	width: 500px;
 	padding: 10px;
 	background-color: var(--secondary-bg);
+	position: relative;
 }
 
 #post-properties > div > p {
@@ -588,6 +589,16 @@
 	margin: 10px 0;
 	background-color: var(--secondary-bg-alt);
 	border-radius: 4px;
+}
+
+#post-properties > div > img {
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	top: -15px;
+	right: -15px;
+	box-shadow: 0 2px 6px 0 #000f;
+	cursor: pointer;
 }
 
 /* Post */

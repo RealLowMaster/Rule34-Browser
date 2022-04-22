@@ -189,6 +189,7 @@ function Rule34XXXPost(tabId, id) {
 			vid.controls = true
 			vid.setAttribute('controlsList', 'nodownload')
 			vid.classList.add('rule34-xxx-image')
+			vid.volume = 1 / 100 * setting.default_volume
 			vid.src = arr.src
 			side.appendChild(vid)
 		} else {
