@@ -1,20 +1,26 @@
-class Slider {
-	constructor() {
-		this.list = []
-		this.active = []
-		this.container = []
-		this.element = []
-	}
+let slider = {
+	list: [],
+	active: null,
+	container: document.getElementById('slider'),
+	element: null
+}
 
-	Open(list, index = null) {
+function OpenSlider(list, index) {
+	KeyManager.ChangeCategory('slider')
+	slider.container.style.display = 'block'
+	slider.list = list
+	if (index != null && typeof index === 'number' && index >= 0 && index < list.length) slider.active = index
+	else slider.active = 0
 
-	}
+}
 
-	Prev() {}
+function SliderPrev() {}
 
-	Next() {}
+function SliderNext() {}
 
-	Change(index) {}
+function SliderChange(index) {}
 
-	Close() {}
+function CloseSlider() {
+	slider.container.style.display = 'none'
+	KeyManager.ChangeCategory('default')
 }

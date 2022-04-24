@@ -194,7 +194,7 @@ class DownloadManager {
 		data.btn1.remove()
 		this.dls.splice(i, 1)
 		this.ids.splice(i, 1)
-		AddPost(data.site, data.id, data.save, data.format, data.data)
+		AddPost(data.site, data.id, data.save, data.format, data.data, data.animated || null)
 		browser.ChangeButtonsToDownloaded(data.site, data.id)
 
 		if (this.dls.length > 0) return

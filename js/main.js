@@ -120,6 +120,9 @@ function SetHotKeys() {
 	KeyManager.AddHotKey('default', true, false, false, 87, 'browser.CloseTab(browser.selectedTab)')
 	KeyManager.AddHotKey('default', false, false, false, 27, 'AskForQuitApp()')
 	
+	KeyManager.AddCategory('slider')
+	KeyManager.AddHotKey('slider', false, false, false, 27, 'CloseSlider()')
+	
 	KeyManager.AddCategory('downloads')
 	KeyManager.AddHotKey('downloads', false, false, false, 27, 'downloader.ClosePanel()')
 
