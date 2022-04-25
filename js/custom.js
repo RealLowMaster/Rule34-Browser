@@ -68,6 +68,7 @@ class Tab {
 	constructor(index, before = null, pid = null) {
 		this.id = index
 		this.pid = pid
+		this.save = null
 		this.history = []
 		this.historyValue = []
 		this.selectedHistory = -1
@@ -1444,9 +1445,9 @@ function Post(tabId, site, id) {
 	container.classList.add('main-page')
 
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
-
 		let save
 		const url = paths.dl+db.post[i][2]+'.'+db.post[i][3]
+		tab.save = [url]
 		if (existsSync(url)) {
 			if (IsFormatVideo(db.post[i][3])) {
 				save = document.createElement('video')
@@ -1458,11 +1459,13 @@ function Post(tabId, site, id) {
 				save.setAttribute('controlsList', 'nodownload')
 				save.volume = 1 / 100 * setting.default_volume
 				save.src = url
+				save.setAttribute('onmousedown', `OpenSlider(browser.GetTab(${tabId}).save, 0)`)
 				container.appendChild(save)
 			} else {
 				save = document.createElement('img')
 				save.classList.add('post-img')
 				save.src = url
+				save.setAttribute('onclick', `OpenSlider(browser.GetTab(${tabId}).save, 0)`)
 				container.appendChild(save)
 			}
 		} else {

@@ -103,14 +103,13 @@
 			<div id="slider">
 				<div></div>
 				<div>
-					<div id="sld-img">
-						<img src="D:\Game\Game\00. Rule34 Save/DL/16506696316747.jpg">
-					</div>
+					<div id="sld-img"></div>
+					<form id="sldform"><input type="number" id="sldinput" min="1" max="1" value="1"><span id="sldpage"></span></form>
 					<div id="sld-btns">
-						<div lt="sld-prev"><i ic="prev"></i></div>
-						<div lt="sld-next"><i ic="next"></i></div>
-						<div lt="sld-osize"><i ic="maximize"></i></div>
-						<div lt="close"><i ic="xmark"></i></div>
+						<div lt="sld-prev" onclick="SliderPrev()"><i ic="prev"></i></div>
+						<div lt="sld-next" onclick="SliderNext()"><i ic="next"></i></div>
+						<div lt="sld-osize" onclick="if (slider.osize) {SliderOriginalSize(false)} else SliderOriginalSize(true)"><i ic="maximize"></i></div>
+						<div lt="close" onclick="CloseSlider()"><i ic="xmark"></i></div>
 					</div>
 					<div id="sld-toggle" l="overview"></div>
 				</div>

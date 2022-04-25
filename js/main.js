@@ -121,6 +121,11 @@ function SetHotKeys() {
 	KeyManager.AddHotKey('default', false, false, false, 27, 'AskForQuitApp()')
 	
 	KeyManager.AddCategory('slider')
+	KeyManager.AddHotKey('slider', false, false, false, 65, 'SliderPrev()')
+	KeyManager.AddHotKey('slider', false, false, false, 68, 'SliderNext()')
+	KeyManager.AddHotKey('slider', false, false, false, 37, 'SliderPrev()')
+	KeyManager.AddHotKey('slider', false, false, false, 39, 'SliderNext()')
+	KeyManager.AddHotKey('slider', false, false, false, 79, 'if (slider.osize) {SliderOriginalSize(false)} else SliderOriginalSize(true)')
 	KeyManager.AddHotKey('slider', false, false, false, 27, 'CloseSlider()')
 	
 	KeyManager.AddCategory('downloads')

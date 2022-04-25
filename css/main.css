@@ -246,9 +246,7 @@
 }
 
 #mb-jump-page > input::-webkit-inner-spin-button,
-#mb-jump-page > input::-webkit-outer-spin-button {
-	appearance: none;
-}
+#mb-jump-page > input::-webkit-outer-spin-button { appearance: none }
 
 #mb-jump-page > input:hover,
 #mb-jump-page > input:focus { border-color: var(--primary-header) }
@@ -701,7 +699,7 @@
 }
 
 /* Slider */
-#slider { background-color: #000e }
+#slider { display: none; background-color: #000e; user-select: none; }
 
 #slider > div:first-child {
 	display: none;
@@ -714,6 +712,35 @@
 	width: 100%;
 	height: 100%;
 	position: relative;
+}
+
+#sldform {
+	position: absolute;
+	top: 0;
+	left: 20px;
+	cursor: default;
+	user-select: text;
+}
+
+#sldinput {
+	width: 50px;
+	padding: 0 3px;
+	margin-right: 5px;
+	background-color: transparent;
+	border: 1px dotted transparent;
+	color: #fff;
+	appearance: none;
+	cursor: pointer;
+}
+
+#sldinput:hover,
+#sldinput:focus { border-color: #069dca }
+#sldinput:focus { border-style: solid; cursor: default }
+#sldinput::-webkit-inner-spin-button,
+#sldinput::-webkit-outer-spin-button { appearance: none }
+
+#sldpage {
+	color: #fff;
 }
 
 #sld-btns {
