@@ -10,7 +10,7 @@ sldform.onsubmit = e => {
 sldinput.onfocus = () => KeyManager.stop = true
 sldinput.addEventListener('focusout', () => KeyManager.stop = false )
 
-let slider = {
+const slider = {
 	list: [],
 	active: null,
 	container: document.getElementById('slider'),
@@ -63,6 +63,33 @@ function SliderNext() {
 
 function SliderChange(index) {
 	slider.active = index
+	sldinput.value = slider.active + 1
+
+	try {
+		slider.element.src = ''
+		slider.element.remove()
+	} catch(err) {}
+
+	if (existsSync(slider.list[slider.active])) {
+		if (IsFormatVideo(LastChar('.', slider.list[slider.active]))) {
+			slider.element = document.createElement('video')
+			slider.element.loop = true
+			slider.element.muted = false
+			slider.element.autoplay = true
+			slider.element.controls = true
+			slider.element.setAttribute('controlsList', 'nodownload')
+			slider.element.classList.add('rule34-xxx-image')
+			slider.element.volume = 1 / 100 * setting.default_volume
+			slider.element.src = slider.list[slider.active]
+		} else {
+			slider.element = document.createElement('img')
+			slider.element.src = slider.list[slider.active]
+		}
+	} else {
+		slider.element = document.createElement('img')
+		slider.element.src = 'Image/no-img-225x225.webp'
+	}
+	slider.img_container.appendChild(slider.element)
 }
 
 function SliderOriginalSize(active) {

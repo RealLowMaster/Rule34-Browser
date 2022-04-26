@@ -216,6 +216,7 @@ function SetContextMenus() {
 	i = ContextManager.AddMenu('posts')
 	ContextManager.AddItem(i, { text:'open', click: () => browser.LinkClick(ContextManager.save[0], ContextManager.save[1]) })
 	ContextManager.AddItem(i, { text:'open-in-ntab', click: () => browser.OpenLinkInNewTab(ContextManager.save[0], ContextManager.save[1]) })
+	ContextManager.AddItem(i, { text:'slider', click: () => OpenSlider(browser.GetTab(ContextManager.save[0]).save, ContextManager.save[4]) })
 	ContextManager.AddItem(i, { text:'redownload', click: () => ReDownloadPost(ContextManager.save[2], ContextManager.save[3]) })
 	ContextManager.AddItem(i, { text:'rethumb', click: () => {} })
 	ContextManager.AddItem(i, { text:'delete', click: () => ConfirmDeletingPost(ContextManager.save[2], ContextManager.save[3]) })

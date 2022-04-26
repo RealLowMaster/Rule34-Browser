@@ -1207,21 +1207,23 @@ function GetMainMenu(tab, page) {
 	return container
 }
 
-function PostLink(tabId, link, site, id) {
+function PostLink(tabId, link, site, id, sldIndex) {
 	const e = window.event, key = e.which
 	if (key == 1) browser.LinkClick(tabId, link)
 	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
 	else {
-		ContextManager.save = [tabId, link, site, id]
+		ContextManager.save = [tabId, link, site, id, sldIndex]
 		ContextManager.ShowMenu('posts')
 	}
 }
 
 function GetPostElement(tab, i, date = 0) {
 	const container = document.createElement('div')
-	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1])
+	const len = tab.save.length
+	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len)
 	let save = document.createElement('img')
 	const src = paths.thumb+db.post[i][2]+'.jpg'
+	tab.save.push(paths.dl+db.post[i][2]+'.'+db.post[i][3])
 	if (existsSync(src)) save.src = src+'?'+date
 	else save.src = 'Image/no-img-225x225.webp'
 	container.appendChild(save)
@@ -1403,6 +1405,7 @@ function LoadPage(tabId, page = 1) {
 		save.classList.add('main-page-posts')
 
 		let min = 0, max
+		tab.save = []
 		if (browser.backward) {
 			if (post_cont < setting.pic_per_page) max = post_cont
 			else {
