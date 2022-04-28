@@ -370,6 +370,7 @@ class ContextMenuManager {
 		this.#menuOptions = []
 		this.#element = null
 		this.save = null
+		window.addEventListener('mouseup', e => { if (this.#element != null && e.which == 1) this.CloseMenu() })
 		window.addEventListener('click', () => { if (this.#element != null) this.CloseMenu() })
 		window.addEventListener('wheel', () => { if (this.#element != null) this.CloseMenu() })
 		window.addEventListener('resize', () => { if (this.#element != null) this.CloseMenu() })
@@ -540,8 +541,8 @@ class ContextMenuManager {
 					if (this.#menu[menu][i].click != undefined) {
 						save = document.createElement('div')
 						save.innerText = Language(this.#menu[menu][i].text)
-						if (typeof this.#menu[menu][i].click === 'string') save.onclick = () => { eval(this.#menu[menu][i].click); this.CloseMenu() }
-						else if (typeof this.#menu[menu][i].click === 'function') save.onclick = () => { this.#menu[menu][i].click(); this.CloseMenu() }
+						if (typeof this.#menu[menu][i].click === 'string') save.onmousedown = () => { if (e.which != 2) eval(this.#menu[menu][i].click); this.CloseMenu() }
+						else if (typeof this.#menu[menu][i].click === 'function') save.onmousedown = e => { if (e.which != 2) this.#menu[menu][i].click(); this.CloseMenu() }
 						container.appendChild(save)
 					} else {
 						save = document.createElement('p')

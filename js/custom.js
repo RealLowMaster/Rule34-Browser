@@ -1223,7 +1223,7 @@ function GetPostElement(tab, i, date = 0) {
 	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len)
 	let save = document.createElement('img')
 	const src = paths.thumb+db.post[i][2]+'.jpg'
-	tab.save.push(paths.dl+db.post[i][2]+'.'+db.post[i][3])
+	tab.save.push(i)
 	if (existsSync(src)) save.src = src+'?'+date
 	else save.src = 'Image/no-img-225x225.webp'
 	container.appendChild(save)
@@ -1461,14 +1461,13 @@ function Post(tabId, site, id) {
 				save.controls = true
 				save.setAttribute('controlsList', 'nodownload')
 				save.volume = 1 / 100 * setting.default_volume
-				save.src = url
-				save.setAttribute('onmousedown', `OpenSlider(browser.GetTab(${tabId}).save, 0)`)
+				save.setAttribute('onmousedown', `OpenSlider([${i}], 0)`)
 				container.appendChild(save)
 			} else {
 				save = document.createElement('img')
 				save.classList.add('post-img')
 				save.src = url
-				save.setAttribute('onclick', `OpenSlider(browser.GetTab(${tabId}).save, 0)`)
+				save.setAttribute('onclick', `OpenSlider([${i}], 0)`)
 				container.appendChild(save)
 			}
 		} else {
