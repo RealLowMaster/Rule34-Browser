@@ -6,11 +6,11 @@ const defaultSetting = {
 	animations: true,
 	not: true,
 	not_sound: true,
-	pic_per_page: 20,
+	pic_per_page: 30,
 	dl_path: null,
 	dl_limit: 5,
 	default_volume: 100,
-	full_screen: false,
+	full_screen: true,
 	developer_mode: false
 }
 
@@ -32,9 +32,9 @@ const sto_radio = [
 
 // [ 'setting name', 'translate name', min, max ]
 const sto_range = [
-	['pic_per_page', 'picperpage', 1, 90],
+	['pic_per_page', 'picperpage', 1, 120],
 	['default_volume', 'defaultvolume', 0, 100],
-	['dl_limit', 'dllimit', 0, 20]
+	['dl_limit', 'dllimit', 1, 20]
 ]
 
 // [ 'setting name', isFolder, 'title' || null ]
@@ -47,17 +47,18 @@ const sto_select = []
 
 let setting
 function LoadSettings() {
-	if (existsSync(dirDocument+'/setting.json')) setting = jsonfile.readFileSync(dirDocument+'/setting.json').a
+	paths.setting = dirDocument+'/setting.json'
+	if (existsSync(paths.setting)) setting = jsonfile.readFileSync(paths.setting)
 	else {
 		setting = defaultSetting
-		jsonfile.writeFileSync(dirDocument+'/setting.json',{a:setting})
+		jsonfile.writeFileSync(paths.setting,setting)
 	}
 
 	if (setting == null) {
 		console.error(setting)
 		console.error('Could not cache settings')
 		setting = defaultSetting
-		jsonfile.writeFileSync(dirDocument+'/setting.json',{a:setting})
+		jsonfile.writeFileSync(paths.setting,setting)
 	}
 
 	for (let i = 0; i < sto_checkbox.length; i++) {
@@ -235,7 +236,7 @@ function SaveSetting() {
 		setting[sto_dialog[i][0]] = element.title
 	}
 
-	try { jsonfile.writeFileSync(dirDocument+'/setting.json',{a:setting}) } catch(err) {
+	try { jsonfile.writeFileSync(paths.setting,setting) } catch(err) {
 		console.error(err)
 		PopAlert('SavingSetting->'+err, 'danger')
 	}
@@ -276,6 +277,7 @@ function ApplySetting(prev_setting = null) {
 			if (setting.animations) document.body.classList.remove('no-animation')
 			else document.body.classList.add('no-animation')
 		}
+		if (setting.pic_per_page != prev_setting.pic_per_page) browser.SetNeedReload(-1)
 		if (setting.theme != prev_setting.theme) ApplyTheme(setting.theme)
 		if (setting.language != prev_setting.language) ApplyLanguage(setting.language)
 		if (setting.full_screen != prev_setting.full_screen) ChangeScreenMode(setting.full_screen, false)

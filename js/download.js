@@ -205,7 +205,7 @@ class DownloadManager {
 		const dl_index = this.ids.indexOf(index)
 		if (dl_index < 0) return
 		const order = this.dl_order.indexOf(index)
-		if (setting.dl_limit > 0 && setting.dl_limit <= order) {
+		if (setting.dl_limit <= order) {
 			setTimeout(() => this.Download(index), 900)
 			return
 		}

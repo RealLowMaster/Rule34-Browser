@@ -700,7 +700,7 @@
 }
 
 /* Slider */
-#slider { display: none; background-color: #000e; user-select: none; }
+#slider { display: none; background-color: #000; user-select: none; }
 
 #sld-overview {
 	display: none;

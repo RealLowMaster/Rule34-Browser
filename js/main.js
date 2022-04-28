@@ -91,7 +91,7 @@ function ChangeScreenMode(fullscreen = null, save = true) {
 	}
 
 	document.getElementById('sto_full_screen').checked = setting.full_screen
-	if (save) jsonfile.writeFileSync(dirDocument+'/setting.json', setting)
+	if (save) jsonfile.writeFileSync(paths.setting, setting)
 }
 
 function LastChar(char, txt, backward = false) {

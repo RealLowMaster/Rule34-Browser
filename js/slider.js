@@ -167,6 +167,10 @@ function SliderOverview(active) {
 			}
 			container.appendChild(element)
 		}
+
+		let scroll = slider.active * 198
+		console.log(scroll)
+		container.scrollLeft = scroll
 	} else slider.container.removeAttribute('o')
 }
 

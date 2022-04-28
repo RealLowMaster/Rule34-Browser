@@ -787,7 +787,7 @@ function ChooseDLPath() {
 
 	setting.dl_path = directory[0]
 	try {
-		jsonfile.writeFileSync(dirDocument+'/setting.json',{a:setting})
+		jsonfile.writeFileSync(dirDocument+'/setting.json',setting)
 		ThisWindow.reload()
 	} catch(err) {
 		console.error(err)
