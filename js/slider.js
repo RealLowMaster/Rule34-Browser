@@ -67,6 +67,11 @@ function SliderNext() {
 }
 
 function SliderChange(index) {
+	if (slider.overview) {
+		const children = document.getElementById('sld-overview').children
+		children[slider.active].removeAttribute('active')
+		children[index].setAttribute('active','')
+	}
 	slider.active = index
 	sldinput.value = slider.active + 1
 
@@ -120,6 +125,7 @@ function SliderOverview(active) {
 			let src = paths.thumb+db.post[index][2]+'.jpg'
 			if (!existsSync(src)) src = 'Image/no-img-225x225.webp'
 			const element = document.createElement('div')
+			if (i == slider.active) element.setAttribute('active', '')
 			element.onclick = () => SliderChange(isave)
 			save = document.createElement('img')
 			save.src = src
@@ -144,6 +150,8 @@ function SliderOverview(active) {
 function CloseSlider() {
 	slider.container.style.display = 'none'
 	slider.container.removeAttribute('o')
+	SliderOverview(false)
+	SliderOriginalSize(false)
 	KeyManager.ChangeCategory('default')
 	if (slider.element != null) {
 		slider.element.src = ''
