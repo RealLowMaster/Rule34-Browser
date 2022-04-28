@@ -125,6 +125,7 @@ function SetHotKeys() {
 	KeyManager.AddHotKey('slider', false, false, false, 68, 'SliderNext()')
 	KeyManager.AddHotKey('slider', false, false, false, 37, 'SliderPrev()')
 	KeyManager.AddHotKey('slider', false, false, false, 39, 'SliderNext()')
+	KeyManager.AddHotKey('slider', false, false, false, 72, 'if (slider.hide) {SliderHide(false)} else SliderHide(true)')
 	KeyManager.AddHotKey('slider', false, false, false, 73, 'if (slider.overview) {SliderOverview(false)} else SliderOverview(true)')
 	KeyManager.AddHotKey('slider', false, false, false, 79, 'if (slider.osize) {SliderOriginalSize(false)} else SliderOriginalSize(true)')
 	KeyManager.AddHotKey('slider', false, false, false, 27, 'CloseSlider()')

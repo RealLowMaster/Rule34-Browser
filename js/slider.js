@@ -17,7 +17,8 @@ const slider = {
 	img_container: document.getElementById('sld-img'),
 	element: null,
 	osize: false,
-	overview: false
+	overview: false,
+	hide: false
 }
 
 function OpenSlider(list, index) {
@@ -35,27 +36,7 @@ function OpenSlider(list, index) {
 	sldinput.max = max
 	document.getElementById('sldpage').innerText = '/ '+max
 
-	const i = slider.list[slider.active], src = paths.dl+db.post[i][2]+'.'+db.post[i][3]
-	if (existsSync(src)) {
-		if (IsFormatVideo(db.post[i][3])) {
-			slider.element = document.createElement('video')
-			slider.element.loop = true
-			slider.element.muted = false
-			slider.element.autoplay = true
-			slider.element.controls = true
-			slider.element.setAttribute('controlsList', 'nodownload')
-			slider.element.classList.add('rule34-xxx-image')
-			slider.element.volume = 1 / 100 * setting.default_volume
-			slider.element.src = src
-		} else {
-			slider.element = document.createElement('img')
-			slider.element.src = src
-		}
-	} else {
-		slider.element = document.createElement('img')
-		slider.element.src = 'Image/no-img-225x225.webp'
-	}
-	slider.img_container.appendChild(slider.element)
+	SliderChange(slider.active)
 }
 
 function SliderPrev() {
@@ -91,23 +72,65 @@ function SliderChange(index) {
 			slider.element.setAttribute('controlsList', 'nodownload')
 			slider.element.classList.add('rule34-xxx-image')
 			slider.element.volume = 1 / 100 * setting.default_volume
+			slider.element.draggable = false
+			if (slider.osize) slider.element.onload = () => {
+				if (slider.osize) {
+					slider.img_container.scrollTop = 0
+					slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
+					SliderHighlight()
+				}
+			}
 			slider.element.src = src
 		} else {
 			slider.element = document.createElement('img')
+			slider.element.draggable = false
+			if (slider.osize) slider.element.onload = () => {
+				if (slider.osize) {
+					slider.img_container.scrollTop = 0
+					slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
+					SliderHighlight()
+				}
+			}
 			slider.element.src = src
 		}
 	} else {
 		slider.element = document.createElement('img')
 		slider.element.src = 'Image/no-img-225x225.webp'
 	}
+
 	slider.img_container.appendChild(slider.element)
+
+	if (slider.osize) {
+		slider.img_container.scrollTop = 0
+		slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
+		SliderHighlight()
+	}
 }
 
 function SliderOriginalSize(active) {
+	slider.osize = active
 	if (active) {
-		
+		slider.img_container.setAttribute('o','')
+		slider.img_container.onmousedown = () => {
+			window.onmousemove = e => {
+				slider.img_container.scrollLeft -= e.movementX
+				slider.img_container.scrollTop -= e.movementY
+				SliderHighlight()
+			}
+
+			window.onmouseup = () => {
+				window.onmousemove = null
+				window.onmouseup = null
+			}
+		}
+		slider.img_container.scrollTop = 0
+		slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
+		SliderHighlight()
 	} else {
-		
+		slider.img_container.removeAttribute('o')
+		slider.img_container.onmousedown = null
+		window.onmousemove = null
+		window.onmouseup = null
 	}
 }
 
@@ -147,15 +170,47 @@ function SliderOverview(active) {
 	} else slider.container.removeAttribute('o')
 }
 
+function SliderHide(active) {
+	slider.hide = active
+	if (active) slider.container.setAttribute('h', '')
+	else slider.container.removeAttribute('h')
+}
+
 function CloseSlider() {
 	slider.container.style.display = 'none'
 	slider.container.removeAttribute('o')
 	SliderOverview(false)
 	SliderOriginalSize(false)
+	SliderHide(false)
 	KeyManager.ChangeCategory('default')
 	if (slider.element != null) {
 		slider.element.src = ''
 		slider.element.remove()
 		slider.element = null
+	}
+}
+
+function SliderHighlight() {
+	if (slider.img_container.scrollTop == 0) slider.img_container.style.borderTopColor = '#5dade2'
+	else slider.img_container.style.borderTopColor = '#000'
+
+	if (slider.img_container.scrollLeft == 0) slider.img_container.style.borderLeftColor = '#5dade2'
+	else slider.img_container.style.borderLeftColor = '#000'
+	
+	if (slider.img_container.scrollTop >= slider.element.clientHeight - slider.img_container.clientHeight) slider.img_container.style.borderBottomColor = '#5dade2'
+	else slider.img_container.style.borderBottomColor = '#000'
+
+	if (slider.img_container.scrollLeft >= slider.element.clientWidth - slider.img_container.clientWidth) slider.img_container.style.borderRightColor = '#5dade2'
+	else slider.img_container.style.borderRightColor = '#000'
+}
+
+slider.img_container.onwheel = e => {
+	if (!slider.osize) {
+		if (e.deltaY > 0) SliderNext()
+		else SliderPrev()
+	} else {
+		if (e.target.tagName == 'IMG') SliderHighlight()
+		else if (e.deltaY > 0) SliderNext()
+		else SliderPrev()
 	}
 }
