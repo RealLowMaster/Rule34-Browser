@@ -52,10 +52,11 @@
 .rule34-xxx-sides > div:last-child > dlr {
 	display: block;
 	width: 100%;
-	padding: 10px;
-	margin: 10px 0;
+	padding: 10px 10px 0 10px;
+	margin: 10px 0 0 0;
 	color: #222;
 	user-select: none;
+	cursor: pointer;
 }
 
 .rule34-xxx-sides > div:last-child > dlr > * {
@@ -184,9 +185,11 @@
 
 .rule34-xxx-image {
 	display: block;
+	width: auto;
 	max-width: 95%;
 	height: auto;
 	margin: 10px auto;
+	cursor: zoom-in;
 }
 
 .rule34-xxx-search {

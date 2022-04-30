@@ -805,12 +805,18 @@ function LoadDatabase() {
 		ShowStartup()
 		return
 	}
-	paths.db = setting.dl_path+'/'
-	paths.dl = paths.db+'DL/'
-	paths.thumb = paths.db+'thumb/'
-	paths.tmp = paths.db+'tmp/'
+	paths.db = setting.dl_path+'/R34DB/'
+	paths.dl = setting.dl_path+'/R34DL/'
+	paths.thumb = setting.dl_path+'/R34thumb/'
+	paths.tmp = setting.dl_path+'/R34tmp/'
 
 	// Check Folders
+	if (!existsSync(paths.db)) try { mkdirSync(paths.db) } catch(err) {
+		console.error(err)
+		error('MakingDatabaseFolder->'+err)
+		return
+	}
+
 	if (!existsSync(paths.dl)) try { mkdirSync(paths.dl) } catch(err) {
 		console.error(err)
 		error('MakingDownloadFolder->'+err)
@@ -1453,7 +1459,7 @@ function Post(tabId, site, id) {
 	container.classList.add('main-page')
 
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
-		let save
+		let save, save2, title = ''
 		const url = paths.dl+db.post[i][2]+'.'+db.post[i][3]
 		tab.save = [url]
 		if (existsSync(url)) {
@@ -1466,6 +1472,7 @@ function Post(tabId, site, id) {
 				save.controls = true
 				save.setAttribute('controlsList', 'nodownload')
 				save.volume = 1 / 100 * setting.default_volume
+				save.src = url
 				save.setAttribute('onmousedown', `OpenSlider([${i}], 0)`)
 				container.appendChild(save)
 			} else {
@@ -1482,7 +1489,6 @@ function Post(tabId, site, id) {
 			container.appendChild(save)
 		}
 		
-		let title = ''
 		// parody
 		if (db.post[i][4] != null) {
 			save = document.createElement('div')
@@ -1490,7 +1496,11 @@ function Post(tabId, site, id) {
 			save.innerText = 'Parody:'
 			for (let j = 0, n = db.post[i][4].length; j < n; j++) {
 				title += db.parody[db.post[i][4][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.parody[db.post[i][4][j]], tabId, tab.AddLink(-6, [])))
+				save2 = document.createElement('div')
+				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+				save2.innerText = db.parody[db.post[i][4][j]]
+				save.appendChild(save2)
+				// save.appendChild(NormalLinkElement('div', db.parody[db.post[i][4][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1502,7 +1512,11 @@ function Post(tabId, site, id) {
 			save.innerText = 'Character:'
 			for (let j = 0, n = db.post[i][5].length; j < n; j++) {
 				title += db.character[db.post[i][5][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.character[db.post[i][5][j]], tabId, tab.AddLink(-6, [])))
+				save2 = document.createElement('div')
+				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+				save2.innerText = db.character[db.post[i][5][j]]
+				save.appendChild(save2)
+				// save.appendChild(NormalLinkElement('div', db.character[db.post[i][5][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1514,7 +1528,11 @@ function Post(tabId, site, id) {
 			save.innerText = 'Artists:'
 			for (let j = 0, n = db.post[i][6].length; j < n; j++) {
 				title += db.artist[db.post[i][6][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.artist[db.post[i][6][j]], tabId, tab.AddLink(-6, [])))
+				save2 = document.createElement('div')
+				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+				save2.innerText = db.artist[db.post[i][6][j]]
+				save.appendChild(save2)
+				// save.appendChild(NormalLinkElement('div', db.artist[db.post[i][6][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1526,7 +1544,11 @@ function Post(tabId, site, id) {
 			save.innerText = 'Tag:'
 			for (let j = 0, n = db.post[i][7].length; j < n; j++) {
 				title += db.tag[db.post[i][7][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.tag[db.post[i][7][j]], tabId, tab.AddLink(-6, [])))
+				save2 = document.createElement('div')
+				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+				save2.innerText = db.tag[db.post[i][7][j]]
+				save.appendChild(save2)
+				// save.appendChild(NormalLinkElement('div', db.tag[db.post[i][7][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1538,7 +1560,11 @@ function Post(tabId, site, id) {
 			save.innerText = 'Meta:'
 			for (let j = 0, n = db.post[i][8].length; j < n; j++) {
 				title += db.meta[db.post[i][8][j]]+', '
-				save.appendChild(NormalLinkElement('div', db.meta[db.post[i][8][j]], tabId, tab.AddLink(-6, [])))
+				save2 = document.createElement('div')
+				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+				save2.innerText = db.meta[db.post[i][8][j]]
+				save.appendChild(save2)
+				// save.appendChild(NormalLinkElement('div', db.meta[db.post[i][8][j]], tabId, tab.AddLink(-6, [])))
 			}
 			container.appendChild(save)
 		}
@@ -1692,4 +1718,6 @@ function OpenLastHistory() {
 	try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
 }
 
-function OpenBookmarks() {}
+function OpenBookmarks() {
+	PopAlert(Language('coming-soon'), 'warning')
+}

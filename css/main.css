@@ -336,8 +336,8 @@
 
 .main-page-posts > div {
 	display: inline-block;
-	width: 235px;
-	height: 235px;
+	width: 233px;
+	height: 233px;
 	padding: 4px;
 	margin: 10px;
 	background-color: var(--secondary-bg-alt);
@@ -355,6 +355,7 @@
 	display: block;
 	width: 225px;
 	height: 225px;
+	margin: 0 !important;
 	border-radius: 4px;
 }
 

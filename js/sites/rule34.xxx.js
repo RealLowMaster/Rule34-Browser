@@ -181,6 +181,7 @@ function Rule34XXXPost(tabId, id) {
 		side.appendChild(Rule34XXXGetTags(tab, arr))
 		sides.appendChild(side)
 		side = document.createElement('div')
+		const src = arr.src
 		if (arr.video) {
 			const vid = document.createElement('video')
 			vid.loop = true
@@ -190,14 +191,16 @@ function Rule34XXXPost(tabId, id) {
 			vid.setAttribute('controlsList', 'nodownload')
 			vid.classList.add('rule34-xxx-image')
 			vid.volume = 1 / 100 * setting.default_volume
-			vid.src = arr.src
+			vid.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
+			vid.src = src
 			side.appendChild(vid)
 		} else {
 			const img = document.createElement('img')
 			img.classList.add('rule34-xxx-image')
 			img.loading = 'lazy'
-			if (setting.r34_xxx_original_size) img.src = arr.src
+			if (setting.r34_xxx_original_size) img.src = src
 			else img.src = arr.srcresize
+			img.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
 			side.appendChild(img)
 		}
 		side.appendChild(BRDownloadElement(0, id))

@@ -7,6 +7,8 @@ function createWindow () {
 		icon: __dirname+'/Image/favicon.ico',
 		minWidth: 800,
 		minHeight: 600,
+		width: 800,
+		height: 600,
 		frame: false,
 		center: true,
 		show: false,

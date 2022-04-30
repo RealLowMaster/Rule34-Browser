@@ -46,7 +46,7 @@ html, body {
 button { user-select: none; cursor: pointer; }
 br { user-select: none }
 a { text-decoration: none }
-img { -webkit-user-drag: none; user-select: none }
+img, video { -webkit-user-drag: none;  user-select: none }
 div { display: block }
 input::-webkit-input-placeholder { user-select: none }
 textarea::-webkit-input-placeholder { user-select: none }
