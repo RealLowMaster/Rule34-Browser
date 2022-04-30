@@ -186,10 +186,11 @@ class rule34xxx {
 			return response.text()
 		}).then(htm => {
 			const html = new DOMParser().parseFromString(htm, 'text/html')
-			let arr = {url:url}, save
+			let arr = {url:url,size:'',id:'',thumb:'',format:''}, save
 
 			arr.title = html.title
 			save = html.getElementById('image') || null
+			// Source
 			if (save == null) {
 				save = html.getElementById('gelcomVideoPlayer') || null
 				if (save != null) {
@@ -210,8 +211,15 @@ class rule34xxx {
 				arr.video = false
 			}
 
+			// Stase
+			try {
+				save = html.getElementById('stats').children[1].children
+				arr.id = save[0].innerText.replace(/ /g, '').replace(/\n/g, '').toLowerCase().replace('id:', '')
+				arr.size = save[2].innerText.replace(/ /g, '').replace(/\n/g, '').toLowerCase().replace('size:', '')
+				arr.format = LastChar('?', LastChar('.', arr.src), true)
+			} catch(err) { console.error(err) }
+
 			// Thumb
-			arr.thumb = ''
 			try {
 				arr.thumb = this.baseURL+'thumbnails/'+LastChar('/', LastChar('/', arr.srcresize.replace(/\/\//g, '/'), true))+'/thumbnail_'+LastChar('.', LastChar('/', arr.srcresize).replace(/sample_/g, ''), true)+'.jpg?'+id
 			} catch(err) { console.error(err) }

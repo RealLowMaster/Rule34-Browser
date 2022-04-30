@@ -179,6 +179,22 @@ function Rule34XXXPost(tabId, id) {
 		sides.classList.add('rule34-xxx-sides')
 		let side = document.createElement('div')
 		side.appendChild(Rule34XXXGetTags(tab, arr))
+		let save = document.createElement('div')
+		save.classList.add('rule34-xxx-tags')
+		save.classList.add('pt-1')
+		let save2 = document.createElement('p')
+		save2.innerText = 'States'
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = 'Id: '+arr.id
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = 'Size: '+arr.size
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = 'Format: '+arr.format
+		save.appendChild(save2)
+		side.appendChild(save)
 		sides.appendChild(side)
 		side = document.createElement('div')
 		const src = arr.src
