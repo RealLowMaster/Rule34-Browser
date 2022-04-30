@@ -1008,23 +1008,27 @@ function BRLink(tabId, link, site, id) {
 			ContextManager.SetActiveItem('br-posts', 4, false)
 			ContextManager.SetActiveItem('br-posts', 5, false)
 			ContextManager.SetActiveItem('br-posts', 6, false)
+			ContextManager.SetActiveItem('br-posts', 7, false)
 		} else if (IsHave(site, id)) {
 			if (IsDownloaded(site, id)) {
 				ContextManager.SetActiveItem('br-posts', 3, false)
 				ContextManager.SetActiveItem('br-posts', 4, false)
 				ContextManager.SetActiveItem('br-posts', 5, false)
 				ContextManager.SetActiveItem('br-posts', 6, true)
+				ContextManager.SetActiveItem('br-posts', 7, true)
 			} else {
 				ContextManager.SetActiveItem('br-posts', 3, false)
 				ContextManager.SetActiveItem('br-posts', 4, true)
 				ContextManager.SetActiveItem('br-posts', 5, false)
 				ContextManager.SetActiveItem('br-posts', 6, false)
+				ContextManager.SetActiveItem('br-posts', 7, false)
 			}
 		} else {
 			ContextManager.SetActiveItem('br-posts', 3, true)
 			ContextManager.SetActiveItem('br-posts', 4, false)
 			ContextManager.SetActiveItem('br-posts', 5, true)
 			ContextManager.SetActiveItem('br-posts', 6, false)
+			ContextManager.SetActiveItem('br-posts', 7, false)
 		}
 		ContextManager.ShowMenu('br-posts')
 	}
@@ -1222,6 +1226,7 @@ function GetPostElement(tab, i, date = 0) {
 	const len = tab.save.length
 	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len)
 	let save = document.createElement('img')
+	save.loading = 'lazy'
 	const src = paths.thumb+db.post[i][2]+'.jpg'
 	tab.save.push(i)
 	if (existsSync(src)) save.src = src+'?'+date

@@ -304,29 +304,40 @@ function AddPost(site, id, imgId, format, data, animated = null) {
 	try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
 }
 
-function ConfirmDeletingPost(site, id) {
-	Confirm(Language('are-ysadp'), [
+function ConfirmDeletingPost(site, id, keep) {
+	if (keep) Confirm(Language('are-ysadpk'), [
 		{
 			text: Language('delete'),
 			class: 'btn btn-danger',
-			click: 'DeletePost('+site+','+id+')'
+			click: `DeletePost(${site},${id},true)`
+		},
+		{text: Language('cancel')}
+	])
+	else Confirm(Language('are-ysadp'), [
+		{
+			text: Language('delete'),
+			class: 'btn btn-danger',
+			click: `DeletePost(${site},${id},false)`
 		},
 		{text: Language('cancel')}
 	])
 }
 
-function DeletePost(site, id) {
+function DeletePost(site, id, keep) {
 	KeyManager.stop = true
 	loading.Show(1, 'Deleting...')
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
 		try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
 		try { unlinkSync(paths.dl+db.post[i][2]+'.'+db.post[i][3]) } catch(err) {}
 		db.post.splice(i, 1)
-		const haveIndex = db.have[site].indexOf(id)
-		if (haveIndex >= 0) db.have[site].splice(haveIndex, 1)
 		try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
-		try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
-		browser.ChangeButtonsToDownloaded(site, id, true)
+		if (!keep) {
+			const haveIndex = db.have[site].indexOf(id)
+			if (haveIndex >= 0) db.have[site].splice(haveIndex, 1)
+			try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
+			browser.ChangeButtonsToHave(site, id)
+		} else browser.ChangeButtonsToDownloaded(site, id, true)
+		
 		KeyManager.stop = false
 		PopAlert(Language('pd'))
 		loading.Forward()

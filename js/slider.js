@@ -4,7 +4,7 @@ sldform.onsubmit = e => {
 	if (isNaN(val) || val < 1) val = 1
 	else if (val > Number(sldinput.max)) val = Number(sldinput.max)
 	sldinput.value = val
-	SliderChange(val)
+	SliderChange(val - 1)
 }
 
 sldinput.onfocus = () => KeyManager.stop = true
@@ -151,6 +151,7 @@ function SliderOverview(active) {
 			if (i == slider.active) element.setAttribute('active', '')
 			element.onclick = () => SliderChange(isave)
 			save = document.createElement('img')
+			save.loading = 'lazy'
 			save.src = src
 			element.appendChild(save)
 			save = document.createElement('p')
