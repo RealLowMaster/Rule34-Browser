@@ -38,6 +38,7 @@
 	<!-- Other -->
 	<script type="text/javascript" src="js/custom.js" defer></script>
 	<script type="text/javascript" src="js/slider.js" defer></script>
+	<script type="text/javascript" src="js/packing.js" defer></script>
 	<script type="text/javascript" src="js/database.js" defer></script>
 	<script type="text/javascript" src="js/download.js" defer></script>
 	<script type="text/javascript" src="js/startup.js" defer></script>
@@ -53,7 +54,7 @@
 			</div>
 		</div>
 		<div id="window-body">
-			<!-- Main Browser ⨯ -->
+			<!-- Main Browser -->
 			<div id="main-browser">
 				<div>
 					<div id="mb-tabs"></div>
@@ -77,6 +78,15 @@
 					</form>
 				</div>
 				<div id="mb-pages"></div>
+			</div>
+
+			<!-- Packing -->
+			<div id="packing">
+				<div>
+					<div lt="unpack" onclick="ClosePacking()"><i ic="box-open"></i></div>
+					<div lt="pack" onclick="Pack()"><i ic="box"></i></div>
+				</div>
+				<div id="packing-container"></div>
 			</div>
 
 			<!-- Properties -->

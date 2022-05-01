@@ -38,6 +38,8 @@
 	background-color: var(--tertiary-bg);
 }
 
+#main-browser[p] { width: calc(100% - 233px) !important }
+
 #mb-tabs {
 	display: flex;
 	width: calc(100% - 100px);
@@ -346,7 +348,7 @@
 	position: relative;
 	cursor: pointer;
 	box-shadow: 1px 1px 3px 0 #0008;
-	transition: background-color ease-in-out .19s;
+	transition: background-color ease-in-out .1s;
 }
 
 .main-page-posts > div:hover { background-color: var(--text-brand) }
@@ -821,7 +823,6 @@
 	opacity: .2;
 }
 #sld-toggle:hover { opacity: 1 }
-
 #slider[o] > div:first-child { display: block }
 #slider[o] > div:last-child { height: calc(100% - 250px) }
 
@@ -847,7 +848,60 @@
 
 #sld-img[o] { overflow: auto; border: 2px solid #000 }
 #sld-img[o] > * { width: auto; height: auto; max-width: none; max-height: none }
-
 #slider[h] > div:last-child > *:not(#sld-img) { opacity: 0 }
 #slider[h] > div:last-child > *:not(#sld-img):hover { opacity: 1 }
 #slider[h] > div:last-child > #sld-img { border: none !important }
+
+/* Packing */
+#packing {
+	display: none;
+	width: 233px !important;
+	left: auto !important;
+	right: 0;
+}
+
+#packing > div:first-child {
+	display: flex;
+	width: 100%;
+	height: 39px;
+	background-color: var(--primary-bg);
+	color: var(--primary-header);
+	direction: rtl;
+}
+
+#packing > div:first-child > div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 39px;
+	height: 39px;
+	cursor: pointer;
+	transition: background-color .1s;
+}
+
+#packing > div:first-child > div:first-child:hover { background-color: var(--text-danger) }
+#packing > div:first-child > div:last-child:hover { background-color: var(--text-brand) }
+
+#packing-container {
+	width: 100%;
+	height: calc(100% - 39px);
+	background-color: var(--secondary-bg-alt);
+	overflow-y: auto;
+}
+
+#packing-container > div {
+	width: 100%;
+	height: 233px;
+	padding: 4px;
+	background-color: var(--secondary-bg);
+	cursor: pointer;
+	transition: background-color .1s;
+}
+
+#packing-container > div > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+#packing-container > div:hover { background-color: var(--text-brand); }

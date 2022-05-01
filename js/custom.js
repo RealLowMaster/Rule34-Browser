@@ -271,11 +271,11 @@ class BrowserManager {
 		this.draging = null
 		window.addEventListener('resize', () => this.ResizeTabs())
 		mb_pages.onscroll = () => this.SetTabScroll()
-		mb_tabs.addEventListener('dragover', e => {
+		mb_tabs.ondragover = e => {
 			e.preventDefault()
-			const afterElement = GetDragAfterElement(e.clientX)
-			const draggable = document.querySelector('.dragging')
 			if (this.draging == null) return
+			const draggable = mb_tabs.querySelector('.dragging')
+			const afterElement = GetDragAfterElement(e.clientX)
 			const index = this.GetTabIndex(this.draging)
 			const tab = this.tabs[index]
 			if (afterElement == null) {
@@ -294,7 +294,7 @@ class BrowserManager {
 				}
 			}
 			if (this.tabs[this.selectedTabIndex].id != this.selectedTab) this.selectedTabIndex = this.GetTabIndex(this.selectedTab)
-		})
+		}
 	}
 
 	GetTabIndex(id) {
