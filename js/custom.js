@@ -1217,12 +1217,23 @@ function GetMainMenu(tab, page) {
 	return container
 }
 
-function PostLink(tabId, link, site, id, sldIndex) {
+function PostLink(tabId, link, site, id, sldIndex, pack) {
 	const e = window.event, key = e.which
 	if (key == 1) browser.LinkClick(tabId, link)
 	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
 	else {
 		ContextManager.save = [tabId, link, site, id, sldIndex]
+
+		if (pack) {
+			ContextManager.SetActiveItem('posts', 3, false)
+			ContextManager.SetActiveItem('posts', 4, true)
+			ContextManager.SetActiveItem('posts', 5, true)
+		} else {
+			ContextManager.SetActiveItem('posts', 3, true)
+			ContextManager.SetActiveItem('posts', 4, false)
+			ContextManager.SetActiveItem('posts', 5, false)
+		}
+
 		ContextManager.ShowMenu('posts')
 	}
 }
@@ -1230,23 +1241,37 @@ function PostLink(tabId, link, site, id, sldIndex) {
 function GetPostElement(tab, i, date = 0) {
 	const container = document.createElement('div')
 	const len = tab.save.length
-	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len)
+	let pack = false
+	if (db.post[i][0] == -1) pack = true
+	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len, pack)
 	let save = document.createElement('img')
 	save.loading = 'lazy'
-	const src = paths.thumb+db.post[i][2]+'.jpg'
-	tab.save.push(i)
-	if (existsSync(src)) save.src = src+'?'+date
-	else save.src = 'Image/no-img-225x225.webp'
-	container.appendChild(save)
+	if (pack) {
+		const src = paths.thumb+db.post[i][2][0]+'.jpg'
+		tab.save.push(i)
+		if (existsSync(src)) save.src = src+'?'+date
+		else save.src = 'Image/no-img-225x225.webp'
+		container.appendChild(save)
 
-	if (db.post[i][9] == '0') {
-		save = document.createElement('p')
-		save.innerHTML = Icon('gif-format')
-		container.appendChild(save)
-	} else if (IsFormatVideo(db.post[i][3])) {
 		save = document.createElement('span')
-		save.innerHTML = Icon('play')
+		save.innerHTML = Icon('layer')
 		container.appendChild(save)
+	} else {
+		const src = paths.thumb+db.post[i][2]+'.jpg'
+		tab.save.push(i)
+		if (existsSync(src)) save.src = src+'?'+date
+		else save.src = 'Image/no-img-225x225.webp'
+		container.appendChild(save)
+	
+		if (db.post[i][9] == '0') {
+			save = document.createElement('p')
+			save.innerHTML = Icon('gif-format')
+			container.appendChild(save)
+		} else if (IsFormatVideo(db.post[i][3])) {
+			save = document.createElement('span')
+			save.innerHTML = Icon('play')
+			container.appendChild(save)
+		}
 	}
 
 	return container

@@ -344,6 +344,7 @@
 	margin: 10px;
 	background-color: var(--secondary-bg-alt);
 	border-radius: 5px;
+	font-size: 20px;
 	overflow: hidden;
 	position: relative;
 	cursor: pointer;

@@ -25,7 +25,8 @@ pack.container.ondragover = e => {
 }
 
 function OpenPacking(site, id) {
-	const index = GetPost(site, id, true)
+	if (site == -1) return
+	const index = GetPost(site, id)
 	if (index == null) return
 	if (!pack.open) {
 		pack.open = true
@@ -53,9 +54,85 @@ function OpenPacking(site, id) {
 	pack.container.appendChild(element)
 }
 
-function Pack() {}
+function Pack() {
+	KeyManager.stop = true
+	loading.Show(1, Language('packing')+'...')
+	const idList = [], children = pack.container.children, cl = children.length
+	if (cl <= 1) {
+		PopAlert(Language('more-for-pack'), 'danger')
+		loading.Close()
+		KeyManager.stop = false
+		return
+	}
+	for (let i = 0; i < cl; i++) {
+		const site = Number(children[i].getAttribute('s')), id = Number(children[i].getAttribute('i'))
+		const found = GetPost(site, id)
+		if (found != null) idList.push(found)
+	}
 
-function UnPack(site, id) {}
+	const save = [-1, new Date().getTime(), [], [], [], [], [], [], [], [], [], []]
+	for (let i = 0, l = idList.length; i < l; i++) {
+		save[2].push(db.post[idList[i]][2])
+		save[3].push(db.post[idList[i]][3])
+		save[4].push(db.post[idList[i]][4])
+		save[5].push(db.post[idList[i]][5])
+		save[6].push(db.post[idList[i]][6])
+		save[7].push(db.post[idList[i]][7])
+		save[8].push(db.post[idList[i]][8])
+		save[9].push(db.post[idList[i]][9] || null)
+		save[10].push(db.post[idList[i]][0])
+		save[11].push(db.post[idList[i]][1])
+	}
+
+	const sorted = idList.sort((a , b) => {return b - a})
+	for (let i = 0, l = sorted.length; i < l; i++) db.post.splice(sorted[i], 1)
+	db.post.push(save)
+	browser.SetNeedReload(-1)
+	
+	ClosePacking()
+	loading.Close()
+	KeyManager.stop = false
+	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
+	PopAlert(Language('pack-end'))
+}
+
+function UnPack(id) {
+	KeyManager.stop = true
+	loading.Show(1, Language('unpacking')+'...')
+	const index = GetPost(-1, id)
+	if (index == null) {
+		loading.Close()
+		KeyManager.stop = false
+		return
+	}
+	const data = db.post[index].slice()
+	db.post.splice(index, 1)
+
+	for (let i = 0, l = data[10].length; i < l; i++) {
+		db.post.push([
+			data[10][i],
+			data[11][i],
+			data[2][i],
+			data[3][i],
+			data[4][i],
+			data[5][i],
+			data[6][i],
+			data[7][i],
+			data[8][i],
+			data[9][i]
+		])
+	}
+
+	loading.Close()
+	KeyManager.stop = false
+	browser.SetNeedReload(-1)
+	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
+	PopAlert(Language('unpack-end'))
+}
+
+function EditPack(site, id) {
+
+}
 
 function ClosePacking() {
 	pack.listSite = []
