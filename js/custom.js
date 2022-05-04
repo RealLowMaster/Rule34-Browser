@@ -1716,15 +1716,17 @@ function LoadHistory(tabId, page) {
 		let min = 0, max
 		if (count < 20) max = count
 		else {
-			min = (20 * page) - 20
-			max = min + 20
-			if (max > count) max = count
+			const use_page = page - 1
+			max = use_page * 20
+			max = count - max
+			min = max - 20
+			if (min < 0) min = 0
 		}
 		save = document.createElement('div')
 		save.classList.add('history')
 		let save2, save3
 
-		for (let i = min; i < max; i++) {
+		for (let i = max - 1; i >= min; i--) {
 			save2 = document.createElement('div')
 			save2.setAttribute('i', i)
 
