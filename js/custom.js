@@ -60,7 +60,18 @@ const db = {
 	character_link: [],
 	meta: [],
 	meta_index: [],
-	meta_link: []
+	meta_link: [],
+	manager: {
+		history: 1,
+		post: 1,
+		have: 1,
+		collection: 1,
+		artist: 1,
+		tag: 1,
+		parody: 1,
+		character: 1,
+		meta: 1
+	}
 }
 
 const paths = {}
@@ -847,6 +858,14 @@ function LoadDatabase() {
 	}
 
 	// -------------> Check Databases
+	if (!existsSync(paths.db+'manager')) try { jsonfile.writeFileSync(paths.db+'manager', db.manager) } catch(err) {
+		console.error(err)
+		error('CreatingManagerDB->'+err)
+	} else try { db.manager = jsonfile.readFileSync(paths.db+'manager') } catch(err) {
+		console.error(err)
+		error('LoadingManagerDB->'+err)
+	}
+
 	// post
 	if (!existsSync(paths.db+'post')) try { jsonfile.writeFileSync(paths.db+'post', {a:[],h:[]}) } catch(err) {
 		console.error(err)
