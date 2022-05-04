@@ -1,10 +1,11 @@
 const pack = {
 	open: false,
 	edit: false,
-	data: null,
+	data: [],
 	container: document.getElementById('packing-container'),
 	listSite: [],
-	listId: []
+	listId: [],
+	listBack: [[],[]]
 }
 
 function GetDragAfterPack(y) {
@@ -57,10 +58,16 @@ function OpenPacking(site, id) {
 	pack.container.appendChild(element)
 }
 
-function IsInPack(site, id) {
-	if (!pack.open) return false
-	for (let i = 0, l = pack.listSite.length; i < l; i++) if (pack.listId[i] == id && pack.listSite[i] == site) return true
-	return false
+function IsInPack(site, id, index = false) {
+	if (index) {
+		if (!pack.open) return -1
+		for (let i = 0, l = pack.listSite.length; i < l; i++) if (pack.listId[i] == id && pack.listSite[i] == site) return i
+		return -1
+	} else {
+		if (!pack.open) return false
+		for (let i = 0, l = pack.listSite.length; i < l; i++) if (pack.listId[i] == id && pack.listSite[i] == site) return true
+		return false
+	}
 }
 
 function IsItPack(id) {
@@ -69,7 +76,38 @@ function IsItPack(id) {
 }
 
 function RemoveFromPack(site, id) {
-
+	const index = IsInPack(site, id, true)
+	if (index == -1) return
+	const children = pack.container.children
+	for (let i = 0, l = children.length; i < l; i++) if (children[i].getAttribute('i') == id && children[i].getAttribute('s') == site) {
+		children[i].remove()
+		pack.listSite.splice(index, 1)
+		pack.listId.splice(index, 1)
+		if (site == -1) {
+			let exists = false, sid = id
+			site = pack.data[10][id], id = pack.data[11][id]
+			for (let j = 0, n = pack.listBack[0].length; j < n; j++) if (pack.listBack[1][i] == id && pack.listBack[0][i] == site) exists = true
+			if (!exists) {
+				pack.listBack[0].push(site)
+				pack.listBack[1].push(id)
+			}
+			db.post.push([
+				site,
+				id,
+				pack.data[2][sid],
+				pack.data[3][sid],
+				pack.data[4][sid],
+				pack.data[5][sid],
+				pack.data[6][sid],
+				pack.data[7][sid],
+				pack.data[8][sid],
+				pack.data[9][sid]
+			])
+			browser.SetNeedReload(-1)
+			try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
+		}
+		return
+	}
 }
 
 function Pack() {
@@ -157,7 +195,7 @@ function Pack() {
 	}
 	else db.post.push(save)
 	browser.SetNeedReload(-1)
-	
+	pack.listBack = [[],[]]
 	ClosePacking()
 	loading.Close()
 	KeyManager.stop = false
@@ -216,6 +254,7 @@ function EditPack(id) {
 	pack.edit = true
 	pack.listSite = []
 	pack.listId = []
+	pack.listBack = [[],[]]
 	document.getElementById('packing').style.display = 'block'
 	document.getElementById('main-browser').setAttribute('p', '')
 	const index = GetPost(-1, id)
@@ -247,8 +286,39 @@ function EditPack(id) {
 }
 
 function ClosePacking() {
+	if (pack.listBack[0].length > 0) {
+		const siteList = pack.listBack[0], idList = pack.listBack[1]
+		let done = false
+		while (!done) {
+			done = true
+			for (let i = 1, l = idList.length; i < l; i += 1) {
+				if (idList[i - 1] > idList[i]) {
+					done = false
+					let tmp = idList[i - 1], tmp2 = siteList[i - 1]
+					siteList[i - 1] = siteList[i]
+					idList[i - 1] = idList[i]
+					siteList[i] = tmp2
+					idList[i] = tmp
+				}
+			}
+		}
+
+		let changed = false
+		for (let i = siteList.length - 1; i >= 0; i--) {
+			const index = GetPost(siteList[i], idList[i])
+			if (index != null) {
+				db.post.splice(index, 1)
+				changed = true
+			}
+		}
+		if (changed) {
+			try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
+			browser.SetNeedReload(-1)
+		}
+	}
 	pack.listSite = []
 	pack.listId = []
+	pack.listBack = [[],[]]
 	pack.data = []
 	pack.open = false
 	pack.edit = false
