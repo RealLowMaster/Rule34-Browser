@@ -1239,16 +1239,17 @@ function PostLink(tabId, link, site, id, sldIndex, pack) {
 }
 
 function GetPostElement(tab, i, date = 0) {
-	const container = document.createElement('div')
-	const len = tab.save.length
 	let pack = false
 	if (db.post[i][0] == -1) pack = true
+	else if (db.post[i][10] == "0") return document.createElement('b')
+	const container = document.createElement('div')
+	const len = tab.save.length
 	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len, pack)
 	let save = document.createElement('img')
 	save.loading = 'lazy'
 	if (pack) {
-		const src = paths.thumb+db.post[i][2][0]+'.jpg'
 		tab.save.push(i)
+		const src = paths.thumb+db.post[i][4]+'.jpg'
 		if (existsSync(src)) save.src = src+'?'+date
 		else save.src = 'Image/no-img-225x225.webp'
 		container.appendChild(save)
@@ -1257,8 +1258,8 @@ function GetPostElement(tab, i, date = 0) {
 		save.innerHTML = Icon('layer')
 		container.appendChild(save)
 	} else {
-		const src = paths.thumb+db.post[i][2]+'.jpg'
 		tab.save.push(i)
+		const src = paths.thumb+db.post[i][2]+'.jpg'
 		if (existsSync(src)) save.src = src+'?'+date
 		else save.src = 'Image/no-img-225x225.webp'
 		container.appendChild(save)

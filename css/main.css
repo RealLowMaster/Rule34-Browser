@@ -336,6 +336,8 @@
 	color: #fff;
 }
 
+.main-page-posts > b { display: none }
+
 .main-page-posts > div {
 	display: inline-block;
 	width: 233px;

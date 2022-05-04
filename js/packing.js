@@ -1,5 +1,6 @@
 const pack = {
 	open: false,
+	edit: false,
 	container: document.getElementById('packing-container'),
 	listSite: [],
 	listId: []
@@ -70,29 +71,20 @@ function Pack() {
 		if (found != null) idList.push(found)
 	}
 
-	const save = [-1, new Date().getTime(), [], [], [], [], [], [], [], [], [], []]
+	const save = [-1, new Date().getTime(), [], [], null]
+	save[4] = db.post[idList[0]][2]
 	for (let i = 0, l = idList.length; i < l; i++) {
-		save[2].push(db.post[idList[i]][2])
-		save[3].push(db.post[idList[i]][3])
-		save[4].push(db.post[idList[i]][4])
-		save[5].push(db.post[idList[i]][5])
-		save[6].push(db.post[idList[i]][6])
-		save[7].push(db.post[idList[i]][7])
-		save[8].push(db.post[idList[i]][8])
-		save[9].push(db.post[idList[i]][9] || null)
-		save[10].push(db.post[idList[i]][0])
-		save[11].push(db.post[idList[i]][1])
+		save[2].push(db.post[idList[i]][0])
+		save[3].push(db.post[idList[i]][1])
+		db.post[idList[i]][10] = "0"
 	}
-
-	const sorted = idList.sort((a , b) => {return b - a})
-	for (let i = 0, l = sorted.length; i < l; i++) db.post.splice(sorted[i], 1)
 	db.post.push(save)
 	browser.SetNeedReload(-1)
 	
 	ClosePacking()
 	loading.Close()
 	KeyManager.stop = false
-	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
+	// try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
 	PopAlert(Language('pack-end'))
 }
 
@@ -108,36 +100,39 @@ function UnPack(id) {
 	const data = db.post[index].slice()
 	db.post.splice(index, 1)
 
-	for (let i = 0, l = data[10].length; i < l; i++) {
-		db.post.push([
-			data[10][i],
-			data[11][i],
-			data[2][i],
-			data[3][i],
-			data[4][i],
-			data[5][i],
-			data[6][i],
-			data[7][i],
-			data[8][i],
-			data[9][i]
-		])
+	for (let i = 0, l = data[2].length; i < l; i++) {
+		const pid = GetPost(data[2][i], data[3][i])
+		if (pid != null) db.post[pid][10] = null
 	}
 
 	loading.Close()
 	KeyManager.stop = false
 	browser.SetNeedReload(-1)
-	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
+	// try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
 	PopAlert(Language('unpack-end'))
 }
 
 function EditPack(site, id) {
-
+	if (pack.open) {
+		PopAlert(Language('pack-is-open'), 'warning')
+		return
+	}
+	pack.open = true
+	pack.edit = true
+	pack.listSite = []
+	pack.listId = []
+	if (!pack.open) {
+		pack.open = true
+		document.getElementById('packing').style.display = 'block'
+		document.getElementById('main-browser').setAttribute('p', '')
+	}
 }
 
 function ClosePacking() {
 	pack.listSite = []
 	pack.listId = []
 	pack.open = false
+	pack.edit = false
 	document.getElementById('packing').style.display = 'none'
 	document.getElementById('main-browser').removeAttribute('p')
 	pack.container.innerHTML = null
