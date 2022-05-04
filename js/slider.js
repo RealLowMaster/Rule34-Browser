@@ -12,6 +12,8 @@ sldinput.addEventListener('focusout', () => KeyManager.stop = false )
 
 const slider = {
 	list: [],
+	thumbList: [],
+	animatedList: [],
 	active: null,
 	container: document.getElementById('slider'),
 	img_container: document.getElementById('sld-img'),
@@ -22,13 +24,19 @@ const slider = {
 	is_url: false
 }
 
-function OpenSlider(list, index, isurl = false) {
+function OpenSlider(list, index, isurl = false, thumbList, animated) {
 	slider.is_url = isurl
 	KeyManager.ChangeCategory('slider')
 	slider.container.style.display = 'block'
 	slider.list = list
 	if (index != null && typeof index === 'number' && index >= 0 && index < list.length) slider.active = index
 	else slider.active = 0
+
+	if (slider.is_url && thumbList != null) slider.thumbList = thumbList
+	else slider.thumbList = []
+
+	if (slider.is_url && animated != null) slider.animatedList = animated
+	else slider.animatedList = []
 
 	const btns = document.getElementById('sld-btns').children
 	if (list.length <= 1) {
@@ -171,7 +179,31 @@ function SliderOverview(active) {
 	if (active) {
 		slider.container.setAttribute('o','')
 		let save
-		for (let i = 0, l = slider.list.length; i < l; i++) {
+		if (slider.is_url) {
+			for (let i = 0, l = slider.list.length; i < l; i++) {
+				const si = i
+				const element = document.createElement('div')
+				if (i == slider.active) element.setAttribute('active', '')
+				element.onclick = () => SliderChange(si)
+				save = document.createElement('img')
+				save.loading = 'lazy'
+				save.src = slider.thumbList[i] || null
+				element.appendChild(save)
+				save = document.createElement('p')
+				save.innerText = i+1
+				element.appendChild(save)
+				if (slider.animatedList[i] == 0) {
+					save = document.createElement('span')
+					save.innerHTML = Icon('gif-format')
+					element.appendChild(save)
+				} else if (slider.animatedList[i] == 1) {
+					save = document.createElement('span')
+					save.innerHTML = Icon('play')
+					element.appendChild(save)
+				}
+				container.appendChild(element)
+			}
+		} else for (let i = 0, l = slider.list.length; i < l; i++) {
 			const isave = i
 			const index = slider.list[i]
 			let src = paths.thumb+db.post[index][2]+'.jpg'
@@ -190,7 +222,7 @@ function SliderOverview(active) {
 				save = document.createElement('span')
 				save.innerHTML = Icon('gif-format')
 				element.appendChild(save)
-			} if (IsFormatVideo(db.post[index][3])) {
+			} else if (IsFormatVideo(db.post[index][3])) {
 				save = document.createElement('span')
 				save.innerHTML = Icon('play')
 				element.appendChild(save)
@@ -211,6 +243,7 @@ function SliderHide(active) {
 function CloseSlider() {
 	slider.container.style.display = 'none'
 	slider.container.removeAttribute('o')
+	slider.listAnimated = []
 	SliderOverview(false)
 	SliderOriginalSize(false)
 	SliderHide(false)

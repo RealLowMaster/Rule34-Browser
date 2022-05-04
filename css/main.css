@@ -610,6 +610,7 @@
 .post-img {
 	display: block;
 	max-width: 95%;
+	min-height: 200px;
 	height: auto;
 	margin: 20px auto;
 	cursor: zoom-in;

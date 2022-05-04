@@ -1295,7 +1295,6 @@ function GetPostElement(tab, i, date = 0) {
 		if (existsSync(src)) save.src = src+'?'+date
 		else save.src = 'Image/no-img-225x225.webp'
 		container.appendChild(save)
-
 		save = document.createElement('span')
 		save.innerHTML = Icon('layer')
 		container.appendChild(save)
@@ -1528,113 +1527,252 @@ function Post(tabId, site, id) {
 
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
 		let save, save2, title = ''
-		const url = paths.dl+db.post[i][2]+'.'+db.post[i][3]
-		tab.save = [url]
-		if (existsSync(url)) {
-			if (IsFormatVideo(db.post[i][3])) {
-				save = document.createElement('video')
-				save.classList.add('post-img')
-				save.loop = true
-				save.muted = false
-				save.autoplay = false
-				save.controls = true
-				save.setAttribute('controlsList', 'nodownload')
-				save.volume = 1 / 100 * setting.default_volume
-				save.src = url
-				save.setAttribute('onmousedown', `OpenSlider([${i}], 0)`)
+		if (db.post[i][0] == -1) {
+			tab.save = [[], [], []]
+			const data = {parody:[], character:[], artist:[], tag:[], meta:[]}
+			for (let j = 0, n = db.post[i][10].length; j < n; j++) {
+				const url = paths.dl+db.post[i][2][j]+'.'+db.post[i][3][j]
+				tab.save[0].push(url)
+				tab.save[1].push(paths.thumb+db.post[i][2][j]+'.jpg')
+				if (existsSync(url)) {
+					const sj = j
+					if (IsFormatVideo(db.post[i][3][j])) {
+						tab.save[2].push(1)
+						save = document.createElement('video')
+						save.classList.add('post-img')
+						save.loop = true
+						save.muted = false
+						save.autoplay = false
+						save.controls = true
+						save.setAttribute('controlsList', 'nodownload')
+						save.volume = 1 / 100 * setting.default_volume
+						save.src = url
+						save.onclick = () => {
+							const load_save = browser.tabs[browser.GetTabIndex(tabId)].save
+							OpenSlider(load_save[0], sj, true, load_save[1], load_save[2])
+						}
+						container.appendChild(save)
+					} else {
+						if (db.post[i][9][j] == '0') tab.save[2].push(0)
+						else tab.save[2].push(-1)
+						save = document.createElement('img')
+						save.classList.add('post-img')
+						save.loading = 'lazy'
+						save.src = url
+						save.onclick = () => {
+							const load_save = browser.tabs[browser.GetTabIndex(tabId)].save
+							OpenSlider(load_save[0], sj, true, load_save[1], load_save[2])
+						}
+						container.appendChild(save)
+					}
+				} else {
+					tab.save[2].push(-1)
+					save = document.createElement('img')
+					save.classList.add('post-img')
+					save.src = 'Image/no-img-225x225.webp'
+					container.appendChild(save)
+				}
+
+				if (db.post[i][4][j] != null) data.parody = data.parody.concat(db.post[i][4][j])
+				if (db.post[i][5][j] != null) data.character = data.character.concat(db.post[i][5][j])
+				if (db.post[i][6][j] != null) data.artist = data.artist.concat(db.post[i][6][j])
+				if (db.post[i][7][j] != null) data.tag = data.tag.concat(db.post[i][7][j])
+				if (db.post[i][8][j] != null) data.meta = data.meta.concat(db.post[i][8][j])
+			}
+			data.parody = NoLoopArray(data.parody)
+			data.character = NoLoopArray(data.character)
+			data.artist = NoLoopArray(data.artist)
+			data.tag = NoLoopArray(data.tag)
+			data.meta = NoLoopArray(data.meta)
+
+			// parody
+			if (data.parody.length > 0) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Parody:'
+				for (let j = 0, n = data.parody.length; j < n; j++) {
+					title += db.parody[data.parody[j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.parody[data.parody[j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.parody[data.parody[j]], tabId, tab.AddLink(-6, [])))
+				}
 				container.appendChild(save)
-			} else {
-				save = document.createElement('img')
-				save.classList.add('post-img')
-				save.src = url
-				save.setAttribute('onclick', `OpenSlider([${i}], 0)`)
+			}
+
+			// character
+			if (data.character.length > 0) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Character:'
+				for (let j = 0, n = data.character.length; j < n; j++) {
+					title += db.character[data.character[j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.character[data.character[j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.character[data.character[j]], tabId, tab.AddLink(-6, [])))
+				}
+				container.appendChild(save)
+			}
+
+			// artist
+			if (data.artist.length > 0) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Artists:'
+				for (let j = 0, n = data.artist.length; j < n; j++) {
+					title += db.artist[data.artist[j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.artist[data.artist[j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.artist[data.artist[j]], tabId, tab.AddLink(-6, [])))
+				}
+				container.appendChild(save)
+			}
+
+			// tag
+			if (data.tag.length > 0) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Tag:'
+				for (let j = 0, n = data.tag.length; j < n; j++) {
+					title += db.tag[data.tag[j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.tag[data.tag[j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.tag[data.tag[j]], tabId, tab.AddLink(-6, [])))
+				}
+				container.appendChild(save)
+			}
+
+			// meta
+			if (data.meta.length > 0) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Meta:'
+				for (let j = 0, n = data.meta.length; j < n; j++) {
+					title += db.meta[data.meta[j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.meta[data.meta[j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.meta[data.meta[j]], tabId, tab.AddLink(-6, [])))
+				}
 				container.appendChild(save)
 			}
 		} else {
-			save = document.createElement('img')
-			save.classList.add('post-img')
-			save.src = 'Image/no-img-225x225.webp'
-			container.appendChild(save)
-		}
-		
-		// parody
-		if (db.post[i][4] != null) {
-			save = document.createElement('div')
-			save.classList.add('post-tags')
-			save.innerText = 'Parody:'
-			for (let j = 0, n = db.post[i][4].length; j < n; j++) {
-				title += db.parody[db.post[i][4][j]]+', '
-				save2 = document.createElement('div')
-				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-				save2.innerText = db.parody[db.post[i][4][j]]
-				save.appendChild(save2)
-				// save.appendChild(NormalLinkElement('div', db.parody[db.post[i][4][j]], tabId, tab.AddLink(-6, [])))
+			const url = paths.dl+db.post[i][2]+'.'+db.post[i][3]
+			if (existsSync(url)) {
+				if (IsFormatVideo(db.post[i][3])) {
+					save = document.createElement('video')
+					save.classList.add('post-img')
+					save.loop = true
+					save.muted = false
+					save.autoplay = false
+					save.controls = true
+					save.setAttribute('controlsList', 'nodownload')
+					save.volume = 1 / 100 * setting.default_volume
+					save.src = url
+					save.setAttribute('onmousedown', `OpenSlider([${i}], 0)`)
+					container.appendChild(save)
+				} else {
+					save = document.createElement('img')
+					save.classList.add('post-img')
+					save.loading = 'lazy'
+					save.src = url
+					save.setAttribute('onclick', `OpenSlider([${i}], 0)`)
+					container.appendChild(save)
+				}
+			} else {
+				save = document.createElement('img')
+				save.classList.add('post-img')
+				save.src = 'Image/no-img-225x225.webp'
+				container.appendChild(save)
 			}
-			container.appendChild(save)
-		}
 
-		// character
-		if (db.post[i][5] != null) {
-			save = document.createElement('div')
-			save.classList.add('post-tags')
-			save.innerText = 'Character:'
-			for (let j = 0, n = db.post[i][5].length; j < n; j++) {
-				title += db.character[db.post[i][5][j]]+', '
-				save2 = document.createElement('div')
-				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-				save2.innerText = db.character[db.post[i][5][j]]
-				save.appendChild(save2)
-				// save.appendChild(NormalLinkElement('div', db.character[db.post[i][5][j]], tabId, tab.AddLink(-6, [])))
+			// parody
+			if (db.post[i][4] != null) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Parody:'
+				for (let j = 0, n = db.post[i][4].length; j < n; j++) {
+					title += db.parody[db.post[i][4][j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.parody[db.post[i][4][j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.parody[db.post[i][4][j]], tabId, tab.AddLink(-6, [])))
+				}
+				container.appendChild(save)
 			}
-			container.appendChild(save)
-		}
 
-		// artist
-		if (db.post[i][6] != null) {
-			save = document.createElement('div')
-			save.classList.add('post-tags')
-			save.innerText = 'Artists:'
-			for (let j = 0, n = db.post[i][6].length; j < n; j++) {
-				title += db.artist[db.post[i][6][j]]+', '
-				save2 = document.createElement('div')
-				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-				save2.innerText = db.artist[db.post[i][6][j]]
-				save.appendChild(save2)
-				// save.appendChild(NormalLinkElement('div', db.artist[db.post[i][6][j]], tabId, tab.AddLink(-6, [])))
+			// character
+			if (db.post[i][5] != null) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Character:'
+				for (let j = 0, n = db.post[i][5].length; j < n; j++) {
+					title += db.character[db.post[i][5][j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.character[db.post[i][5][j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.character[db.post[i][5][j]], tabId, tab.AddLink(-6, [])))
+				}
+				container.appendChild(save)
 			}
-			container.appendChild(save)
-		}
 
-		// tag
-		if (db.post[i][7] != null) {
-			save = document.createElement('div')
-			save.classList.add('post-tags')
-			save.innerText = 'Tag:'
-			for (let j = 0, n = db.post[i][7].length; j < n; j++) {
-				title += db.tag[db.post[i][7][j]]+', '
-				save2 = document.createElement('div')
-				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-				save2.innerText = db.tag[db.post[i][7][j]]
-				save.appendChild(save2)
-				// save.appendChild(NormalLinkElement('div', db.tag[db.post[i][7][j]], tabId, tab.AddLink(-6, [])))
+			// artist
+			if (db.post[i][6] != null) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Artists:'
+				for (let j = 0, n = db.post[i][6].length; j < n; j++) {
+					title += db.artist[db.post[i][6][j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.artist[db.post[i][6][j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.artist[db.post[i][6][j]], tabId, tab.AddLink(-6, [])))
+				}
+				container.appendChild(save)
 			}
-			container.appendChild(save)
-		}
 
-		// meta
-		if (db.post[i][8] != null) {
-			save = document.createElement('div')
-			save.classList.add('post-tags')
-			save.innerText = 'Meta:'
-			for (let j = 0, n = db.post[i][8].length; j < n; j++) {
-				title += db.meta[db.post[i][8][j]]+', '
-				save2 = document.createElement('div')
-				save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-				save2.innerText = db.meta[db.post[i][8][j]]
-				save.appendChild(save2)
-				// save.appendChild(NormalLinkElement('div', db.meta[db.post[i][8][j]], tabId, tab.AddLink(-6, [])))
+			// tag
+			if (db.post[i][7] != null) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Tag:'
+				for (let j = 0, n = db.post[i][7].length; j < n; j++) {
+					title += db.tag[db.post[i][7][j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.tag[db.post[i][7][j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.tag[db.post[i][7][j]], tabId, tab.AddLink(-6, [])))
+				}
+				container.appendChild(save)
 			}
-			container.appendChild(save)
+
+			// meta
+			if (db.post[i][8] != null) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = 'Meta:'
+				for (let j = 0, n = db.post[i][8].length; j < n; j++) {
+					title += db.meta[db.post[i][8][j]]+', '
+					save2 = document.createElement('div')
+					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
+					save2.innerText = db.meta[db.post[i][8][j]]
+					save.appendChild(save2)
+					// save.appendChild(NormalLinkElement('div', db.meta[db.post[i][8][j]], tabId, tab.AddLink(-6, [])))
+				}
+				container.appendChild(save)
+			}
 		}
 
 		container.appendChild(document.createElement('br'))
