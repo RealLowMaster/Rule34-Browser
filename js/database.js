@@ -6,8 +6,9 @@ function IsHave(site, id) {
 }
 
 function IsDownloaded(site, id) {
-	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) return true
-	return false
+	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) return 1
+	if (db.post_have[site].indexOf(id) >= 0) return 2
+	return 0
 }
 
 function AddToHave(site, id) {
@@ -300,7 +301,7 @@ function AddPost(site, id, imgId, format, data, animated = null) {
 	db.post.push(arr)
 	db.have[site].push(id)
 	browser.SetNeedReload(-1)
-	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
+	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
 	try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
 }
 
@@ -324,13 +325,17 @@ function ConfirmDeletingPost(site, id, keep) {
 }
 
 function DeletePost(site, id, keep) {
+	if (IsInPack(site, id)) {
+		PopAlert(Language('cdelete-in-pack'), 'danger')
+		return
+	}
 	KeyManager.stop = true
 	loading.Show(1, 'Deleting...')
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
 		try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
 		try { unlinkSync(paths.dl+db.post[i][2]+'.'+db.post[i][3]) } catch(err) {}
 		db.post.splice(i, 1)
-		try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
+		try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
 		if (!keep) {
 			const haveIndex = db.have[site].indexOf(id)
 			if (haveIndex >= 0) db.have[site].splice(haveIndex, 1)

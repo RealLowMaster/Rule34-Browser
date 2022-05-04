@@ -43,6 +43,7 @@ const sites = [
 const db = {
 	history: [],
 	post: [],
+	post_have: [],
 	have: [],
 	collection: [],
 	artist: [],
@@ -847,10 +848,22 @@ function LoadDatabase() {
 
 	// -------------> Check Databases
 	// post
-	if (!existsSync(paths.db+'post')) try { jsonfile.writeFileSync(paths.db+'post', {a:[]}) } catch(err) {
+	if (!existsSync(paths.db+'post')) try { jsonfile.writeFileSync(paths.db+'post', {a:[],h:[]}) } catch(err) {
 		console.error(err)
 		error('CreatingPostDB->'+err)
-	} else try { db.post = jsonfile.readFileSync(paths.db+'post').a } catch(err) {
+	} else try {
+		const load = jsonfile.readFileSync(paths.db+'post')
+		if (Array.isArray(load.a)) db.post = load.a
+		else db.post = []
+		if (Array.isArray(load.h)) {
+			db.post_have = load.h
+			if (db.post_have.length < sites.length) for (let i = 0, l = sites.length; i < l; i++) if (!Array.isArray(db.post_have[i])) db.post_have[i] = []
+		} else {
+			const post_have = []
+			for (let i = 0, l = sites.length; i < l; i++) post_have.push([])
+			db.post_have = post_have
+		}
+	} catch(err) {
 		db.post = []
 		console.error(err)
 		error('LoadingPostDB->'+err)
@@ -982,7 +995,7 @@ function BRPostDL(site, id) {
 		container.setAttribute('dli','')
 		container.innerHTML = `<img src="${loading_img.src}">`
 	} else if (IsHave(site, id)) {
-		if (IsDownloaded(site, id)) {
+		if (IsDownloaded(site, id) != 0) {
 			container.setAttribute('dl','')
 			container.setAttribute('l', 'dled')
 			container.innerText = Language('dled')
@@ -1016,18 +1029,29 @@ function BRLink(tabId, link, site, id) {
 			ContextManager.SetActiveItem('br-posts', 6, false)
 			ContextManager.SetActiveItem('br-posts', 7, false)
 		} else if (IsHave(site, id)) {
-			if (IsDownloaded(site, id)) {
-				ContextManager.SetActiveItem('br-posts', 3, false)
-				ContextManager.SetActiveItem('br-posts', 4, false)
-				ContextManager.SetActiveItem('br-posts', 5, false)
-				ContextManager.SetActiveItem('br-posts', 6, true)
-				ContextManager.SetActiveItem('br-posts', 7, true)
-			} else {
-				ContextManager.SetActiveItem('br-posts', 3, false)
-				ContextManager.SetActiveItem('br-posts', 4, true)
-				ContextManager.SetActiveItem('br-posts', 5, false)
-				ContextManager.SetActiveItem('br-posts', 6, false)
-				ContextManager.SetActiveItem('br-posts', 7, false)
+			const isdl = IsDownloaded(site, id)
+			switch(isdl) {
+				case 0:
+					ContextManager.SetActiveItem('br-posts', 3, false)
+					ContextManager.SetActiveItem('br-posts', 4, true)
+					ContextManager.SetActiveItem('br-posts', 5, false)
+					ContextManager.SetActiveItem('br-posts', 6, false)
+					ContextManager.SetActiveItem('br-posts', 7, false)
+					break
+				case 1:
+					ContextManager.SetActiveItem('br-posts', 3, false)
+					ContextManager.SetActiveItem('br-posts', 4, false)
+					ContextManager.SetActiveItem('br-posts', 5, false)
+					ContextManager.SetActiveItem('br-posts', 6, true)
+					ContextManager.SetActiveItem('br-posts', 7, true)
+					break
+				case 2:
+					ContextManager.SetActiveItem('br-posts', 3, false)
+					ContextManager.SetActiveItem('br-posts', 4, false)
+					ContextManager.SetActiveItem('br-posts', 5, false)
+					ContextManager.SetActiveItem('br-posts', 6, false)
+					ContextManager.SetActiveItem('br-posts', 7, false)
+					break
 			}
 		} else {
 			ContextManager.SetActiveItem('br-posts', 3, true)
@@ -1241,7 +1265,6 @@ function PostLink(tabId, link, site, id, sldIndex, pack) {
 function GetPostElement(tab, i, date = 0) {
 	let pack = false
 	if (db.post[i][0] == -1) pack = true
-	else if (db.post[i][10] == "0") return document.createElement('b')
 	const container = document.createElement('div')
 	const len = tab.save.length
 	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len, pack)
@@ -1249,7 +1272,7 @@ function GetPostElement(tab, i, date = 0) {
 	save.loading = 'lazy'
 	if (pack) {
 		tab.save.push(i)
-		const src = paths.thumb+db.post[i][4]+'.jpg'
+		const src = paths.thumb+db.post[i][2][0]+'.jpg'
 		if (existsSync(src)) save.src = src+'?'+date
 		else save.src = 'Image/no-img-225x225.webp'
 		container.appendChild(save)

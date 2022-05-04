@@ -55,6 +55,12 @@ function OpenPacking(site, id) {
 	pack.container.appendChild(element)
 }
 
+function IsInPack(site, id) {
+	if (!pack.open) return false
+	for (let i = 0, l = pack.listSite.length; i < l; i++) if (pack.listId[i] == id && pack.listSite[i] == site) return true
+	return false
+}
+
 function Pack() {
 	KeyManager.stop = true
 	loading.Show(1, Language('packing')+'...')
@@ -71,12 +77,24 @@ function Pack() {
 		if (found != null) idList.push(found)
 	}
 
-	const save = [-1, new Date().getTime(), [], [], null]
-	save[4] = db.post[idList[0]][2]
+	const save = [-1, new Date().getTime(), [], [], [], [], [], [], [], [], [], []]
 	for (let i = 0, l = idList.length; i < l; i++) {
-		save[2].push(db.post[idList[i]][0])
-		save[3].push(db.post[idList[i]][1])
-		db.post[idList[i]][10] = "0"
+		save[2].push(db.post[idList[i]][2])
+		save[3].push(db.post[idList[i]][3])
+		save[4].push(db.post[idList[i]][4])
+		save[5].push(db.post[idList[i]][5])
+		save[6].push(db.post[idList[i]][6])
+		save[7].push(db.post[idList[i]][7])
+		save[8].push(db.post[idList[i]][8])
+		save[9].push(db.post[idList[i]][9] || null)
+		save[10].push(db.post[idList[i]][0])
+		save[11].push(db.post[idList[i]][1])
+	}
+
+	const sorted = idList.sort((a , b) => {return b - a})
+	for (let i = 0, l = sorted.length; i < l; i++) {
+		db.post_have[db.post[sorted[i]][0]].push(db.post[sorted[i]][1])
+		db.post.splice(sorted[i], 1)
 	}
 	db.post.push(save)
 	browser.SetNeedReload(-1)
@@ -84,7 +102,7 @@ function Pack() {
 	ClosePacking()
 	loading.Close()
 	KeyManager.stop = false
-	// try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
+	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
 	PopAlert(Language('pack-end'))
 }
 
@@ -100,15 +118,27 @@ function UnPack(id) {
 	const data = db.post[index].slice()
 	db.post.splice(index, 1)
 
-	for (let i = 0, l = data[2].length; i < l; i++) {
-		const pid = GetPost(data[2][i], data[3][i])
-		if (pid != null) db.post[pid][10] = null
+	for (let i = 0, l = data[10].length; i < l; i++) {
+		const hindex = db.post_have[data[10][i]].indexOf(data[11][i])
+		if (hindex >= 0) db.post_have[data[10][i]].splice(hindex, 1)
+		db.post.push([
+			data[10][i],
+			data[11][i],
+			data[2][i],
+			data[3][i],
+			data[4][i],
+			data[5][i],
+			data[6][i],
+			data[7][i],
+			data[8][i],
+			data[9][i]
+		])
 	}
 
 	loading.Close()
 	KeyManager.stop = false
 	browser.SetNeedReload(-1)
-	// try { jsonfile.writeFileSync(paths.db+'post', {a:db.post}) } catch(err) { console.error(err) }
+	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
 	PopAlert(Language('unpack-end'))
 }
 
