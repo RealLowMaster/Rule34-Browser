@@ -341,7 +341,7 @@ function DeletePost(site, id, keep) {
 			if (haveIndex >= 0) db.have[site].splice(haveIndex, 1)
 			try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
 			browser.ChangeButtonsToHave(site, id)
-		} else browser.ChangeButtonsToDownloaded(site, id, true)
+		} else browser.ChangeButtonsToHave(site, id, false)
 		
 		KeyManager.stop = false
 		PopAlert(Language('pd'))
