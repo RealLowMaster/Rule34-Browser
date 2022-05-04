@@ -325,7 +325,7 @@ function ConfirmDeletingPost(site, id, keep) {
 }
 
 function DeletePost(site, id, keep) {
-	if (IsInPack(site, id)) {
+	if (IsInPack(site, id) || IsItPack(id)) {
 		PopAlert(Language('cdelete-in-pack'), 'danger')
 		return
 	}

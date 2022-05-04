@@ -228,4 +228,7 @@ function SetContextMenus() {
 	ContextManager.AddItem(i, { text:'delete', click: () => ConfirmDeletingPost(ContextManager.save[2], ContextManager.save[3], false) })
 	ContextManager.AddItem(i, { text:'delete-shave', click: () => ConfirmDeletingPost(ContextManager.save[2], ContextManager.save[3], true) })
 	ContextManager.AddItem(i, { text:'properties', click: () => OpenPostProperties(ContextManager.save[2], ContextManager.save[3]) })
+
+	i = ContextManager.AddMenu('pack')
+	ContextManager.AddItem(i, { text:'r-pack', click: () => RemoveFromPack(ContextManager.save[0], ContextManager.save[1]) })
 }

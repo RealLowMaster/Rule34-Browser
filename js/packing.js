@@ -1,6 +1,7 @@
 const pack = {
 	open: false,
 	edit: false,
+	data: null,
 	container: document.getElementById('packing-container'),
 	listSite: [],
 	listId: []
@@ -45,6 +46,7 @@ function OpenPacking(site, id) {
 	element.draggable = true
 	element.ondragstart = e => e.target.classList.add('dragging')
 	element.ondragend = e => e.target.classList.remove('dragging')
+	element.oncontextmenu = () => ContextManager.ShowMenu('pack', [site, id])
 	element.setAttribute('s', site)
 	element.setAttribute('i', id)
 	const img = document.createElement('img')
@@ -61,10 +63,19 @@ function IsInPack(site, id) {
 	return false
 }
 
+function IsItPack(id) {
+	if (pack.edit && pack.data[1] == id) return true
+	return false
+}
+
+function RemoveFromPack(site, id) {
+
+}
+
 function Pack() {
 	KeyManager.stop = true
 	loading.Show(1, Language('packing')+'...')
-	const idList = [], children = pack.container.children, cl = children.length
+	const idList = [], siteList = [], children = pack.container.children, cl = children.length
 	if (cl <= 1) {
 		PopAlert(Language('more-for-pack'), 'danger')
 		loading.Close()
@@ -73,30 +84,78 @@ function Pack() {
 	}
 	for (let i = 0; i < cl; i++) {
 		const site = Number(children[i].getAttribute('s')), id = Number(children[i].getAttribute('i'))
-		const found = GetPost(site, id)
-		if (found != null) idList.push(found)
+		if (site != -1) {
+			const found = GetPost(site, id)
+			if (found != null) {
+				siteList.push(site)
+				idList.push(found)
+			}
+		} else {
+			siteList.push(-1)
+			idList.push(id)
+		}
 	}
-
 	const save = [-1, new Date().getTime(), [], [], [], [], [], [], [], [], [], []]
 	for (let i = 0, l = idList.length; i < l; i++) {
-		save[2].push(db.post[idList[i]][2])
-		save[3].push(db.post[idList[i]][3])
-		save[4].push(db.post[idList[i]][4])
-		save[5].push(db.post[idList[i]][5])
-		save[6].push(db.post[idList[i]][6])
-		save[7].push(db.post[idList[i]][7])
-		save[8].push(db.post[idList[i]][8])
-		save[9].push(db.post[idList[i]][9] || null)
-		save[10].push(db.post[idList[i]][0])
-		save[11].push(db.post[idList[i]][1])
+		if (siteList[i] != -1) {
+			save[2].push(db.post[idList[i]][2])
+			save[3].push(db.post[idList[i]][3])
+			save[4].push(db.post[idList[i]][4])
+			save[5].push(db.post[idList[i]][5])
+			save[6].push(db.post[idList[i]][6])
+			save[7].push(db.post[idList[i]][7])
+			save[8].push(db.post[idList[i]][8])
+			save[9].push(db.post[idList[i]][9] || null)
+			save[10].push(db.post[idList[i]][0])
+			save[11].push(db.post[idList[i]][1])
+		} else {
+			save[2].push(pack.data[2][idList[i]])
+			save[3].push(pack.data[3][idList[i]])
+			save[4].push(pack.data[4][idList[i]])
+			save[5].push(pack.data[5][idList[i]])
+			save[6].push(pack.data[6][idList[i]])
+			save[7].push(pack.data[7][idList[i]])
+			save[8].push(pack.data[8][idList[i]])
+			save[9].push(pack.data[9][idList[i]])
+			save[10].push(pack.data[10][idList[i]])
+			save[11].push(pack.data[11][idList[i]])
+		}
 	}
 
-	const sorted = idList.sort((a , b) => {return b - a})
-	for (let i = 0, l = sorted.length; i < l; i++) {
-		db.post_have[db.post[sorted[i]][0]].push(db.post[sorted[i]][1])
-		db.post.splice(sorted[i], 1)
+	// Sorting Ids Lower -> Higher
+	let done = false
+	while (!done) {
+		done = true
+		for (let i = 1, l = idList.length; i < l; i += 1) {
+			if (idList[i - 1] > idList[i]) {
+				done = false
+				let tmp = idList[i - 1], tmp2 = siteList[i - 1]
+				siteList[i - 1] = siteList[i]
+				idList[i - 1] = idList[i]
+				siteList[i] = tmp2
+				idList[i] = tmp
+			}
+		}
 	}
-	db.post.push(save)
+	
+	for (let i = siteList.length - 1; i >= 0; i--) {
+		if (siteList[i] != -1) {
+			db.post_have[siteList[i]].push(db.post[idList[i]][1])
+			db.post.splice(idList[i], 1)
+		}
+	}
+	if (pack.edit) {
+		const packIndex = GetPost(-1, pack.data[1])
+		if (packIndex == null) {
+			PopAlert('nopostfound', 'danger')
+			loading.Close()
+			KeyManager.stop = false
+			ClosePacking()
+			return
+		}
+		db.post[packIndex] = save
+	}
+	else db.post.push(save)
 	browser.SetNeedReload(-1)
 	
 	ClosePacking()
@@ -109,6 +168,12 @@ function Pack() {
 function UnPack(id) {
 	KeyManager.stop = true
 	loading.Show(1, Language('unpacking')+'...')
+	if (IsItPack(id)) {
+		KeyManager.stop = false
+		loading.Close()
+		PopAlert(Language('cunpack-in-edit'), 'danger')
+		return
+	}
 	const index = GetPost(-1, id)
 	if (index == null) {
 		loading.Close()
@@ -142,7 +207,7 @@ function UnPack(id) {
 	PopAlert(Language('unpack-end'))
 }
 
-function EditPack(site, id) {
+function EditPack(id) {
 	if (pack.open) {
 		PopAlert(Language('pack-is-open'), 'warning')
 		return
@@ -151,16 +216,40 @@ function EditPack(site, id) {
 	pack.edit = true
 	pack.listSite = []
 	pack.listId = []
-	if (!pack.open) {
-		pack.open = true
-		document.getElementById('packing').style.display = 'block'
-		document.getElementById('main-browser').setAttribute('p', '')
+	document.getElementById('packing').style.display = 'block'
+	document.getElementById('main-browser').setAttribute('p', '')
+	const index = GetPost(-1, id)
+	if (index == null) {
+		ClosePacking()
+		PopAlert(Language('nopostfound'), 'danger')
+		return
+	}
+	pack.data = db.post[index].slice()
+
+	for (let i = 0, l = pack.data[10].length; i < l; i++) {
+		const li = pack.listSite.length
+		pack.listSite[li] = -1
+		pack.listId[li] = i
+		const element = document.createElement('div')
+		element.draggable = true
+		element.ondragstart = e => e.target.classList.add('dragging')
+		element.ondragend = e => e.target.classList.remove('dragging')
+		element.oncontextmenu = () => ContextManager.ShowMenu('pack', [-1, i])
+		element.setAttribute('s', -1)
+		element.setAttribute('i', i)
+		const img = document.createElement('img')
+		let src = paths.thumb+pack.data[2][i]+'.jpg'
+		if (!existsSync(src)) src = 'Image/no-img-225x225.webp'
+		img.src = src+'?'+new Date().getTime()
+		element.appendChild(img)
+		pack.container.appendChild(element)
 	}
 }
 
 function ClosePacking() {
 	pack.listSite = []
 	pack.listId = []
+	pack.data = []
 	pack.open = false
 	pack.edit = false
 	document.getElementById('packing').style.display = 'none'
