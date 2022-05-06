@@ -1384,49 +1384,159 @@ function GetPagination(tab, link, total_pages, page) {
 
 function OpenPostProperties(site, id) {
 	KeyManager.stop = true
-	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
-		const container = document.getElementById('post-properties')
-		const panel = container.children[0], url = paths.dl+db.post[i][2]+'.'+db.post[i][3]
-		panel.innerHTML = null
-		let size = 0, save
-		try { size = statSync(url).size } catch(err) { size = 0 }
+	const index = GetPost(site, id)
+	if (index == null) {
+		KeyManager.stop = false
+		return
+	}
+	const container = document.getElementById('post-properties'), panel = container.children[0]
+	panel.innerHTML = null
+	if (db.post[index][0] == -1) {
+		const list = [0]
+		let l = db.post[index][10].length, save, save2, save3
+		for (let i = 0; i < l; i++) {
+			const url = paths.dl+db.post[index][2][i]+'.'+db.post[index][3][i]
+			let size
+			try { size = statSync(url).size } catch(err) { size = 0 }
+			list[0] += size
+			const site = db.post[index][10][i]
+			list.push([url, FormatBytes(size), 'Image/sites/'+sites[site].url+'-32x32.'+sites[site].icon, db.post[index][3][i]])
+		}
 
-		save = document.createElement('img')
-		save.src = 'Image/sites/'+sites[db.post[i][0]].url+'-32x32.'+sites[db.post[i][0]].icon
-		save.title = Language('open-site')
+		save = document.createElement('span')
+		save2 = document.createElement('div')
+		save2.innerText = Language('full-size')+':'
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = FormatBytes(list[0])
+		save.appendChild(save2)
+		panel.appendChild(save)
+
+		l++
+		for (let i = 1; i < l; i++) {
+			const si = i
+			const row = document.createElement('span')
+			let column = document.createElement('div')
+			const img = document.createElement('img')
+			img.src = list[i][2]
+			img.title = Language('open-site')
+			img.onclick = () => {
+				container.style.display = 'none'
+				panel.innerHTML = null
+				KeyManager.stop = false
+				browser.OpenInNewTab(3, db.post[index][10][si - 1])
+			}
+			column.appendChild(img)
+			row.appendChild(column)
+			column = document.createElement('div')
+			column.innerText = list[i][1]+' - '+list[i][3].toUpperCase()
+			row.appendChild(column)
+			column = document.createElement('div')
+			column.classList.add('btn')
+			column.classList.add('btn-primary')
+			column.innerText = Language('openfile')
+			column.onclick = () => downloader.OpenURL(list[si][0])
+			row.appendChild(column)
+			panel.appendChild(row)
+
+			if (existsSync(list[i][0])) {
+				if (IsFormatVideo(list[i][3])) {
+					const vid = document.createElement('video')
+					vid.onloadedmetadata = () => {
+						const get_element = panel.children[si].children[1]
+						get_element.innerText += ' - '+vid.videoWidth+'x'+vid.videoHeight
+						get_element.title = vid.videoWidth * vid.videoHeight+' Pixles'
+					}
+					vid.src = list[i][0]
+				} else {
+					const img = new Image()
+					img.onload = () => {
+						const get_element = panel.children[si].children[1]
+						get_element.innerText += ' - '+img.naturalWidth+'x'+img.naturalHeight
+						get_element.title = img.naturalWidth * img.naturalHeight+' Pixles'
+					}
+					img.src = list[i][0]
+				}
+			}
+		}
+
+		save = document.createElement('div')
+		save.classList.add('btn')
+		save.classList.add('btn-danger')
+		save.innerText = Language('close')
 		save.onclick = () => {
 			container.style.display = 'none'
 			panel.innerHTML = null
 			KeyManager.stop = false
-			browser.OpenInNewTab(3, db.post[i][0])
 		}
 		panel.appendChild(save)
-		
-		save = document.createElement('p')
-		save.innerText = FormatBytes(size)
+	} else {
+		const url = paths.dl+db.post[index][2]+'.'+db.post[index][3]
+		let size = 0
+		try { size = statSync(url).size } catch(err) { size = 0 }
+
+		let save = document.createElement('span')
+		let save2 = document.createElement('div')
+		save2.innerText = Language('size')+':'
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = FormatBytes(size)
+		save.appendChild(save2)
 		panel.appendChild(save)
 
-		save = document.createElement('p')
-		save.innerText = db.post[i][3].toUpperCase()
+		save = document.createElement('span')
+		save2 = document.createElement('div')
+		save2.innerText = Language('format')+':'
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = db.post[index][3].toUpperCase()
+		save.appendChild(save2)
 		panel.appendChild(save)
 
 		if (existsSync(url)) {
-			const res = document.createElement('p')
-			if (IsFormatVideo(db.post[i][3])) {
+			save = document.createElement('span')
+			save2 = document.createElement('div')
+			save2.innerText = Language('resolution')+':'
+			save.appendChild(save2)
+			const res = document.createElement('div')
+			save.appendChild(res)
+			if (IsFormatVideo(db.post[index][3])) {
 				const vid = document.createElement('video')
 				vid.onloadedmetadata = () => {
 					res.innerText = vid.videoWidth+'x'+vid.videoHeight
+					res.title = vid.videoWidth * vid.videoHeight+' Pixels'
 				}
 				vid.src = url
 			} else {
 				const img = new Image()
 				img.onload = () => {
 					res.innerText = img.naturalWidth+'x'+img.naturalHeight
+					res.title = img.naturalWidth * img.naturalHeight+' Pixels'
 				}
 				img.src = url
 			}
-			panel.appendChild(res)
+			panel.appendChild(save)
 		}
+
+		save = document.createElement('span')
+		save2 = document.createElement('div')
+		save2.innerText = Language('site')+':'
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = sites[db.post[index][0]].name
+		const save3 = document.createElement('img')
+		save3.classList.add('ml-2')
+		save3.src = 'Image/sites/'+sites[db.post[index][0]].url+'-32x32.'+sites[db.post[index][0]].icon
+		save3.title = Language('open-site')
+		save3.onclick = () => {
+			container.style.display = 'none'
+			panel.innerHTML = null
+			KeyManager.stop = false
+			browser.OpenInNewTab(3, db.post[index][0])
+		}
+		save2.appendChild(save3)
+		save.appendChild(save2)
+		panel.appendChild(save)
 
 		save = document.createElement('div')
 		save.classList.add('btn')
@@ -1445,10 +1555,8 @@ function OpenPostProperties(site, id) {
 			KeyManager.stop = false
 		}
 		panel.appendChild(save)
-
-		container.style.display = 'flex'
-		return
 	}
+	container.style.display = 'flex'
 }
 
 function LoadPage(tabId, page = 1) {

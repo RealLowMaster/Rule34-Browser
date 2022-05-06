@@ -1,15 +1,6 @@
 @font-face { font-family: Outfit; src: url("../fonts/Outfit.ttf") }
 @font-face { font-family: BTitrBd; src: url('../fonts/BTitrBd.ttf') }
 
-* {
-	padding: 0;
-	margin: 0;
-	border: none;
-	outline: none;
-	box-sizing: border-box;
-	font-family: var(--font-family);
-}
-
 :root {
 	font-size: 16px;
 	font-weight: 300;
@@ -19,6 +10,15 @@
 	--topMenuSize: 25px;
 	--dir: ltr;
 	--diro: rtl;
+}
+
+* {
+	padding: 0;
+	margin: 0;
+	border: none;
+	outline: none;
+	box-sizing: border-box;
+	font-family: var(--font-family);
 }
 
 ::-webkit-scrollbar {
@@ -146,18 +146,15 @@ textarea::-webkit-input-placeholder { user-select: none }
 
 .btn {
 	display: inline-flex;
-	justify-content: center;
 	align-items: center;
 	width: auto;
-	height: 32px;
     min-width: 60px;
-    min-height: 32px;
-	padding: 2px 16px;
+	padding: 8px 16px;
 	margin: 3px;
 	background: none;
 	color: #fff;
 	border-radius: 3px;
-	font-family: Outfit,Arial,sans-serif;
+	text-align: center;
 	font-size: 14px;
     font-weight: 500;
     line-height: 16px;
