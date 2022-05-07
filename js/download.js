@@ -104,7 +104,7 @@ class DownloadManager {
 			id: id,
 			save: Number(`${date}${Math.floor(Math.random() * 9)}`)
 		}
-		browser.ChangeButtonsToDownloading(site, id)
+		browser.ChangeButtonsToDownloading(site, id, false)
 		return this.ids[i]
 	}
 
@@ -195,7 +195,7 @@ class DownloadManager {
 		this.dls.splice(i, 1)
 		this.ids.splice(i, 1)
 		AddPost(data.site, data.id, data.save, data.format, data.data, data.animated || null)
-		browser.ChangeButtonsToDownloaded(data.site, data.id)
+		browser.ChangeButtonsToDownloaded(data.site, data.id, false)
 
 		if (this.dls.length > 0) return
 		PopAlert(Language('adl-finish'), 'warning')

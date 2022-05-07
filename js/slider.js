@@ -206,19 +206,25 @@ function SliderOverview(active) {
 		} else for (let i = 0, l = slider.list.length; i < l; i++) {
 			const isave = i
 			const index = slider.list[i]
-			let src = paths.thumb+db.post[index][2]+'.jpg'
-			if (!existsSync(src)) src = 'Image/no-img-225x225.webp'
 			const element = document.createElement('div')
 			if (i == slider.active) element.setAttribute('active', '')
 			element.onclick = () => SliderChange(isave)
 			save = document.createElement('img')
 			save.loading = 'lazy'
+			let src
+			if (db.post[index][0] == -1) src = paths.thumb+db.post[index][2][0]+'.jpg'
+			else src = paths.thumb+db.post[index][2]+'.jpg'
+			if (!existsSync(src)) src = 'Image/no-img-225x225.webp'
 			save.src = src
 			element.appendChild(save)
 			save = document.createElement('p')
 			save.innerText = i+1
 			element.appendChild(save)
-			if (db.post[index][9] == '0') {
+			if (db.post[index][0] == -1) {
+				save = document.createElement('span')
+				save.innerHTML = Icon('layer')
+				element.appendChild(save)
+			} else if (db.post[index][9] == '0') {
 				save = document.createElement('span')
 				save.innerHTML = Icon('gif-format')
 				element.appendChild(save)

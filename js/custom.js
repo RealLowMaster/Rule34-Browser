@@ -582,6 +582,8 @@ class BrowserManager {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) {
 					elements[j].removeAttribute('dli')
+					elements[j].removeAttribute('dl')
+					elements[j].removeAttribute('have')
 					if (elements[j].tagName == 'DL') {
 						elements[j].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
 						elements[j].setAttribute('l', 'dl')
@@ -608,6 +610,8 @@ class BrowserManager {
 				for (let j = 0, n = elements.length; j < n; j++) if (elements[j].tagName == 'DL') {
 					elements[j].removeAttribute('onclick')
 					elements[j].removeAttribute('l')
+					elements[j].removeAttribute('dl')
+					elements[j].removeAttribute('have')
 					elements[j].setAttribute('dli','')
 					elements[j].title = ''
 					elements[j].innerHTML = `<img src="${loading_img.src}">`
@@ -623,54 +627,6 @@ class BrowserManager {
 				for (let j = 0, n = elements.length; j < n; j++) {
 					elements[j].removeAttribute('dli')
 					elements[j].removeAttribute('dl')
-					if (elements[j].tagName == 'DL') {
-						elements[j].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
-						elements[j].setAttribute('l', 'dl')
-						elements[j].title = ''
-						elements[j].innerText = Language('dl')
-					} else {
-						elements[j].innerHTML = null
-						let save = document.createElement('div')
-						save.onclick = () => DownloadClick(site, id)
-						save.setAttribute('l', 'dl')
-						save.innerText = Language('dl')
-						elements[j].appendChild(save)
-						save = document.createElement('div')
-						save.onclick = () => AddToHave(site, id)
-						save.setAttribute('l', 'add-to-dls')
-						save.innerText = Language('add-to-dls')
-						elements[j].appendChild(save)
-					}
-				}
-			}
-		} else {
-			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
-				const elements = document.querySelectorAll(`[pid="${id}"]`)
-				for (let j = 0, n = elements.length; j < n; j++) {
-					elements[j].removeAttribute('dli')
-					elements[j].setAttribute('dl', '')
-					if (elements[j].tagName == 'DL') {
-						elements[j].removeAttribute('onclick')
-						elements[j].setAttribute('l', 'dled')
-						elements[j].title = ''
-						elements[j].innerText = Language('dled')
-					} else {
-						elements[j].innerHTML = null
-						const save = document.createElement('div')
-						save.setAttribute('l', 'dled')
-						save.innerText = Language('dled')
-						elements[j].appendChild(save)
-					}
-				}
-			}
-		}
-	}
-
-	ChangeButtonsToHave(site, id, back) {
-		if (back) {
-			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
-				const elements = document.querySelectorAll(`[pid="${id}"]`)
-				for (let j = 0, n = elements.length; j < n; j++) {
 					elements[j].removeAttribute('have')
 					if (elements[j].tagName == 'DL') {
 						elements[j].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
@@ -696,6 +652,60 @@ class BrowserManager {
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) {
+					elements[j].removeAttribute('dli')
+					elements[j].removeAttribute('have')
+					elements[j].setAttribute('dl', '')
+					if (elements[j].tagName == 'DL') {
+						elements[j].removeAttribute('onclick')
+						elements[j].setAttribute('l', 'dled')
+						elements[j].title = ''
+						elements[j].innerText = Language('dled')
+					} else {
+						elements[j].innerHTML = null
+						const save = document.createElement('div')
+						save.setAttribute('l', 'dled')
+						save.innerText = Language('dled')
+						elements[j].appendChild(save)
+					}
+				}
+			}
+		}
+	}
+
+	ChangeButtonsToHave(site, id, back) {
+		if (back) {
+			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+				const elements = document.querySelectorAll(`[pid="${id}"]`)
+				for (let j = 0, n = elements.length; j < n; j++) {
+					elements[j].removeAttribute('dli')
+					elements[j].removeAttribute('dl')
+					elements[j].removeAttribute('have')
+					if (elements[j].tagName == 'DL') {
+						elements[j].setAttribute('onclick', `DownloadClick(${site}, ${id})`)
+						elements[j].setAttribute('l', 'dl')
+						elements[j].title = ''
+						elements[j].innerText = Language('dl')
+					} else {
+						elements[j].innerHTML = null
+						let save = document.createElement('div')
+						save.onclick = () => DownloadClick(site, id)
+						save.setAttribute('l', 'dl')
+						save.innerText = Language('dl')
+						elements[j].appendChild(save)
+						save = document.createElement('div')
+						save.onclick = () => AddToHave(site, id)
+						save.setAttribute('l', 'add-to-dls')
+						save.innerText = Language('add-to-dls')
+						elements[j].appendChild(save)
+					}
+				}
+			}
+		} else {
+			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
+				const elements = document.querySelectorAll(`[pid="${id}"]`)
+				for (let j = 0, n = elements.length; j < n; j++) {
+					elements[j].removeAttribute('dli')
+					elements[j].removeAttribute('dl')
 					elements[j].setAttribute('have','')
 					if (elements[j].tagName == 'DL') {
 						elements[j].setAttribute('onclick', `RemoveFromHave(${site}, ${id})`)

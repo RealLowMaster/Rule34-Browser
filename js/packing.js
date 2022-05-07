@@ -34,7 +34,7 @@ function OpenPacking(site, id) {
 	if (!pack.open) {
 		pack.open = true
 		document.getElementById('packing').style.display = 'block'
-		document.getElementById('main-browser').setAttribute('p', '')
+		mb_pages.setAttribute('p', '')
 	}
 	for (let i = 0, l = pack.listSite.length; i < l; i++) if (pack.listId[i] == id && pack.listSite[i] == site) {
 		PopAlert(Language('al-in-pack'), 'danger')
@@ -256,7 +256,7 @@ function EditPack(id) {
 	pack.listId = []
 	pack.listBack = [[],[]]
 	document.getElementById('packing').style.display = 'block'
-	document.getElementById('main-browser').setAttribute('p', '')
+	mb_pages.setAttribute('p', '')
 	const index = GetPost(-1, id)
 	if (index == null) {
 		ClosePacking()
@@ -323,6 +323,6 @@ function ClosePacking() {
 	pack.open = false
 	pack.edit = false
 	document.getElementById('packing').style.display = 'none'
-	document.getElementById('main-browser').removeAttribute('p')
+	mb_pages.removeAttribute('p')
 	pack.container.innerHTML = null
 }

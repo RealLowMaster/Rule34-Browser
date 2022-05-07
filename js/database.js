@@ -15,7 +15,7 @@ function AddToHave(site, id) {
 	const i = db.have[site].indexOf(id)
 	if (i < 0) {
 		db.have[site].push(id)
-		browser.ChangeButtonsToHave(site, id)
+		browser.ChangeButtonsToHave(site, id, false)
 		try {
 			jsonfile.writeFileSync(paths.db+'have', {a:db.have})
 			PopAlert(Language('pa-to-dls'))
@@ -340,7 +340,7 @@ function DeletePost(site, id, keep) {
 			const haveIndex = db.have[site].indexOf(id)
 			if (haveIndex >= 0) db.have[site].splice(haveIndex, 1)
 			try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
-			browser.ChangeButtonsToHave(site, id)
+			browser.ChangeButtonsToDownloaded(site, id, true)
 		} else browser.ChangeButtonsToHave(site, id, false)
 		
 		KeyManager.stop = false

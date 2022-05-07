@@ -38,8 +38,6 @@
 	background-color: var(--tertiary-bg);
 }
 
-#main-browser[p] { width: calc(100% - 233px) !important }
-
 #mb-tabs {
 	display: flex;
 	width: calc(100% - 100px);
@@ -135,7 +133,6 @@
 }
 
 #mb-tabs > div[active] + div::before { display: none }
-
 .dragging { opacity: 0.5 }
 
 #main-browser > div:first-child > div:last-child {
@@ -220,9 +217,7 @@
 }
 
 #mb-search > input:hover,
-#mb-search > input:focus {
-	border-color: var(--modifier-selected-bg);
-}
+#mb-search > input:focus { border-color: var(--modifier-selected-bg) }
 
 #mb-jump-page {
 	display: inline-block;
@@ -258,10 +253,8 @@
 	height: 100%;
 }
 
-#mb-pages {
-	height: calc(100% - 69px);
-	overflow-y: auto;
-}
+#mb-pages { height: calc(100% - 69px); overflow-y: auto }
+#mb-pages[p] { width: calc(100% - 233px) }
 
 #mb-pages > div {
 	display: none;
@@ -368,12 +361,14 @@
 	position: absolute;
 	top: 10px;
 	right: 10px;
+	filter: drop-shadow(0 1px #000f);
 }
 
 .main-page-posts > div > p {
 	position: absolute;
 	bottom: 10px;
 	left: 10px;
+	filter: drop-shadow(0 1px #000f);
 }
 
 .main-page-pagination {
@@ -775,6 +770,8 @@
 	position: absolute;
 	top: 10px;
 	right: 10px;
+	font-size: 20px;
+	filter: drop-shadow(0 1px #000f);
 }
 
 #sld-overview > div:hover { background-color: #faa81a }
@@ -878,6 +875,8 @@
 #packing {
 	display: none;
 	width: 233px !important;
+	height: calc(100% - var(--topMenuSize) - 69px) !important;
+	top: calc(var(--topMenuSize) + 69px) !important;
 	left: auto !important;
 	right: 0;
 }
