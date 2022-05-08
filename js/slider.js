@@ -7,16 +7,34 @@ sldform.onsubmit = e => {
 	SliderChange(val - 1)
 }
 
+sldpform.onsubmit = e => {
+	e.preventDefault()
+	if (slider.sub_max == null) return
+	let val = Number(sldpinput.value)
+	if (isNaN(val) || val < 1) val = 1
+	else if (val > Number(sldpinput.max)) val = Number(sldpinput.max)
+	sldpinput.value = val
+	slider.sub_active = val - 1
+	SliderChange(slider.active)
+}
+
 sldinput.onfocus = () => KeyManager.stop = true
 sldinput.addEventListener('focusout', () => KeyManager.stop = false )
+sldpinput.onfocus = () => KeyManager.stop = true
+sldpinput.addEventListener('focusout', () => KeyManager.stop = false )
 
 const slider = {
 	list: [],
+	listLength: null,
 	thumbList: [],
 	animatedList: [],
 	active: null,
+	sub_active: null,
+	sub_max: null,
 	container: document.getElementById('slider'),
 	img_container: document.getElementById('sld-img'),
+	pack_page: document.getElementById('sldppage'),
+	pack_icon: null,
 	element: null,
 	osize: false,
 	overview: false,
@@ -25,12 +43,15 @@ const slider = {
 }
 
 function OpenSlider(list, index, isurl = false, thumbList, animated) {
+	slider.pack_icon = sldpform.children[0]
 	slider.is_url = isurl
 	KeyManager.ChangeCategory('slider')
 	slider.container.style.display = 'block'
 	slider.list = list
-	if (index != null && typeof index === 'number' && index >= 0 && index < list.length) slider.active = index
+	slider.listLength = list.length
+	if (index != null && typeof index === 'number' && index >= 0 && index < slider.listLength) slider.active = index
 	else slider.active = 0
+	slider.sub_active = null
 
 	if (slider.is_url && thumbList != null) slider.thumbList = thumbList
 	else slider.thumbList = []
@@ -39,7 +60,7 @@ function OpenSlider(list, index, isurl = false, thumbList, animated) {
 	else slider.animatedList = []
 
 	const btns = document.getElementById('sld-btns').children
-	if (list.length <= 1) {
+	if (slider.listLength <= 1) {
 		btns[0].style.display = 'none'
 		btns[1].style.display = 'none'
 		sldform.style.display = 'none'
@@ -52,19 +73,28 @@ function OpenSlider(list, index, isurl = false, thumbList, animated) {
 	}
 
 	sldinput.value = slider.active + 1
-	const max = slider.list.length
+	const max = slider.listLength
 	sldinput.max = max
 	document.getElementById('sldpage').innerText = '/ '+max
 
-	SliderChange(slider.active)
+	if (db.post[slider.list[slider.active]][0] == -1) {
+		slider.active--
+		SliderChange(slider.active + 1)
+	} else SliderChange(slider.active)
 }
 
 function SliderPrev() {
-	if (slider.active > 0) SliderChange(slider.active - 1)
+	if (slider.sub_max != null && slider.sub_active > 0) {
+		slider.sub_active--
+		SliderChange(slider.active)
+	} else if (slider.active > 0) SliderChange(slider.active - 1)
 }
 
 function SliderNext() {
-	if (slider.active < slider.list.length - 1) SliderChange(slider.active + 1)
+	if (slider.sub_max != null && slider.sub_active < slider.sub_max) {
+		slider.sub_active++
+		SliderChange(slider.active)
+	} else if (slider.active < slider.listLength - 1) SliderChange(slider.active + 1)
 }
 
 function SliderChange(index) {
@@ -73,6 +103,8 @@ function SliderChange(index) {
 		children[slider.active].removeAttribute('active')
 		children[index].setAttribute('active','')
 	}
+	let same = false
+	if (slider.active == index) same = true
 	slider.active = index
 	sldinput.value = slider.active + 1
 
@@ -84,8 +116,31 @@ function SliderChange(index) {
 	const i = slider.list[slider.active]
 	let src, format
 	if (!slider.is_url) {
-		format = db.post[i][3]
-		src = paths.dl+db.post[i][2]+'.'+format
+		if (db.post[i][0] == -1) {
+			if (same) {
+				format = db.post[i][3][slider.sub_active]
+				src = paths.dl+db.post[i][2][slider.sub_active]+'.'+format
+			} else {
+				format = db.post[i][3][0]
+				src = paths.dl+db.post[i][2][0]+'.'+format
+				slider.sub_active = 0
+				slider.sub_max = db.post[i][10].length - 1
+			}
+			slider.pack_page.innerText = slider.sub_max + 1
+			slider.pack_page.style.display = 'inline-block'
+			slider.pack_icon.style.display = 'inline-block'
+			sldpinput.value = slider.sub_active + 1
+			sldpinput.max = slider.sub_max + 1
+			sldpinput.style.display = 'inline-block'
+		} else {
+			format = db.post[i][3]
+			src = paths.dl+db.post[i][2]+'.'+format
+			slider.sub_active = null
+			slider.sub_max = null
+			slider.pack_page.style.display = 'none'
+			slider.pack_icon.style.display = 'none'
+			sldpinput.style.display = 'none'
+		}
 
 		if (!existsSync(src)) {
 			slider.element = document.createElement('img')
@@ -98,7 +153,6 @@ function SliderChange(index) {
 			}
 			return
 		}
-
 	} else {
 		src = i
 		format = LastChar('.', src)
@@ -136,7 +190,6 @@ function SliderChange(index) {
 	}
 
 	slider.img_container.appendChild(slider.element)
-
 	if (slider.osize) {
 		slider.img_container.scrollTop = 0
 		slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
@@ -180,7 +233,7 @@ function SliderOverview(active) {
 		slider.container.setAttribute('o','')
 		let save
 		if (slider.is_url) {
-			for (let i = 0, l = slider.list.length; i < l; i++) {
+			for (let i = 0, l = slider.listLength; i < l; i++) {
 				const si = i
 				const element = document.createElement('div')
 				if (i == slider.active) element.setAttribute('active', '')
@@ -203,7 +256,7 @@ function SliderOverview(active) {
 				}
 				container.appendChild(element)
 			}
-		} else for (let i = 0, l = slider.list.length; i < l; i++) {
+		} else for (let i = 0, l = slider.listLength; i < l; i++) {
 			const isave = i
 			const index = slider.list[i]
 			const element = document.createElement('div')
@@ -253,6 +306,9 @@ function CloseSlider() {
 	SliderOverview(false)
 	SliderOriginalSize(false)
 	SliderHide(false)
+	slider.active = null
+	slider.sub_active = null
+	slider.sub_max = null
 	KeyManager.ChangeCategory('default')
 	if (slider.element != null) {
 		slider.element.src = ''

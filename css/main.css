@@ -778,7 +778,8 @@
 #sld-overview > div[active] { background-color: #949cf7 }
 #slider > div:last-child { width: 100%; height: 100%; position: relative }
 
-#sldform {
+.sldform {
+	color: #fff;
 	position: absolute;
 	top: 0;
 	left: 20px;
@@ -786,8 +787,8 @@
 	user-select: text;
 }
 
-#sldinput {
-	width: 50px;
+.sldform > input {
+	width: 40px;
 	padding: 0 3px;
 	margin-right: 5px;
 	background-color: transparent;
@@ -797,12 +798,12 @@
 	cursor: pointer;
 }
 
-#sldinput:hover,
-#sldinput:focus { border-color: #069dca }
-#sldinput:focus { border-style: solid; cursor: default }
-#sldinput::-webkit-inner-spin-button,
-#sldinput::-webkit-outer-spin-button { appearance: none }
-#sldpage { color: #fff }
+.sldform > input:hover,
+.sldform > input:focus { border-color: #069dca }
+.sldform > input:focus { border-style: solid; cursor: default }
+.sldform > input::-webkit-inner-spin-button,
+.sldform > input::-webkit-outer-spin-button { appearance: none }
+#sldpform { left: 104px }
 
 #sld-btns {
 	display: flex;
