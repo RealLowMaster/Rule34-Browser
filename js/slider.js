@@ -77,7 +77,7 @@ function OpenSlider(list, index, isurl = false, thumbList, animated) {
 	sldinput.max = max
 	document.getElementById('sldpage').innerText = '/ '+max
 
-	if (db.post[slider.list[slider.active]][0] == -1) {
+	if (!slider.is_url && db.post[slider.list[slider.active]][0] == -1) {
 		slider.active--
 		SliderChange(slider.active + 1)
 	} else SliderChange(slider.active)

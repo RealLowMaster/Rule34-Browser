@@ -134,8 +134,31 @@ function LoadSettings() {
 }
 
 function OpenSettings() {
-	document.getElementById('setting-window').style.display = 'flex'
 	KeyManager.ChangeCategory('setting')
+	document.getElementById('setting-window').style.display = 'flex'
+	const session = remote.getCurrentWebContents().session
+	const cacheSize = document.getElementById('clear-cache-size')
+	cacheSize.innerText = ''
+	
+	const syncing = async() => {
+		const size = await session.getCacheSize()
+		if (typeof size == 'number') cacheSize.innerText = FormatBytes(size)
+	}
+
+	syncing()
+}
+
+async function ClearCaches() {
+	KeyManager.stop = true
+	loading.Show(1, Language('wait')+'...')
+	const cacheSize = document.getElementById('clear-cache-size')
+	const session = remote.getCurrentWebContents().session
+	try { await session.clearCache() } catch(err) { console.error(err) }
+	const size = await session.getCacheSize()
+	if (typeof size == 'number') cacheSize.innerText = FormatBytes(size)
+	else cacheSize.innerText = FormatBytes(0)
+	loading.Close()
+	KeyManager.stop = false
 }
 
 function CloseSetting() {

@@ -10,7 +10,18 @@ const ThisWindow = remote.getCurrentWindow(), loading = new Loading(), update_nu
 // Set Windows Closing Event
 ThisWindow.addListener('close', e => {
 	e.preventDefault()
-	CloseApp()
+	if (downloader.HasDownload()) {
+		Confirm(Language('ydl-are-sure-cls-app'), [
+			{
+				text: Language('yes'),
+				class: 'btn btn-danger',
+				click: 'downloader.CancelAll(() => CloseApp())'
+			},
+			{
+				text: Language('no')
+			}
+		])
+	} else CloseApp()
 })
 
 function CloseApp() {

@@ -332,16 +332,41 @@ function DeletePost(site, id, keep) {
 	KeyManager.stop = true
 	loading.Show(1, 'Deleting...')
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
-		try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
-		try { unlinkSync(paths.dl+db.post[i][2]+'.'+db.post[i][3]) } catch(err) {}
-		db.post.splice(i, 1)
-		try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
-		if (!keep) {
-			const haveIndex = db.have[site].indexOf(id)
-			if (haveIndex >= 0) db.have[site].splice(haveIndex, 1)
-			try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
-			browser.ChangeButtonsToDownloaded(site, id, true)
-		} else browser.ChangeButtonsToHave(site, id, false)
+		if (db.post[i][0] == -1) {
+			if (!keep) {
+				for (let j = 0, n = db.post[i][10].length; j < n; j++) {
+					try { unlinkSync(paths.thumb+db.post[i][2][j]+'.jpg') } catch(err) {}
+					try { unlinkSync(paths.dl+db.post[i][2][j]+'.'+db.post[i][3][j]) } catch(err) {}
+					const post_have = db.post_have[db.post[i][10][j]].indexOf(db.post[i][11][j])
+					if (post_have != -1) db.post_have.splice(post_have, 1)
+					const haveIndex = db.have[db.post[i][10][j]].indexOf(db.post[i][11][j])
+					if (haveIndex != -1) db.have[db.post[i][10][j]].splice(haveIndex, 1)
+					browser.ChangeButtonsToDownloaded(db.post[i][10][j], db.post[i][11][j], true)
+				}
+			} else {
+				for (let j = 0, n = db.post[i][10].length; j < n; j++) {
+					try { unlinkSync(paths.thumb+db.post[i][2][j]+'.jpg') } catch(err) {}
+					try { unlinkSync(paths.dl+db.post[i][2][j]+'.'+db.post[i][3][j]) } catch(err) {}
+					const post_have = db.post_have[db.post[i][10][j]].indexOf(db.post[i][11][j])
+					if (post_have != -1) db.post_have.splice(post_have, 1)
+					browser.ChangeButtonsToHave(db.post[i][10][j], db.post[i][11][j], false)
+				}
+				try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
+			}
+			db.post.splice(i, 1)
+			try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
+		} else {
+			try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
+			try { unlinkSync(paths.dl+db.post[i][2]+'.'+db.post[i][3]) } catch(err) {}
+			db.post.splice(i, 1)
+			try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
+			if (!keep) {
+				const haveIndex = db.have[site].indexOf(id)
+				if (haveIndex >= 0) db.have[site].splice(haveIndex, 1)
+				try { jsonfile.writeFileSync(paths.db+'have', {a:db.have}) } catch(err) { console.error(err) }
+				browser.ChangeButtonsToDownloaded(site, id, true)
+			} else browser.ChangeButtonsToHave(site, id, false)
+		}
 		
 		KeyManager.stop = false
 		PopAlert(Language('pd'))

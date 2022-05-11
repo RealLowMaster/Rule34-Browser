@@ -617,7 +617,7 @@ class DownloadManager {
 		browser.ChangeButtonsToDownloading(site, id, true)
 	}
 
-	CancelAll() {
+	CancelAll(callback) {
 		for (let i = 0, l = this.dls.length; i < l; i++) {
 			if (this.dls[i].dl != null) this.dls[i].dl.Stop()
 			const site = this.dls[i].site, id = this.dls[i].id
@@ -628,6 +628,7 @@ class DownloadManager {
 			this.dls.splice(i, 1)
 			browser.ChangeButtonsToDownloading(site, id, true)
 		}
+		if (typeof callback == 'function') callback()
 	}
 
 	OpenPanel() {
