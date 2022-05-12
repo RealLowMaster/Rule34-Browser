@@ -1,6 +1,6 @@
 .context-menu {
 	display: block;
-	width: 200px;
+	width: 220px;
 	height: auto;
 	background-color: var(--secondary-bg-alt);
 	color: var(--text-normal);
@@ -25,6 +25,7 @@
 	cursor: pointer;
 }
 
+.context-menu > div > span { margin-left: 10px }
 .context-menu > div:hover { background-color: var(--modifier-hover-bg) }
 
 .context-menu > p {

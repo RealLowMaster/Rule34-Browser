@@ -10,6 +10,7 @@ const defaultSetting = {
 	dl_path: null,
 	dl_limit: 5,
 	default_volume: 100,
+	seen_release: update_number - 1,
 	full_screen: true,
 	developer_mode: false
 }
@@ -30,8 +31,9 @@ const sto_radio = [
 	['language', 'language', ['english', 'persian']]
 ]
 
-// [ 'setting name', 'translate name', min, max ]
+// [ 'setting name', 'translate name', min, max, 'translate tip' || null ]
 const sto_range = [
+	['seen_release', null, -1, update_number],
 	['pic_per_page', 'picperpage', 1, 120],
 	['default_volume', 'defaultvolume', 0, 100],
 	['dl_limit', 'dllimit', 1, 20]
@@ -47,22 +49,28 @@ const sto_select = []
 
 let setting
 function LoadSettings() {
-	paths.setting = dirDocument+'/setting.json'
-	if (existsSync(paths.setting)) setting = jsonfile.readFileSync(paths.setting)
-	else {
+	if (existsSync(dirDocument+'/setting.json')) try { setting = jsonfile.readFileSync(dirDocument+'/setting.json') } catch(err) {
+		console.error(err)
 		setting = defaultSetting
-		jsonfile.writeFileSync(paths.setting,setting)
+		try { jsonfile.writeFileSync(dirDocument+'/setting.json',setting) } catch(err) { console.error(err) }
+	} else {
+		setting = defaultSetting
+		try { jsonfile.writeFileSync(dirDocument+'/setting.json',setting) } catch(err) { console.error(err) }
 	}
 
-	if (setting == null) {
+	if (setting == null || typeof setting !== 'object') {
 		console.error(setting)
 		console.error('Could not cache settings')
 		setting = defaultSetting
-		jsonfile.writeFileSync(paths.setting,setting)
+		try { jsonfile.writeFileSync(dirDocument+'/setting.json',setting) } catch(err) { console.error(err) }
 	}
 
+	let changed = false, save, save2, save3
 	for (let i = 0; i < sto_checkbox.length; i++) {
-		if (typeof setting[sto_checkbox[i][0]] != 'boolean') setting[sto_checkbox[i][0]] = defaultSetting[sto_checkbox[i][0]]
+		if (typeof setting[sto_checkbox[i][0]] != 'boolean') {
+			setting[sto_checkbox[i][0]] = defaultSetting[sto_checkbox[i][0]]
+			changed = true
+		}
 
 		const sto_id = 'sto_'+sto_checkbox[i][0]
 		const working_element = document.getElementById(sto_id) || null
@@ -70,29 +78,62 @@ function LoadSettings() {
 		working_element.setAttribute('class', 'sto-checkbox')
 		working_element.removeAttribute('id')
 
-		let html = `<div><label for="${sto_id}" l="${sto_checkbox[i][1]}"></label><input type="checkbox" id="${sto_id}"></div>`
-		if (sto_checkbox[i][2] != null) html += `<p l="${sto_checkbox[i][2]}"></p>`
-		working_element.innerHTML = html
+		save = document.createElement('div')
+		save2 = document.createElement('label')
+		save2.setAttribute('for', sto_id)
+		save2.setAttribute('l', sto_checkbox[i][1])
+		save.appendChild(save2)
+		save2 = document.createElement('input')
+		save2.type = 'checkbox'
+		save2.id = sto_id
+		save.appendChild(save2)
+		working_element.appendChild(save)
+		if (sto_checkbox[i][2] != null) {
+			save = document.createElement('p')
+			save.setAttribute('l', sto_checkbox[i][2])
+			working_element.appendChild(save)
+		}
 	}
 
 	for (let i = 0; i < sto_radio.length; i++) {
-		if (typeof setting[sto_radio[i][0]] != 'number') setting[sto_radio[i][0]] = defaultSetting[sto_radio[i][0]]
-		else if (setting[sto_radio[i][0]] < 0) setting[sto_radio[i][0]] = 0
-		else if (setting[sto_radio[i][0]] >= sto_radio[i][2].length) setting[sto_radio[i][0]] = sto_radio[i][2].length - 1
+		if (typeof setting[sto_radio[i][0]] != 'number') {
+			setting[sto_radio[i][0]] = defaultSetting[sto_radio[i][0]]
+			changed = true
+		} else if (setting[sto_radio[i][0]] < 0) {
+			setting[sto_radio[i][0]] = 0
+			changed = true
+		} else if (setting[sto_radio[i][0]] >= sto_radio[i][2].length) {
+			setting[sto_radio[i][0]] = sto_radio[i][2].length - 1
+			changed = true
+		}
 
 		const working_element = document.getElementById('sto_'+sto_radio[i][0]) || null
 		if (working_element == null) continue
 		working_element.setAttribute('class', 'sto-radio')
 
-		let html = `<p l="${sto_radio[i][1]}"></p>`
-		for (let j = 0; j < sto_radio[i][2].length; j++) html += `<div onclick="RadioRow(this)" value="${j}" l="${sto_radio[i][2][j]}"></div>`
-		working_element.innerHTML = html
+		save = document.createElement('p')
+		save.setAttribute('l', sto_radio[i][1])
+		working_element.appendChild(save)
+		for (let j = 0; j < sto_radio[i][2].length; j++) {
+			save = document.createElement('div')
+			save.setAttribute('l', sto_radio[i][2][j])
+			save.setAttribute('onclick', 'RadioRow(this)')
+			save.setAttribute('value', j)
+			working_element.appendChild(save)
+		}
 	}
 
 	for (let i = 0; i < sto_range.length; i++) {
-		if (typeof setting[sto_range[i][0]] != 'number') setting[sto_range[i][0]] = defaultSetting[sto_range[i][0]]
-		else if (setting[sto_range[i][0]] < sto_range[i][2]) setting[sto_range[i][0]] = sto_range[i][2]
-		else if (setting[sto_range[i][0]] > sto_range[i][3]) setting[sto_range[i][0]] = sto_range[i][3]
+		if (typeof setting[sto_range[i][0]] != 'number') {
+			setting[sto_range[i][0]] = defaultSetting[sto_range[i][0]]
+			changed = true
+		} else if (setting[sto_range[i][0]] < sto_range[i][2]) {
+			setting[sto_range[i][0]] = sto_range[i][2]
+			changed = true
+		} else if (setting[sto_range[i][0]] > sto_range[i][3]) {
+			setting[sto_range[i][0]] = sto_range[i][3]
+			changed = true
+		}
 
 		const sto_id = 'sto_'+sto_range[i][0]
 		const working_element = document.getElementById(sto_id) || null
@@ -100,28 +141,71 @@ function LoadSettings() {
 		working_element.setAttribute('class', 'sto-range')
 		working_element.removeAttribute('id')
 		const value = setting[sto_range[i][0]], min = sto_range[i][2], max = sto_range[i][3]
-		working_element.innerHTML = `<p l="${sto_range[i][1]}"></p><input type="range" min="${min}" max="${max}" value="${value}" oninput="OnRangeInput(this)" id="${sto_id}"><div style="left:${((value - min) * 100) / (max - min)}%"><div></div><div>${value}</div></div>`
+
+		save = document.createElement('h6')
+		save.setAttribute('l', sto_range[i][1])
+		working_element.appendChild(save)
+		save = document.createElement('div')
+		save2 = document.createElement('input')
+		save2.type = 'range'
+		save2.min = min
+		save2.max = max
+		save2.value = value
+		save2.setAttribute('oninput', 'OnRangeInput(this)')
+		save2.id = sto_id
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.style.left = ((value - min) * 100) / (max - min)+'%'
+		save3 = document.createElement('div')
+		save2.appendChild(save3)
+		save3 = document.createElement('div')
+		save3.innerText = value
+		save2.appendChild(save3)
+		save.appendChild(save2)
+		save2 = document.createElement('span')
+		save.appendChild(save2)
+		working_element.appendChild(save)
+		if (sto_range[i][4] != null) {
+			save = document.createElement('p')
+			save.setAttribute('l', sto_range[i][4])
+			working_element.appendChild(save)
+		}
 	}
 
 	for (let i = 0; i < sto_dialog.length; i++) {
-		if (typeof setting[sto_dialog[i][0]] != 'string') setting[sto_dialog[i][0]] = defaultSetting[sto_dialog[i][0]]
+		if (typeof setting[sto_dialog[i][0]] != 'string') {
+			setting[sto_dialog[i][0]] = defaultSetting[sto_dialog[i][0]]
+			changed = true
+		}
 
 		const sto_id = 'sto_'+sto_dialog[i][0]
 		const working_element = document.getElementById(sto_id) || null
 		if (working_element == null) continue
 		working_element.setAttribute('class', 'sto-dialog')
 		working_element.removeAttribute('id')
-		let html = '<button type="button" class="btn btn-primary" onclick="OpenUploadFile(this, '
-		if (sto_dialog[i][1]) html += 'true)" l="openfolder">'
-		else html += 'false)" l="openfile">'
-		html += `</button><p id="${sto_id}" title="${setting[sto_dialog[i][0]]}">${setting[sto_dialog[i][0]]}</p>`
-		working_element.innerHTML = html
+
+		save = document.createElement('button')
+		save.type = 'button'
+		save.classList.add('btn')
+		save.classList.add('btn-primary')
+		if (sto_dialog[i][1]) {
+			save.setAttribute('onclick', 'OpenUploadFile(this,true)')
+			save.setAttribute('l', 'openfolder')
+		} else {
+			save.setAttribute('onclick', 'OpenUploadFile(this,false)')
+			save.setAttribute('l', 'openfile')
+		}
+		working_element.appendChild(save)
+		save = document.createElement('p')
+		save.id = sto_id
+		save.title = setting[sto_dialog[i][0]]
+		save.innerText = setting[sto_dialog[i][0]]
+		working_element.appendChild(save)
 	}
 
 	ChangeScreenMode(setting.full_screen, false)
 
 	// Place For Custom Statments
-
 	window.addEventListener('keydown', e => {
 		if (e.ctrlKey && e.shiftKey && e.which == 73 && setting.developer_mode == true) remote.getCurrentWebContents().toggleDevTools()
 	})
@@ -131,6 +215,13 @@ function LoadSettings() {
 	ApplyTheme(setting.theme)
 	if (setting.animations) document.body.classList.remove('no-animation')
 	else document.body.classList.add('no-animation')
+
+	if (!existsSync('rn.json')) {
+		document.getElementById('stt-release').style.display = 'none'
+		setting.seen_release = null
+	}
+
+	if (changed) try { jsonfile.writeFileSync(dirDocument+'/setting.json',setting) } catch(err) { console.error(err) }
 }
 
 function OpenSettings() {
@@ -197,9 +288,11 @@ function RadioRow(who) {
 
 // Range
 function OnRangeInput(who) {
-	const slider = who.parentElement.children[2], value = who.value, min = who.min
-	slider.style.left = ((value - min) * 100) / (who.max - min) + '%'
+	const children = who.parentElement.children
+	const slider = children[1], value = who.value, min = Number(who.min), percent = ((value - min) * 100) / (Number(who.max) - min) + '%'
+	slider.style.left = percent
 	slider.children[1].innerText = value
+	children[2].style.width = percent
 }
 
 // Upload File

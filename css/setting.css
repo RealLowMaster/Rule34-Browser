@@ -279,7 +279,8 @@
 	left: calc(100% - 22px);
 }
 
-.sto-checkbox > p {
+.sto-checkbox > p,
+.sto-range > p {
 	display: block;
 	margin-top: 8px;
 	color: var(--secondary-header);
@@ -341,12 +342,9 @@
 .sto-radio > div[active]::before { background-image: url('../Image/radio-check.svg') }
 
 /* Range */
-.sto-range {
-	margin-bottom: 20px;
-	position: relative;
-}
+.sto-range { margin-bottom: 20px }
 
-.sto-range > p {
+.sto-range > h6 {
 	display: block;
 	width: 100%;
 	margin-bottom: 70px;
@@ -358,7 +356,12 @@
 	text-transform: uppercase;
 }
 
-.sto-range > input {
+.sto-range > div {
+	width: 100%;
+	position: relative;
+}
+
+.sto-range > div > input {
 	display: block;
 	width: 100%;
 	height: 7px;
@@ -367,7 +370,7 @@
 	cursor: pointer;
 }
 
-.sto-range > input::-webkit-slider-thumb {
+.sto-range > div > input::-webkit-slider-thumb {
 	width: 35px;
 	height: 35px;
 	-webkit-appearance: none;
@@ -376,7 +379,7 @@
 	position: relative;
 }
 
-.sto-range > div {
+.sto-range > div > div {
 	height: 104px;
 	width: 35px;
 	position: absolute;
@@ -388,7 +391,10 @@
 	pointer-events: none;
 }
 
-.sto-range > div > div:first-child {
+.sto-range > div > div > div:first-child {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	height: 35px;
 	width: 35px;
 	background-color: #fff;
@@ -399,21 +405,19 @@
 	pointer-events: none;
 }
 
-.sto-range > div > div:first-child::before {
+.sto-range > div > div > div:first-child::before {
 	content: '';
 	width: 24px;
 	height: 24px;
-	padding: 2px;
+	padding: 4px;
 	background-color: #ffd200;
 	background: #ffd200 url('../Image/range-arrow.svg') no-repeat center;
 	border-radius: 50%;
 	position: absolute;
-	top: calc(50% - 12px);
-	left: calc(50% - 12px);
 	box-sizing: border-box;
 }
 
-.sto-range > div > div:last-child {
+.sto-range > div > div > div:last-child {
 	width: 35px;
 	height: 35px;
 	position: absolute;
@@ -428,7 +432,7 @@
 	pointer-events: none;
 }
 
-.sto-range > div > div:last-child::after {
+.sto-range > div > div > div:last-child::after {
 	content: '';
 	border-top: 17px solid #ffd200;
 	border-left: 17.5px solid transparent;
@@ -437,6 +441,19 @@
 	bottom: -15.5px;
 	left: 0;
 }
+
+.sto-range > div > span {
+	display: block;
+	width: 50%;
+	height: 7px;
+	background-color: #ffd200;
+	border-radius: 3px 0 0 3px;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.sto-range > p { margin-top: 25px; }
 
 /* Upload */
 .sto-dialog {

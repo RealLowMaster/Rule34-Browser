@@ -453,6 +453,8 @@ class ContextMenuManager {
 				if (typeof config.click === 'string' || typeof config.click === 'function') obj.click = config.click
 				else throw "Click Should Be String or Function!"
 			}
+			if (typeof config.icon === 'string') obj.icon = config.icon
+			else obj.icon = null
 		}
 		this.#menu[menu].push(obj)
 	}
@@ -516,6 +518,8 @@ class ContextMenuManager {
 				if (typeof config.click === 'string' || typeof config.click === 'function') obj.click = config.click
 				else throw "Click Should Be String or Function!"
 			}
+			if (typeof config.icon === 'string') obj.icon = config.icon
+			else obj.icon = null
 		}
 		this.#menu[menu][index] = obj
 	}
@@ -540,8 +544,16 @@ class ContextMenuManager {
 				if (this.#menu[menu][i].text != undefined) {
 					if (this.#menu[menu][i].click != undefined) {
 						save = document.createElement('div')
-						save.innerText = Language(this.#menu[menu][i].text)
-						if (typeof this.#menu[menu][i].click === 'string') save.onmousedown = () => { if (e.which != 2) eval(this.#menu[menu][i].click); this.CloseMenu() }
+						if (this.#menu[menu][i].icon !== null) {
+							const icon = Icon(this.#menu[menu][i].icon, true)
+							if (icon != null) save.appendChild(icon)
+							const save2 = document.createElement('span')
+							save2.innerText = Language(this.#menu[menu][i].text)
+							save.appendChild(save2)
+						} else save.innerText = Language(this.#menu[menu][i].text)
+						
+						
+						if (typeof this.#menu[menu][i].click === 'string') save.onmousedown = e => { if (e.which != 2) eval(this.#menu[menu][i].click); this.CloseMenu() }
 						else if (typeof this.#menu[menu][i].click === 'function') save.onmousedown = e => { if (e.which != 2) this.#menu[menu][i].click(); this.CloseMenu() }
 						container.appendChild(save)
 					} else {

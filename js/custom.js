@@ -42,6 +42,7 @@ const sites = [
 
 const db = {
 	history: [],
+	bookmark: [],
 	post: [],
 	post_have: [],
 	have: [],
@@ -867,6 +868,16 @@ function LoadDatabase() {
 		error('CreatingHistoryDB->'+err)
 	}
 
+	// -------------> Check Bookmarks
+	if (existsSync(dirDocument+'/bookmark.json')) try { db.bookmark = jsonfile.readFileSync(dirDocument+'/bookmark.json').a } catch(err) {
+		console.error(err)
+		error('LoadingBookmark->'+err)
+	} else try { jsonfile.writeFileSync(dirDocument+'/bookmark.json', {a:[]}) } catch(err) {
+		console.log(err)
+		db.bookmark = []
+		error('CreatingBookmarkDB->'+err)
+	}
+
 	// -------------> Check Databases
 	if (!existsSync(paths.db+'manager')) try { jsonfile.writeFileSync(paths.db+'manager', db.manager) } catch(err) {
 		console.error(err)
@@ -1012,7 +1023,8 @@ function LoadDatabase() {
 		error('LoadingMetaDB->'+err)
 	}
 
-	loading.Close()
+	if (setting.seen_release != null && setting.seen_release != update_number) OpenReleaseNote()
+	else loading.Close()
 	KeyManager.ChangeCategory('default')
 	NewTab()
 }
@@ -1052,42 +1064,42 @@ function BRLink(tabId, link, site, id) {
 	else {
 		ContextManager.save = [tabId, link, site, id]
 		if (downloader.IsDownloading(site, id)) {
+			ContextManager.SetActiveItem('br-posts', 2, false)
 			ContextManager.SetActiveItem('br-posts', 3, false)
 			ContextManager.SetActiveItem('br-posts', 4, false)
 			ContextManager.SetActiveItem('br-posts', 5, false)
 			ContextManager.SetActiveItem('br-posts', 6, false)
-			ContextManager.SetActiveItem('br-posts', 7, false)
 		} else if (IsHave(site, id)) {
 			const isdl = IsDownloaded(site, id)
 			switch(isdl) {
 				case 0:
-					ContextManager.SetActiveItem('br-posts', 3, false)
-					ContextManager.SetActiveItem('br-posts', 4, true)
+					ContextManager.SetActiveItem('br-posts', 2, false)
+					ContextManager.SetActiveItem('br-posts', 3, true)
+					ContextManager.SetActiveItem('br-posts', 4, false)
 					ContextManager.SetActiveItem('br-posts', 5, false)
 					ContextManager.SetActiveItem('br-posts', 6, false)
-					ContextManager.SetActiveItem('br-posts', 7, false)
 					break
 				case 1:
+					ContextManager.SetActiveItem('br-posts', 2, false)
 					ContextManager.SetActiveItem('br-posts', 3, false)
 					ContextManager.SetActiveItem('br-posts', 4, false)
-					ContextManager.SetActiveItem('br-posts', 5, false)
+					ContextManager.SetActiveItem('br-posts', 5, true)
 					ContextManager.SetActiveItem('br-posts', 6, true)
-					ContextManager.SetActiveItem('br-posts', 7, true)
 					break
 				case 2:
+					ContextManager.SetActiveItem('br-posts', 2, false)
 					ContextManager.SetActiveItem('br-posts', 3, false)
 					ContextManager.SetActiveItem('br-posts', 4, false)
 					ContextManager.SetActiveItem('br-posts', 5, false)
 					ContextManager.SetActiveItem('br-posts', 6, false)
-					ContextManager.SetActiveItem('br-posts', 7, false)
 					break
 			}
 		} else {
-			ContextManager.SetActiveItem('br-posts', 3, true)
-			ContextManager.SetActiveItem('br-posts', 4, false)
-			ContextManager.SetActiveItem('br-posts', 5, true)
+			ContextManager.SetActiveItem('br-posts', 2, true)
+			ContextManager.SetActiveItem('br-posts', 3, false)
+			ContextManager.SetActiveItem('br-posts', 4, true)
+			ContextManager.SetActiveItem('br-posts', 5, false)
 			ContextManager.SetActiveItem('br-posts', 6, false)
-			ContextManager.SetActiveItem('br-posts', 7, false)
 		}
 		ContextManager.ShowMenu('br-posts')
 	}

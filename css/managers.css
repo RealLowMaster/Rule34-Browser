@@ -1,6 +1,5 @@
-#language-manager,
-#theme-manager {
-	display: none;
+.mg-manager {
+	display: grid;
 	grid-template-columns: 10fr 250px;
 	width: 100%;
 	height: calc(100% - var(--topMenuSize));
@@ -9,11 +8,9 @@
 	left: 0;
 }
 
-#language-manager > div:first-child,
-#theme-manager > div:first-child { background-color: #666 }
+.mg-manager > div:first-child { background-color: #666 }
 
-#language-structure-panel,
-#theme-structure-panel {
+.mg-struct-panel {
 	display: block;
 	width: calc(100% - 250px);
 	height: calc(100% - var(--topMenuSize));
@@ -22,15 +19,13 @@
 	left: 0;
 }
 
-#language-structures,
-#theme-structures {
+.mg-structs {
 	height: calc(100% - 40px);
 	padding: 10px;
 	overflow-y: auto;
 }
 
-#language-structures > div,
-#theme-structures > div {
+.mg-structs > div {
 	display: flex;
 	width: 100%;
 	padding: 5px;
@@ -41,11 +36,9 @@
 	transition: background-color ease-in-out .2s;
 }
 
-#language-structures > div[active],
-#theme-structures > div[active] { background-color: #1975dd; }
+.mg-structs > div[active] { background-color: #1975dd; }
 
-#language-structures > div > p,
-#theme-structures > div > p {
+.mg-structs > div > p {
 	display: flex;
 	align-items: center;
 	flex: 0 0 50%;
@@ -54,8 +47,7 @@
 	color: #fff;
 }
 
-#language-structures > div > div,
-#theme-structures > div > div {
+.mg-structs > div > div {
 	display: flex;
 	align-items: center;
 	flex: 0 0 50%;
@@ -63,8 +55,7 @@
 	padding: 0 10px;
 }
 
-#language-structures > div > div > input,
-#theme-structures > div > div > input {
+.mg-structs > div > div > input {
 	display: block;
 	width: 100%;
 	padding: 7px 10px;
@@ -74,13 +65,10 @@
 	border-radius: 4px;
 }
 
-#language-structures > div > div > input:hover,
-#language-structures > div > div > input:focus,
-#theme-structures > div > div > input:hover,
-#theme-structures > div > div > input:focus { border-color: #fff }
+.mg-structs > div > div > input:hover,
+.mg-structs > div > div > input:focus { border-color: #fff }
 
-#language-manager > div:last-child,
-#theme-manager > div:last-child {
+.mg-manager > div:last-child {
 	display: block;
 	width: 250px;
 	height: calc(100% - var(--topMenuSize));
@@ -90,10 +78,8 @@
 	border-left: 1px solid #222;
 }
 
-#language-manager > div:last-child > div:first-child,
-#theme-manager > div:last-child > div:first-child,
-#language-structure-panel > div:first-child,
-#theme-structure-panel > div:first-child {
+.mg-manager > div:last-child > div:first-child,
+.mg-struct-panel > div:first-child {
 	display: flex;
 	height: 40px;
 	align-items: center;
@@ -101,10 +87,8 @@
 	border-bottom: 1px solid #222;
 }
 
-#language-manager > div:last-child > div:first-child > div,
-#theme-manager > div:last-child > div:first-child > div,
-#language-structure-panel > div:first-child > div,
-#theme-structure-panel > div:first-child > div {
+.mg-manager > div:last-child > div:first-child > div,
+.mg-struct-panel > div:first-child > div {
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
@@ -115,21 +99,17 @@
 	cursor: pointer;
 }
 
-#language-manager > div:last-child > div:first-child > div:hover,
-#theme-manager > div:last-child > div:first-child > div:hover,
-#language-structure-panel > div:first-child > div:hover,
-#theme-structure-panel > div:first-child > div:hover { color: #f00 }
+.mg-manager > div:last-child > div:first-child > div:hover,
+.mg-struct-panel > div:first-child > div:hover { color: #f00 }
 
-#language-container,
-#theme-container {
+.mg-container {
 	height: calc(100% - 40px);
 	padding: 10px;
 	overflow-y: auto;
 	background-color: #555;
 }
 
-#language-container > div,
-#theme-container > div {
+.mg-container > div {
 	width: 100%;
 	padding: 10px;
 	margin: 5px 0;
@@ -140,18 +120,13 @@
 	transition: background-color ease-in-out .2s;
 }
 
-#language-container > div[active],
-#theme-container > div[active] { background-color: #1975dd }
+.mg-container > div[active] { background-color: #1975dd }
 
-#language-structures > div[active] > p::selection,
-#theme-structures > div[active] > p::selection,
-#language-container > div[active]::selection,
-#theme-container > div[active]::selection { background-color: #e00 }
+.mg-structs > div[active] > p::selection,
+.mg-container > div[active]::selection { background-color: #e00 }
 
-#language-add-panel,
-#theme-add-panel,
-#language-add-structure,
-#theme-add-structure {
+.mg-add-panel,
+.mg-add-struct {
 	display: none;
 	justify-content: center;
 	align-items: center;
@@ -164,10 +139,8 @@
 	z-index: +1;
 }
 
-#language-add-panel > form,
-#theme-add-panel > form,
-#language-add-structure > form,
-#theme-add-structure > form {
+.mg-add-panel > form,
+.mg-add-struct > form {
 	display: block;
 	width: 350px;
 	height: auto;
@@ -177,10 +150,8 @@
 	position: relative;
 }
 
-#language-add-panel > form > label,
-#theme-add-panel > form > label,
-#language-add-structure > form > label,
-#theme-add-structure > form > label {
+.mg-add-panel > form > label,
+.mg-add-struct > form > label {
 	display: block;
 	width: 100%;
 	padding: 8px 0;
@@ -188,14 +159,10 @@
 	user-select: none;
 }
 
-#language-add-panel > form > input,
-#language-add-panel > form > select,
-#theme-add-panel > form > input,
-#theme-add-panel > form > select,
-#language-add-structure > form > input,
-#language-add-structure > form > select,
-#theme-add-structure > form > input,
-#theme-add-structure > form > select {
+.mg-add-panel > form > input,
+.mg-add-panel > form > select,
+.mg-add-struct > form > input,
+.mg-add-struct > form > select {
 	display: block;
 	width: 100%;
 	padding: 7px 10px;
@@ -207,19 +174,228 @@
 	transition: border-color ease-in-out .2s;
 }
 
-#language-add-panel > form > input:hover,
-#language-add-panel > form > select:hover,
-#language-add-panel > form > input:focus,
-#language-add-panel > form > select:focus,
-#theme-add-panel > form > input:hover,
-#theme-add-panel > form > select:hover,
-#theme-add-panel > form > input:focus,
-#theme-add-panel > form > select:focus,
-#language-add-structure > form > input:hover,
-#language-add-structure > form > input:focus,
-#language-add-structure > form > select:hover,
-#language-add-structure > form > select:focus,
-#theme-add-structure > form > input:hover,
-#theme-add-structure > form > input:focus,
-#theme-add-structure > form > select:hover,
-#theme-add-structure > form > select:focus { border-color: #3288eb }
+.mg-add-panel > form > input:hover,
+.mg-add-panel > form > select:hover,
+.mg-add-panel > form > input:focus,
+.mg-add-panel > form > select:focus,
+.mg-add-struct > form > input:hover,
+.mg-add-struct > form > input:focus,
+.mg-add-struct > form > select:hover,
+.mg-add-struct > form > select:focus { border-color: #3288eb }
+
+/* Release Notes */
+#release-maker {
+	background-color: #fff;
+	padding: 20px;
+	overflow-y: auto;
+	cursor: default;
+}
+
+#release-maker > h1 {
+	display: block;
+	width: 100%;
+	color: #222;
+	font-size: 18px;
+	margin: 50px 0 10px 0;
+}
+
+#release-maker > input {
+	display: block;
+	width: 100%;
+	padding: 7px 10px;
+	color: #222;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+#release-maker > div > div:first-child {
+	width: 100%;
+}
+
+#release-maker > div > div:first-child > div {
+	display: block;
+	width: 100%;
+	margin: 5px 0;
+}
+
+#release-maker > div > div:first-child > div > input {
+	display: inline-block;
+	width: 80%;
+	padding: 7px 10px;
+	color: #222;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+#release-maker > div > div:first-child > div > div {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	width: 30px;
+	height: 30px;
+	margin-left: 8px;
+	background-color: #f00;
+	color: #fff;
+	border-radius: 50%;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+#release-maker > div > div:last-child {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	width: 35px;
+	height: 35px;
+	margin-top: 10px;
+	user-select: none;
+	background-color: #eee;
+	border-radius: 50%;
+	font-size: 24px;
+	cursor: pointer;
+}
+
+/* Icon */
+#icon-manager {
+	display: block;
+	width: 100%;
+	height: calc(100% - var(--topMenuSize));
+	padding: 20px;
+	background-color: #fff;
+	overflow-y: auto;
+	position: fixed;
+	top: var(--topMenuSize);
+	left: 0;
+	z-index: 101;
+	cursor: default;
+}
+
+#icon-manager-container {
+	display: block;
+	width: 100%;
+	padding: 10px 0;
+	text-align: center;
+}
+
+#icon-manager-container > div {
+	display: inline-block;
+	width: auto;
+	padding: 5px;
+	margin: 5px;
+	background-color: transparent;
+	color: #222;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	position: relative;
+}
+
+#icon-manager-container > div > svg {
+	display: block;
+	width: 40px;
+	height: 40px;
+	margin: 10px auto;
+}
+
+#icon-manager-container > div > p {
+	display: block;
+	padding: 2px;
+	margin-top: 5px;
+	text-align: center;
+}
+
+#icon-manager-container > div > div {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	width: 15px;
+	height: 15px;
+	background-color: #e00b;
+	color: #fff;
+	border-radius: 0 5px 0 4px;
+	font-size: 14px;
+	line-height: 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+	cursor: pointer;
+	user-select: none;
+}
+
+#icon-manager-container > div:hover > div { display: flex }
+#icon-manager-container > div > div:hover { background-color: #e00a }
+
+#icon-manager-add {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: calc(100% - var(--topMenuSize));
+	position: fixed;
+	top: var(--topMenuSize);
+	left: 0;
+	user-select: none;
+	z-index: +1;
+}
+
+#icon-manager-add > div:first-child {
+	width: 100%;
+	height: 100%;
+	background-color: #000c;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+#icon-manager-add > div:last-child {
+	display: block;
+	width: calc(100% - 80px);
+	height: calc(100% - 60px);
+	padding: 10px;
+	background-color: #fff;
+	overflow-y: auto;
+	position: relative;
+	z-index: +1;
+}
+
+#icon-manager-add > div:last-child > p {
+	display: block;
+	width: 100%;
+	font-size: .9rem;
+	padding: 2px 0;
+}
+
+#icon-manager-add > div:last-child > input,
+#icon-manager-add > div:last-child > textarea,
+#icon-manager-add-svg > textarea {
+	display: block;
+	width: 100%;
+	padding: 7px 10px;
+	margin-bottom: 32px;
+	font-size: 1rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	transition: .2s ease-in-out border-color;
+}
+
+#icon-manager-add > div:last-child > input:hover,
+#icon-manager-add > div:last-child > textarea:hover,
+#icon-manager-add-svg > textarea:hover,
+#icon-manager-add > div:last-child > input:focus,
+#icon-manager-add > div:last-child > textarea:focus,
+#icon-manager-add-svg > textarea:focus { border-color: #5DADE2 }
+
+#icon-manager-add > div:last-child > textarea,
+#icon-manager-add-svg > textarea { resize: vertical }
+
+#icon-manager-add-svg {
+	display: none;
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+	background-color: #fff;
+	overflow-y: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: +1;
+}

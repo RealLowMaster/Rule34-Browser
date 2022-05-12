@@ -51,6 +51,16 @@ div { display: block }
 input::-webkit-input-placeholder { user-select: none }
 textarea::-webkit-input-placeholder { user-select: none }
 
+svg {
+	display: inline-block;
+	user-select: none;
+	height: 1em;
+	overflow: visible;
+	box-sizing: content-box;
+	vertical-align: -.125em;
+}
+
+/* Window */
 #window {
 	display: flex;
 	flex-flow: column;
@@ -132,6 +142,59 @@ textarea::-webkit-input-placeholder { user-select: none }
 	top: var(--topMenuSize);
 	left: 0;
 }
+
+/* Release Notes */
+#release-notes {
+	display: block;
+	padding: 20px 35px;
+	background-color: var(--primary-bg);
+	color: var(--primary-header);
+	overflow-y: auto;
+}
+
+#release-notes > h1 {
+	margin-bottom: 30px;
+	font-size: 36px;
+	font-weight: 600;
+}
+
+#release-notes > h2 {
+	margin-bottom: 45px;
+	font-size: 24px;
+	font-weight: 400;
+}
+
+#release-notes > h3 {
+	margin-bottom: 12px;
+	font-size: 18px;
+	font-weight: 400;
+}
+
+#release-notes > ul {
+	display: block;
+	width: 100%;
+	padding-left: 40px;
+	margin-bottom: 30px;
+	line-height: 32px;
+}
+
+#release-notes > ul > li > span { color: var(--secondary-header) }
+
+#release-notes > div {
+	width: 100%;
+	margin-bottom: 30px;
+	text-align: right;
+}
+
+#release-notes > div > div {
+	display: inline-block;
+	padding: 7px 10px;
+	border-radius: 4px;
+	user-select: none;
+	cursor: pointer;
+}
+
+#release-notes > div > div:hover { background-color: var(--secondary-bg) }
 
 .no-animation,
 .no-animation::after,
