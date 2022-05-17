@@ -352,7 +352,7 @@ function SaveSetting() {
 		setting[sto_dialog[i][0]] = element.title
 	}
 
-	try { jsonfile.writeFileSync(paths.setting,setting) } catch(err) {
+	try { jsonfile.writeFileSync(dirDocument+'/setting.json', setting) } catch(err) {
 		console.error(err)
 		PopAlert('SavingSetting->'+err, 'danger')
 	}

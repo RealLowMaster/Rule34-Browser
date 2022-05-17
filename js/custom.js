@@ -888,7 +888,12 @@ function LoadDatabase() {
 	}
 
 	// post
-	if (!existsSync(paths.db+'post')) try { jsonfile.writeFileSync(paths.db+'post', {a:[],h:[]}) } catch(err) {
+	if (!existsSync(paths.db+'post')) try {
+		const post_have = []
+		for (let i = 0, l = sites.length; i < l; i++) post_have.push([])
+		db.post_have = post_have
+		jsonfile.writeFileSync(paths.db+'post', {a:[],h:db.post_have})
+	} catch(err) {
 		console.error(err)
 		error('CreatingPostDB->'+err)
 	} else try {

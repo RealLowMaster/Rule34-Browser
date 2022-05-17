@@ -168,7 +168,7 @@ function SetContextMenus() {
 		LoadHistory(id, 1)
 	} })
 	ContextManager.AddItem(i, { icon:'download', text:'downloads', click: () => downloader.OpenPanel() })
-	ContextManager.AddItem(i, { icon:'bookmarks', text:'bookmarks', click: () => OpenBookmarks() })
+	// ContextManager.AddItem(i, { icon:'bookmarks', text:'bookmarks', click: () => OpenBookmarks() })
 	ContextManager.AddItem(i, {})
 	ContextManager.AddItem(i, { icon:'setting', text:'settings', click: () => OpenSettings() })
 	ContextManager.AddItem(i, { icon:'exit', text:'exit', click: () => remote.app.quit() })
@@ -181,7 +181,7 @@ function SetContextMenus() {
 
 	i = ContextManager.AddMenu('history')
 	// ContextManager.AddItem(i, { text:'open', click: () => {} })
-	ContextManager.AddItem(i, { text:'open-in-ntab', click: () => {
+	ContextManager.AddItem(i, { icon:'open-new-link', text:'open-in-ntab', click: () => {
 		browser.OpenInNewTab(db.history[ContextManager.save][2], db.history[ContextManager.save][3])
 		db.history.splice(ContextManager.save, 1)
 		browser.SetNeedReload(-2)
