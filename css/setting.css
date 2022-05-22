@@ -380,8 +380,10 @@
 }
 
 .sto-range > div > div {
-	height: 104px;
-	width: 35px;
+	display: flex;
+	justify-content: center;
+	height: 80px;
+	width: 30px;
 	position: absolute;
 	bottom: -13px;
 	left: 50%;
@@ -418,10 +420,10 @@
 }
 
 .sto-range > div > div > div:last-child {
-	width: 35px;
+	min-width: 35px;
 	height: 35px;
+	padding: 0 4px;
 	position: absolute;
-	top: 15px;
 	background-color: #ffd200;
 	border-radius: 4px;
 	text-align: center;
@@ -430,16 +432,6 @@
 	font-weight: 600;
 	user-select: none;
 	pointer-events: none;
-}
-
-.sto-range > div > div > div:last-child::after {
-	content: '';
-	border-top: 17px solid #ffd200;
-	border-left: 17.5px solid transparent;
-	border-right: 17.5px solid transparent;
-	position: absolute;
-	bottom: -15.5px;
-	left: 0;
 }
 
 .sto-range > div > span {

@@ -10,6 +10,7 @@ const defaultSetting = {
 	dl_path: null,
 	dl_limit: 5,
 	default_volume: 100,
+	pixel_limit: 10000,
 	seen_release: update_number - 1,
 	full_screen: true,
 	developer_mode: false
@@ -36,7 +37,8 @@ const sto_range = [
 	['seen_release', null, -1, update_number],
 	['pic_per_page', 'picperpage', 1, 120],
 	['default_volume', 'defaultvolume', 0, 100],
-	['dl_limit', 'dllimit', 1, 20]
+	['dl_limit', 'dllimit', 1, 20, 'dllimittip'],
+	['pixel_limit', 'pixellimit', 1000, 18200, 'pixellimittip']
 ]
 
 // [ 'setting name', isFolder, 'title' || null ]
