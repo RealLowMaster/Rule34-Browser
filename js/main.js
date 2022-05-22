@@ -232,7 +232,7 @@ function SetContextMenus() {
 	ContextManager.AddItem(i, { icon:'open-new-link', text:'open-in-ntab', click: () => browser.OpenLinkInNewTab(ContextManager.save[0], ContextManager.save[1]) })
 	ContextManager.AddItem(i, { icon:'layer', text:'slider', click: () => OpenSlider(browser.GetTab(ContextManager.save[0]).save, ContextManager.save[4]) })
 	ContextManager.AddItem(i, { icon:'box', text:'pack', click: () => OpenPacking(ContextManager.save[2], ContextManager.save[3]) })
-	ContextManager.AddItem(i, { icon:'box-open', text:'unpack', click: () => UnPack(ContextManager.save[3]) })
+	ContextManager.AddItem(i, { icon:'box-open', text:'unpack', click: () => AskForUnPack(ContextManager.save[3]) })
 	ContextManager.AddItem(i, { icon:'edit', text:'editpack', click: () => EditPack(ContextManager.save[3]) })
 	ContextManager.AddItem(i, { icon:'redownload', text:'redownload', click: () => ReDownloadPost(ContextManager.save[2], ContextManager.save[3]) })
 	// ContextManager.AddItem(i, { text:'rethumb', click: () => {} })

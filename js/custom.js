@@ -12,12 +12,6 @@ const mb_search = document.getElementById('mb-search')
 const mb_jump_page = document.getElementById('mb-jump-page')
 
 const status = [403, 404, 500, 503]
-const statusMsg = [
-	"You don't have the permission to View this Page.",
-	"Page Not Found.",
-	"Internal Server Error.",
-	"Server is unavailable at this Time."
-]
 
 const sites = [
 	{

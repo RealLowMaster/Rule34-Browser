@@ -203,6 +203,17 @@ function Pack() {
 	PopAlert(Language('pack-end'))
 }
 
+function AskForUnPack(id) {
+	Confirm(Language('ask-to-unpack'), [
+		{
+			text: Language('yes'),
+			btn: 'btn btn-primary',
+			click: () => UnPack(id)
+		},
+		{ text: Language('no'), class: 'btn btn-danger' }
+	])
+}
+
 function UnPack(id) {
 	KeyManager.stop = true
 	loading.Show(1, Language('unpacking')+'...')

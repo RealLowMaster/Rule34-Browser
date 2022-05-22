@@ -121,7 +121,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[i]
+				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
@@ -180,7 +180,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[i]
+				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
@@ -198,7 +198,7 @@ class rule34xxx {
 					arr.srcresize = arr.src
 					arr.video = true
 				} else {
-					callback(statusMsg[status.indexOf(404)], null)
+					callback(Language('err404'), null)
 					return
 				}
 			} else {
@@ -251,7 +251,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[i]
+				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
@@ -304,7 +304,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[i]
+				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
@@ -356,7 +356,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[i]
+				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
@@ -410,7 +410,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[i]
+				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
@@ -456,7 +456,7 @@ class rule34xxx {
 		fetch(url).then(response => {
 			if (response.status != 200) {
 				const i = status.indexOf(response.status)
-				if (i > -1) throw statusMsg[i]
+				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
