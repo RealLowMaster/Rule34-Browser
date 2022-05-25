@@ -313,7 +313,7 @@ class DownloadManager {
 			})
 			vid.on('end', () => {
 				try { renameSync(path, save_path) } catch(err) { console.error(err) }
-				sharp(paths.tmp+name+'.png').resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+name+'.jpg').then(() => {
+				sharp(paths.tmp+name+'.png', { limitInputPixels: false }).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+name+'.jpg').then(() => {
 					try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
 					if (dl) {
 						i = this.ids.indexOf(index)
@@ -349,7 +349,7 @@ class DownloadManager {
 				}
 				loaded_img.onload = () => {
 					sharp_resize = this.GetResizeAspect(loaded_img.naturalWidth, loaded_img.naturalHeight, this.maximum_pixel)
-					sharp(path).resize(sharp_resize).jpeg({ mozjpeg: true }).toFile(save_path).then(() => {
+					sharp(path, { limitInputPixels: false }).resize(sharp_resize).jpeg({ mozjpeg: true }).toFile(save_path).then(() => {
 						if (dl) {
 							i = this.ids.indexOf(index)
 							if (i < 0) return
@@ -370,7 +370,7 @@ class DownloadManager {
 							if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
 							else loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
 						}
-						sharp(save_path).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+						sharp(save_path, { limitInputPixels: false }).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
 							console.error(err)
 							finished()
 						})
@@ -387,13 +387,25 @@ class DownloadManager {
 						finished()
 					})
 				}
+				loaded_img.onerror = err => {
+					console.error(err)
+					try { unlinkSync(path) } catch(err) {}
+					if (dl) {
+						i = this.ids.indexOf(index)
+						if (i >= 0) {
+							this.dls[i].span.setAttribute('l', 'finish')
+							this.dls[i].span.innerText = Language('finish')
+						}
+					}
+					finished()
+				}
 				loaded_img.src = path
 				return
 			case 'png':
 				if (!dl && db.post[index][9] != null) db.post[index][9] = null
 				loaded_img.onload = () => {
 					sharp_resize = this.GetResizeAspect(loaded_img.naturalWidth, loaded_img.naturalHeight, this.maximum_pixel)
-					sharp(path).resize(sharp_resize).webp({ quality: 100 }).toFile(save_path+'webp').then(() => {
+					sharp(path, { limitInputPixels: false }).resize(sharp_resize).webp({ quality: 100 }).toFile(save_path+'webp').then(() => {
 						if (dl) {
 							i = this.ids.indexOf(index)
 							if (i < 0) return
@@ -424,7 +436,7 @@ class DownloadManager {
 								loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
 							}
 						}
-						sharp(save_path+format).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+						sharp(save_path+format, { limitInputPixels: false }).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
 							console.error(err)
 							finished()
 						})
@@ -441,6 +453,18 @@ class DownloadManager {
 						finished()
 					})
 				}
+				loaded_img.onerror = err => {
+					console.error(err)
+					try { unlinkSync(path) } catch(err) {}
+					if (dl) {
+						i = this.ids.indexOf(index)
+						if (i >= 0) {
+							this.dls[i].span.setAttribute('l', 'finish')
+							this.dls[i].span.innerText = Language('finish')
+						}
+					}
+					finished()
+				}
 				loaded_img.src = path
 				return
 			case 'webp':
@@ -451,7 +475,7 @@ class DownloadManager {
 				}
 				loaded_img.onload = () => {
 					sharp_resize = this.GetResizeAspect(loaded_img.naturalWidth, loaded_img.naturalHeight, this.maximum_pixel)
-					sharp(path).resize(sharp_resize).webp({ quality: 100 }).toFile(save_path).then(() => {
+					sharp(path, { limitInputPixels: false }).resize(sharp_resize).webp({ quality: 100 }).toFile(save_path).then(() => {
 						if (dl) {
 							i = this.ids.indexOf(index)
 							if (i < 0) return
@@ -472,7 +496,7 @@ class DownloadManager {
 							if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
 							else loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
 						}
-						sharp(save_path).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+						sharp(save_path, { limitInputPixels: false }).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
 							console.error(err)
 							finished()
 						})
@@ -489,6 +513,18 @@ class DownloadManager {
 						finished()
 					})
 				}
+				loaded_img.onerror = err => {
+					console.error(err)
+					try { unlinkSync(path) } catch(err) {}
+					if (dl) {
+						i = this.ids.indexOf(index)
+						if (i >= 0) {
+							this.dls[i].span.setAttribute('l', 'finish')
+							this.dls[i].span.innerText = Language('finish')
+						}
+					}
+					finished()
+				}
 				loaded_img.src = path
 				return
 			case 'gif':
@@ -496,7 +532,7 @@ class DownloadManager {
 				else db.post[index][9] = '0'
 				loaded_img.onload = () => {
 					sharp_resize = this.GetResizeAspect(loaded_img.naturalWidth, loaded_img.naturalHeight, this.maximum_pixel)
-					sharp(path, { animated: true }).resize(sharp_resize).webp().toFile(save_path+'webp').then(() => {
+					sharp(path, { limitInputPixels: false, animated: true }).resize(sharp_resize).webp().toFile(save_path+'webp').then(() => {
 						if (dl) {
 							i = this.ids.indexOf(index)
 							if (i < 0) return
@@ -526,7 +562,7 @@ class DownloadManager {
 								loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
 							}
 						}
-						sharp(save_path+format).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+						sharp(save_path+format, { limitInputPixels: false }).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
 							console.error(err)
 							finished()
 						})
@@ -542,6 +578,18 @@ class DownloadManager {
 						}
 						finished()
 					})
+				}
+				loaded_img.onerror = err => {
+					console.error(err)
+					try { unlinkSync(path) } catch(err) {}
+					if (dl) {
+						i = this.ids.indexOf(index)
+						if (i >= 0) {
+							this.dls[i].span.setAttribute('l', 'finish')
+							this.dls[i].span.innerText = Language('finish')
+						}
+					}
+					finished()
 				}
 				loaded_img.src = path
 				return
