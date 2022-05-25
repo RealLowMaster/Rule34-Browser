@@ -10,7 +10,7 @@ const defaultSetting = {
 	dl_path: null,
 	dl_limit: 5,
 	default_volume: 100,
-	pixel_limit: 10000,
+	maximum_pixel: 2,
 	seen_release: update_number - 1,
 	full_screen: true,
 	developer_mode: false
@@ -29,7 +29,8 @@ const sto_checkbox = [
 // [ 'setting name', 'translate name', [index = 0 => value 1, index = 1 => value 2, etc ...] ]
 const sto_radio = [
 	['theme', 'theme', ['dark', 'light']],
-	['language', 'language', ['english', 'persian']]
+	['language', 'language', ['english', 'persian']],
+	['maximum_pixel', 'maximumpixel', ['mpvlow', 'mplow', 'mpmid', 'mphigh', 'mpvhigh']]
 ]
 
 // [ 'setting name', 'translate name', min, max, 'translate tip' || null ]
@@ -206,8 +207,8 @@ function LoadSettings() {
 	}
 
 	ChangeScreenMode(setting.full_screen, false)
+	SettingCustomeCheck()
 
-	// Place For Custom Statments
 	window.addEventListener('keydown', e => {
 		if (e.ctrlKey && e.shiftKey && e.which == 73 && setting.developer_mode == true) remote.getCurrentWebContents().toggleDevTools()
 	})
@@ -224,6 +225,16 @@ function LoadSettings() {
 	}
 
 	if (changed) try { jsonfile.writeFileSync(dirDocument+'/setting.json',setting) } catch(err) { console.error(err) }
+}
+
+function SettingCustomeCheck() {
+	switch(setting.maximum_pixel) {
+		case 0: downloader.maximum_pixel = 1000000; break
+		case 1: downloader.maximum_pixel = 9000000; break
+		case 2: downloader.maximum_pixel = 36000000; break
+		case 3: downloader.maximum_pixel = 144000000; break
+		case 4: downloader.maximum_pixel = 225000000; break
+	}
 }
 
 function OpenSettings() {
@@ -394,6 +405,13 @@ function ApplySetting(prev_setting = null) {
 		if (setting.animations != prev_setting.animations) {
 			if (setting.animations) document.body.classList.remove('no-animation')
 			else document.body.classList.add('no-animation')
+		}
+		if (setting.maximum_pixel != prev_setting.maximum_pixel) switch(setting.maximum_pixel) {
+			case 0: downloader.maximum_pixel = 1000000; break
+			case 1: downloader.maximum_pixel = 9000000; break
+			case 2: downloader.maximum_pixel = 36000000; break
+			case 3: downloader.maximum_pixel = 144000000; break
+			case 4: downloader.maximum_pixel = 225000000; break
 		}
 		if (setting.pic_per_page != prev_setting.pic_per_page) browser.SetNeedReload(-1)
 		if (setting.theme != prev_setting.theme) ApplyTheme(setting.theme)

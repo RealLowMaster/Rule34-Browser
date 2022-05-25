@@ -82,6 +82,7 @@ class DownloadManager {
 		this.dl_order = []
 		this.dled = []
 		this.dledIds = []
+		this.maximum_pixel = 0
 	}
 
 	HasDownload() {
@@ -259,6 +260,16 @@ class DownloadManager {
 		this.Optimize(path, save_path, index, this.dls[i].save, true)
 	}
 
+	GetResizeAspect(width, height, max_pixels) {
+		const pixels = width * height
+		if (pixels <= max_pixels) return {}
+		const ratio = width / height
+		const scale = Math.sqrt(pixels / max_pixels)
+		const final_height = Math.floor(height / scale)
+		const final_width = Math.floor(ratio * height / scale)
+		return { width:final_width, height:final_height }
+	}
+
 	Optimize(path, save_path, index, save, dl) {
 		let format = LastChar('.', path), i
 		if (dl) {
@@ -327,6 +338,8 @@ class DownloadManager {
 			})
 		}
 
+		const loaded_img = new Image()
+		let sharp_resize
 		switch(format) {
 			case 'jpg':
 				save_path += 'jpg'
@@ -334,93 +347,101 @@ class DownloadManager {
 					db.post[index][3] = 'jpg'
 					if (db.post[index][9] != null) db.post[index][9] = null
 				}
-				sharp(path).jpeg({ mozjpeg: true }).toFile(save_path).then(() => {
-					if (dl) {
-						i = this.ids.indexOf(index)
-						if (i < 0) return
-					}
-					const opt_size = statSync(save_path).size
-					let dl_size
-					if (dl) dl_size = this.dls[i].dl_size
-					else dl_size = statSync(path).size
-					if (dl_size < opt_size) {
-						try {
-							unlinkSync(save_path)
-							renameSync(path, save_path)
-						} catch(err) { console.error(err) }
-						if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
-						else loading.Change(null, FormatBytes(dl_size))
-					} else {
-						try { unlinkSync(path) } catch(err) {}
-						if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
-						else loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
-					}
-					sharp(save_path).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+				loaded_img.onload = () => {
+					sharp_resize = this.GetResizeAspect(loaded_img.naturalWidth, loaded_img.naturalHeight, this.maximum_pixel)
+					sharp(path).resize(sharp_resize).jpeg({ mozjpeg: true }).toFile(save_path).then(() => {
+						if (dl) {
+							i = this.ids.indexOf(index)
+							if (i < 0) return
+						}
+						const opt_size = statSync(save_path).size
+						let dl_size
+						if (dl) dl_size = this.dls[i].dl_size
+						else dl_size = statSync(path).size
+						if (dl_size < opt_size) {
+							try {
+								unlinkSync(save_path)
+								renameSync(path, save_path)
+							} catch(err) { console.error(err) }
+							if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
+							else loading.Change(null, FormatBytes(dl_size))
+						} else {
+							try { unlinkSync(path) } catch(err) {}
+							if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
+							else loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
+						}
+						sharp(save_path).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+							console.error(err)
+							finished()
+						})
+					}).catch(err => {
 						console.error(err)
+						try { unlinkSync(path) } catch(err) {}
+						if (dl) {
+							i = this.ids.indexOf(index)
+							if (i >= 0) {
+								this.dls[i].span.setAttribute('l', 'finish')
+								this.dls[i].span.innerText = Language('finish')
+							}
+						}
 						finished()
 					})
-				}).catch(err => {
-					console.error(err)
-					try { unlinkSync(path) } catch(err) {}
-					if (dl) {
-						i = this.ids.indexOf(index)
-						if (i >= 0) {
-							this.dls[i].span.setAttribute('l', 'finish')
-							this.dls[i].span.innerText = Language('finish')
-						}
-					}
-					finished()
-				})
+				}
+				loaded_img.src = path
 				return
 			case 'png':
 				if (!dl && db.post[index][9] != null) db.post[index][9] = null
-				sharp(path).webp({ quality: 100 }).toFile(save_path+'webp').then(() => {
-					if (dl) {
-						i = this.ids.indexOf(index)
-						if (i < 0) return
-					}
-					const opt_size = statSync(save_path+'webp').size
-					let dl_size
-					if (dl) dl_size = this.dls[i].dl_size
-					else dl_size = statSync(path).size
-					if (dl_size < opt_size) {
-						try {
-							unlinkSync(save_path+'webp')
-							renameSync(path, save_path+'png')
-						} catch(err) { console.error(err) }
-						if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
-						else {
-							format = 'png'
-							db.post[index][3] = 'png'
-							loading.Change(null, FormatBytes(dl_size))
-						}
-					} else {
-						try { unlinkSync(path) } catch(err) {}
-						format = 'webp'
+				loaded_img.onload = () => {
+					sharp_resize = this.GetResizeAspect(loaded_img.naturalWidth, loaded_img.naturalHeight, this.maximum_pixel)
+					sharp(path).resize(sharp_resize).webp({ quality: 100 }).toFile(save_path+'webp').then(() => {
 						if (dl) {
-							this.dls[i].format = 'webp'
-							this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
-						} else {
-							db.post[index][3] = 'webp'
-							loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
+							i = this.ids.indexOf(index)
+							if (i < 0) return
 						}
-					}
-					sharp(save_path+format).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+						const opt_size = statSync(save_path+'webp').size
+						let dl_size
+						if (dl) dl_size = this.dls[i].dl_size
+						else dl_size = statSync(path).size
+						if (dl_size < opt_size) {
+							try {
+								unlinkSync(save_path+'webp')
+								renameSync(path, save_path+'png')
+							} catch(err) { console.error(err) }
+							if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
+							else {
+								format = 'png'
+								db.post[index][3] = 'png'
+								loading.Change(null, FormatBytes(dl_size))
+							}
+						} else {
+							try { unlinkSync(path) } catch(err) {}
+							format = 'webp'
+							if (dl) {
+								this.dls[i].format = 'webp'
+								this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
+							} else {
+								db.post[index][3] = 'webp'
+								loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
+							}
+						}
+						sharp(save_path+format).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+							console.error(err)
+							finished()
+						})
+					}).catch(err => {
 						console.error(err)
+						try { unlinkSync(path) } catch(err) {}
+						if (dl) {
+							i = this.ids.indexOf(index)
+							if (i >= 0) {
+								this.dls[i].span.setAttribute('l', 'finish')
+								this.dls[i].span.innerText = Language('finish')
+							}
+						}
 						finished()
 					})
-				}).catch(err => {
-					console.error(err)
-					try { unlinkSync(path) } catch(err) {}
-					if (dl) {
-						i = this.ids.indexOf(index)
-						if (i >= 0) {
-							this.dls[i].span.setAttribute('l', 'finish')
-							this.dls[i].span.innerText = Language('finish')
-						}
-					}
-					finished()
-				})
+				}
+				loaded_img.src = path
 				return
 			case 'webp':
 				save_path += 'webp'
@@ -428,93 +449,101 @@ class DownloadManager {
 					db.post[index][3] = 'webp'
 					if (db.post[index][9] != null) db.post[index][9] = null
 				}
-				sharp(path).webp({ quality: 100 }).toFile(save_path).then(() => {
-					if (dl) {
-						i = this.ids.indexOf(index)
-						if (i < 0) return
-					}
-					const opt_size = statSync(save_path).size
-					let dl_size
-					if (dl) dl_size = this.dls[i].dl_size
-					else dl_size = statSync(path).size
-					if (dl_size < opt_size) {
-						try {
-							unlinkSync(save_path)
-							renameSync(path, save_path)
-						} catch(err) { console.error(err) }
-						if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
-						else loading.Change(null, FormatBytes(dl_size))
-					} else {
-						try { unlinkSync(path) } catch(err) {}
-						if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
-						else loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
-					}
-					sharp(save_path).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+				loaded_img.onload = () => {
+					sharp_resize = this.GetResizeAspect(loaded_img.naturalWidth, loaded_img.naturalHeight, this.maximum_pixel)
+					sharp(path).resize(sharp_resize).webp({ quality: 100 }).toFile(save_path).then(() => {
+						if (dl) {
+							i = this.ids.indexOf(index)
+							if (i < 0) return
+						}
+						const opt_size = statSync(save_path).size
+						let dl_size
+						if (dl) dl_size = this.dls[i].dl_size
+						else dl_size = statSync(path).size
+						if (dl_size < opt_size) {
+							try {
+								unlinkSync(save_path)
+								renameSync(path, save_path)
+							} catch(err) { console.error(err) }
+							if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
+							else loading.Change(null, FormatBytes(dl_size))
+						} else {
+							try { unlinkSync(path) } catch(err) {}
+							if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
+							else loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
+						}
+						sharp(save_path).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+							console.error(err)
+							finished()
+						})
+					}).catch(err => {
 						console.error(err)
+						try { unlinkSync(path) } catch(err) {}
+						if (dl) {
+							i = this.ids.indexOf(index)
+							if (i >= 0) {
+								this.dls[i].span.setAttribute('l', 'finish')
+								this.dls[i].span.innerText = Language('finish')
+							}
+						}
 						finished()
 					})
-				}).catch(err => {
-					console.error(err)
-					try { unlinkSync(path) } catch(err) {}
-					if (dl) {
-						i = this.ids.indexOf(index)
-						if (i >= 0) {
-							this.dls[i].span.setAttribute('l', 'finish')
-							this.dls[i].span.innerText = Language('finish')
-						}
-					}
-					finished()
-				})
+				}
+				loaded_img.src = path
 				return
 			case 'gif':
 				if (dl) this.dls[i].animated = true
 				else db.post[index][9] = '0'
-				sharp(path, { animated: true }).webp().toFile(save_path+'webp').then(() => {
-					if (dl) {
-						i = this.ids.indexOf(index)
-						if (i < 0) return
-					}
-					const opt_size = statSync(save_path+'webp').size
-					let dl_size
-					if (dl) dl_size = this.dls[i].dl_size
-					else dl_size = statSync(path).size
-					if (dl_size < opt_size) {
-						try {
-							unlinkSync(save_path+'webp')
-							renameSync(path, save_path+'gif')
-						} catch(err) { console.error(err) }
-						if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
-						else {
-							db.post[index][3] = 'gif'
-							loading.Change(null, FormatBytes(dl_size))
-						}
-					} else {
-						try { unlinkSync(path) } catch(err) {}
-						format = 'webp'
+				loaded_img.onload = () => {
+					sharp_resize = this.GetResizeAspect(loaded_img.naturalWidth, loaded_img.naturalHeight, this.maximum_pixel)
+					sharp(path, { animated: true }).resize(sharp_resize).webp().toFile(save_path+'webp').then(() => {
 						if (dl) {
-							this.dls[i].format = 'webp'
-							this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
-						} else {
-							db.post[index][3] = 'webp'
-							loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
+							i = this.ids.indexOf(index)
+							if (i < 0) return
 						}
-					}
-					sharp(save_path+format).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+						const opt_size = statSync(save_path+'webp').size
+						let dl_size
+						if (dl) dl_size = this.dls[i].dl_size
+						else dl_size = statSync(path).size
+						if (dl_size < opt_size) {
+							try {
+								unlinkSync(save_path+'webp')
+								renameSync(path, save_path+'gif')
+							} catch(err) { console.error(err) }
+							if (dl) this.dls[i].span.innerText = FormatBytes(dl_size)
+							else {
+								db.post[index][3] = 'gif'
+								loading.Change(null, FormatBytes(dl_size))
+							}
+						} else {
+							try { unlinkSync(path) } catch(err) {}
+							format = 'webp'
+							if (dl) {
+								this.dls[i].format = 'webp'
+								this.dls[i].span.innerText = FormatBytes(dl_size)+' To '+FormatBytes(opt_size)
+							} else {
+								db.post[index][3] = 'webp'
+								loading.Change(null, FormatBytes(dl_size)+' To '+FormatBytes(opt_size))
+							}
+						}
+						sharp(save_path+format).resize(225, 225).jpeg({ mozjpeg: true }).toFile(paths.thumb+save+'.jpg').then(() => finished()).catch(err => {
+							console.error(err)
+							finished()
+						})
+					}).catch(err => {
 						console.error(err)
+						try { unlinkSync(path) } catch(err) {}
+						if (dl) {
+							i = this.ids.indexOf(index)
+							if (i >= 0) {
+								this.dls[i].span.setAttribute('l', 'finish')
+								this.dls[i].span.innerText = Language('finish')
+							}
+						}
 						finished()
 					})
-				}).catch(err => {
-					console.error(err)
-					try { unlinkSync(path) } catch(err) {}
-					if (dl) {
-						i = this.ids.indexOf(index)
-						if (i >= 0) {
-							this.dls[i].span.setAttribute('l', 'finish')
-							this.dls[i].span.innerText = Language('finish')
-						}
-					}
-					finished()
-				})
+				}
+				loaded_img.src = path
 				return
 			case 'mp4': videoThumb(); return
 			case 'webm': videoThumb(); return
