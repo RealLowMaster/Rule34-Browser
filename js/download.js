@@ -203,30 +203,31 @@ class DownloadManager {
 	}
 
 	Download(index) {
-		const dl_index = this.ids.indexOf(index)
+		const sindex = index
+		const dl_index = this.ids.indexOf(sindex)
 		if (dl_index < 0) return
-		const order = this.dl_order.indexOf(index)
+		const order = this.dl_order.indexOf(sindex)
 		if (setting.dl_limit <= order) {
-			setTimeout(() => this.Download(index), 900)
+			setTimeout(() => this.Download(sindex), 1000)
 			return
 		}
 		this.dls[dl_index].dl = new Download(this.dls[dl_index].url, paths.tmp+this.dls[dl_index].save+'.'+this.dls[dl_index].format)
 		this.dls[dl_index].dl.OnError(err => {
 			console.error(err)
-			this.SendToAddPost(index)
+			this.SendToAddPost(sindex)
 		})
 
 		this.dls[dl_index].dl.OnComplete(filename => {
-			const i = this.ids.indexOf(index)
+			const i = this.ids.indexOf(sindex)
 			if (i < 0) {
 				try { unlinkSync(filename) } catch(e) {}
 				return
 			}
-			this.AfterDownload(index, filename)
+			this.AfterDownload(sindex, filename)
 		})
 
 		this.dls[dl_index].dl.OnResponse(resp => {
-			const i = this.ids.indexOf(index)
+			const i = this.ids.indexOf(sindex)
 			if (i < 0) return
 			const bytes = parseInt(resp.headers['content-length'])
 			this.dls[i].total_size = FormatBytes(bytes)
@@ -235,7 +236,7 @@ class DownloadManager {
 		})
 		
 		this.dls[dl_index].dl.OnData(data => {
-			const i = this.ids.indexOf(index)
+			const i = this.ids.indexOf(sindex)
 			if (i < 0) return
 			this.dls[i].dl_size += data
 			this.dls[i].procress.style.width = this.dls[i].percent * this.dls[i].dl_size+'%'

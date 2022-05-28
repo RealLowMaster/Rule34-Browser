@@ -57,15 +57,14 @@ const db = {
 	meta_index: [],
 	meta_link: [],
 	manager: {
-		history: 1,
-		post: 1,
-		have: 1,
-		collection: 1,
-		artist: 1,
-		tag: 1,
-		parody: 1,
-		character: 1,
-		meta: 1
+		post: 0,
+		have: 0,
+		collection: 0,
+		artist: 0,
+		tag: 0,
+		parody: 0,
+		character: 0,
+		meta: 0
 	}
 }
 
@@ -873,13 +872,23 @@ function LoadDatabase() {
 	}
 
 	// -------------> Check Databases
-	if (!existsSync(paths.db+'manager')) try { jsonfile.writeFileSync(paths.db+'manager', db.manager) } catch(err) {
+	const db_tmp = {}
+	// post
+	if (existsSync(paths.db+'post')) try { db_tmp.post = jsonfile.readFileSync(paths.db+'post') } catch(err) {
 		console.error(err)
-		error('CreatingManagerDB->'+err)
-	} else try { db.manager = jsonfile.readFileSync(paths.db+'manager') } catch(err) {
+		Alert('LoadingPostDB->'+err)
+	} else try {
+		post_have = []
+		for (let i = 0, l = sites.length; i < l; i++) post_have.push([])
+		db_tmp.post = { v:db.manager.post, a:[], h: post_have.slice() }
+		delete post_have
+		jsonfile.writeFileSync(paths.db+'post', db_tmp.post)
+	} catch(err) {
 		console.error(err)
-		error('LoadingManagerDB->'+err)
+		Alert('CreatingPostDB->'+err)
 	}
+
+
 
 	// post
 	if (!existsSync(paths.db+'post')) try {
@@ -889,7 +898,7 @@ function LoadDatabase() {
 		jsonfile.writeFileSync(paths.db+'post', {a:[],h:db.post_have})
 	} catch(err) {
 		console.error(err)
-		error('CreatingPostDB->'+err)
+		Alert('CreatingPostDB->'+err)
 	} else try {
 		const load = jsonfile.readFileSync(paths.db+'post')
 		if (Array.isArray(load.a)) db.post = load.a
@@ -902,10 +911,11 @@ function LoadDatabase() {
 			for (let i = 0, l = sites.length; i < l; i++) post_have.push([])
 			db.post_have = post_have
 		}
+		if (typeof load.v === 'number') manager.post = load.v
 	} catch(err) {
 		db.post = []
 		console.error(err)
-		error('LoadingPostDB->'+err)
+		Alert('LoadingPostDB->'+err)
 	}
 
 	// have
@@ -918,7 +928,7 @@ function LoadDatabase() {
 		console.error(err)
 		error('CreatingHaveDB->'+err)
 	} else try {
-		db.have = jsonfile.readFileSync(paths.db+'have').a
+		db.have = jsonfile.readFileSync(paths.db+'have')
 		for (let i = 0, l = sites.length; i < l; i++) if (typeof db.have[i] !== 'object') db.have[i] = []
 	} catch(err) {
 		db.have = []
