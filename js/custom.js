@@ -36,7 +36,6 @@ const sites = [
 
 const db = {
 	history: [],
-	bookmark: [],
 	post: [],
 	post_have: [],
 	have: [],
@@ -57,6 +56,7 @@ const db = {
 	meta_index: [],
 	meta_link: [],
 	manager: {
+		history: 0,
 		post: 0,
 		have: 0,
 		collection: 0,
@@ -118,7 +118,7 @@ class Tab {
 		if (!this.customizing) {
 			browser.AddHistory(this.title.innerText, this.site, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 			browser.SetNeedReload(-2)
-			try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+			try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
 		}
 		this.loading = true
 		this.needReload = false
@@ -201,7 +201,7 @@ class Tab {
 		this.selectedHistory--
 		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 		this.customizing = false
-		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
 	}
 	
 	Next() {
@@ -215,7 +215,7 @@ class Tab {
 		this.selectedHistory++
 		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 		this.customizing = false
-		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
 	}
 
 	Reload() {
@@ -347,7 +347,7 @@ class BrowserManager {
 
 			this.timeout = setTimeout(() => this.ResizeTabs(), 1000)
 			browser.SetNeedReload(-2)
-			try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+			try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
 			return
 		}
 	}
@@ -405,7 +405,7 @@ class BrowserManager {
 		this.ActivateTab(index)
 		this.ResizeTabs()
 		browser.SetNeedReload(-2)
-		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history }) } catch(err) { console.log(err) }
 	}
 
 	CloseAllTabs() {
@@ -417,7 +417,7 @@ class BrowserManager {
 		this.selectedTab = null
 		this.selectedTabIndex = null
 		this.SetNeedReload(-2)
-		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
 	}
 
 	AddHistory(txt, site, val, val2) {
@@ -779,21 +779,25 @@ function NewTab() {
 	LoadPage(id, 1)
 }
 
-function ShowStartup() {
+function ShowStartup(list) {
 	const container = document.createElement('div')
 	container.id = 'show-startup'
-	let save = document.createElement('p')
-	save.innerText = Language('cdl_path')
-	container.appendChild(save)
+	if (list.length == 0) {
+		let save = document.createElement('p')
+		save.innerText = Language('cdl_path')
+		container.appendChild(save)
 
-	save = document.createElement('div')
-	save.classList.add('btn')
-	save.classList.add('btn-primary')
-	save.innerText = Language('openfolder')
-	save.onclick = ChooseDLPath
-	container.appendChild(save)
+		save = document.createElement('div')
+		save.classList.add('btn')
+		save.classList.add('btn-primary')
+		save.innerText = Language('openfolder')
+		save.onclick = ChooseDLPath
+		container.appendChild(save)
 
-	document.body.appendChild(container)
+		document.body.appendChild(container)
+	} else {
+
+	}
 }
 
 function ChooseDLPath() {
@@ -813,12 +817,9 @@ function ChooseDLPath() {
 
 function LoadDatabase() {
 	loading.Forward()
-	if (
-		typeof setting.dl_path !== 'string' ||
-		!existsSync(setting.dl_path)
-	) {
+	if (typeof setting.dl_path !== 'string' || !existsSync(setting.dl_path)) {
 		loading.Close()
-		ShowStartup()
+		ShowStartup([])
 		return
 	}
 	paths.db = setting.dl_path+'/R34DB/'
@@ -829,52 +830,45 @@ function LoadDatabase() {
 	// Check Folders
 	if (!existsSync(paths.db)) try { mkdirSync(paths.db) } catch(err) {
 		console.error(err)
-		error('MakingDatabaseFolder->'+err)
+		Alert('MakingDatabaseFolder->'+err)
 		return
 	}
 
 	if (!existsSync(paths.dl)) try { mkdirSync(paths.dl) } catch(err) {
 		console.error(err)
-		error('MakingDownloadFolder->'+err)
+		Alert('MakingDownloadFolder->'+err)
 		return
 	}
 
 	if (!existsSync(paths.thumb)) try { mkdirSync(paths.thumb) } catch(err) {
 		console.error(err)
-		error('MakingThumbFolder->'+err)
+		Alert('MakingThumbFolder->'+err)
 		return
 	}
 
 	if (!existsSync(paths.tmp)) try { mkdirSync(paths.tmp) } catch(err) {
 		console.error(err)
-		error('MakingTempFolder->'+err)
+		Alert('MakingTempFolder->'+err)
 		return
 	}
 
-	// -------------> Check History
-	if (existsSync(dirDocument+'/history')) try { db.history = jsonfile.readFileSync(dirDocument+'/history').a } catch(err) {
-		console.error(err)
-		error('LoadingHistory->'+err)
-	} else try { jsonfile.writeFileSync(dirDocument+'/history', {a:[]}) } catch(err) {
-		console.log(err)
-		db.history = []
-		error('CreatingHistoryDB->'+err)
-	}
-
-	// -------------> Check Bookmarks
-	if (existsSync(dirDocument+'/bookmark.json')) try { db.bookmark = jsonfile.readFileSync(dirDocument+'/bookmark.json').a } catch(err) {
-		console.error(err)
-		error('LoadingBookmark->'+err)
-	} else try { jsonfile.writeFileSync(dirDocument+'/bookmark.json', {a:[]}) } catch(err) {
-		console.log(err)
-		db.bookmark = []
-		error('CreatingBookmarkDB->'+err)
-	}
-
-	// -------------> Check Databases
+	// -------------> Load/Create Global Databases
 	const db_tmp = {}
+	if (existsSync(dirDocument+'/history')) try { db_tmp.history = jsonfile.readFileSync(dirDocument+'/history') } catch(err) {
+		db_tmp.history = 'LoadingHistoryDB->'+err
+		console.error(err)
+	} else try {
+		db_tmp.history = { v:db.manager.history, a:[] }
+		jsonfile.writeFileSync(dirDocument+'/history', db_tmp.history)
+	} catch(err) {
+		db_tmp.history = 'CreatingHistoryDB->'+err
+		console.log(err)
+	}
+
+	// -------------> Load/Create Databases
 	// post
 	if (existsSync(paths.db+'post')) try { db_tmp.post = jsonfile.readFileSync(paths.db+'post') } catch(err) {
+		db_tmp.post = undefined
 		console.error(err)
 		Alert('LoadingPostDB->'+err)
 	} else try {
@@ -884,159 +878,267 @@ function LoadDatabase() {
 		delete post_have
 		jsonfile.writeFileSync(paths.db+'post', db_tmp.post)
 	} catch(err) {
+		db_tmp.post = undefined
 		console.error(err)
 		Alert('CreatingPostDB->'+err)
-	}
-
-
-
-	// post
-	if (!existsSync(paths.db+'post')) try {
-		const post_have = []
-		for (let i = 0, l = sites.length; i < l; i++) post_have.push([])
-		db.post_have = post_have
-		jsonfile.writeFileSync(paths.db+'post', {a:[],h:db.post_have})
-	} catch(err) {
-		console.error(err)
-		Alert('CreatingPostDB->'+err)
-	} else try {
-		const load = jsonfile.readFileSync(paths.db+'post')
-		if (Array.isArray(load.a)) db.post = load.a
-		else db.post = []
-		if (Array.isArray(load.h)) {
-			db.post_have = load.h
-			if (db.post_have.length < sites.length) for (let i = 0, l = sites.length; i < l; i++) if (!Array.isArray(db.post_have[i])) db.post_have[i] = []
-		} else {
-			const post_have = []
-			for (let i = 0, l = sites.length; i < l; i++) post_have.push([])
-			db.post_have = post_have
-		}
-		if (typeof load.v === 'number') manager.post = load.v
-	} catch(err) {
-		db.post = []
-		console.error(err)
-		Alert('LoadingPostDB->'+err)
 	}
 
 	// have
-	if (!existsSync(paths.db+'have')) try {
-		const have = []
-		for (let i = 0, l = sites.length; i < l; i++) have.push([])
-		jsonfile.writeFileSync(paths.db+'have', {a:have})
-		db.have = have
-	} catch(err) {
+	if (existsSync(paths.db+'have')) try { db_tmp.have = jsonfile.readFileSync(paths.db+'have') } catch(err) {
+		db_tmp.have = undefined
 		console.error(err)
-		error('CreatingHaveDB->'+err)
+		Alert('LoadingHaveDB->'+err)
 	} else try {
-		db.have = jsonfile.readFileSync(paths.db+'have')
-		for (let i = 0, l = sites.length; i < l; i++) if (typeof db.have[i] !== 'object') db.have[i] = []
+		tmp_have
+		for (let i = 0, l = sites.length; i < l; i++) tmp_have.push([])
+		db_tmp.have = { v:db.manager.have, a:tmp_have.slice() }
+		delete tmp_have
+		jsonfile.writeFileSync(paths.db+'have', db_tmp.have)
 	} catch(err) {
-		db.have = []
-		for (let i = 0, l = sites.length; i < l; i++) db.have.push([])
+		db_tmp.have = undefined
 		console.error(err)
-		error('LoadingHaveDB->'+err)
+		Alert('CreatingHaveDB->'+err)
 	}
 
 	// collection
-	if (!existsSync(paths.db+'collection')) try { jsonfile.writeFileSync(paths.db+'collection', {a:[]}) } catch(err) {
+	/*
+	if (existsSync(paths.db+'collection')) try { db_tmp.collection = jsonfile.readFileSync(paths.db+'collection') } catch(err) {
+		db_tmp.collection = undefined
 		console.error(err)
-		error('CreatingCollectionDB->'+err)
-	} else try { db.collection = jsonfile.readFileSync(paths.db+'collection').a } catch(err) {
-		db.collection = []
+		Alert('LoadingCollectionDB->'+err)
+	} else try {
+		db_tmp.collection = { v:db.manager.collection, a:[] }
+		jsonfile.writeFileSync(paths.db+'collection', db_tmp.collection)
+	} catch(err) {
+		db_tmp.collection = undefined
 		console.error(err)
-		error('LoadingCollectionDB->'+err)
+		Alert('CreatingCollectionDB->'+err)
 	}
+	*/
 
 	// artist
-	if (!existsSync(paths.db+'artist')) try { jsonfile.writeFileSync(paths.db+'artist', {a:[],l:[],i:[]}) } catch(err) {
+	if (existsSync(paths.db+'artist')) try { db_tmp.artist = jsonfile.readFileSync(paths.db+'artist') } catch(err) {
+		db_tmp.artist = undefined
 		console.error(err)
-		error('CreatingArtistDB->'+err)
+		Alert('LoadingArtistDB->'+err)
 	} else try {
-		const data = jsonfile.readFileSync(paths.db+'artist')
-		db.artist = data.a
-		db.artist_index = data.i
-		db.artist_link = data.l
+		db_tmp.artist = { v:db.manager.artist, a:[], l:[], i:[] }
+		jsonfile.writeFileSync(paths.db+'artist', db_tmp.artist)
 	} catch(err) {
-		db.artist = []
-		db.artist_index = []
-		db.artist_link = []
+		db_tmp.artist = undefined
 		console.error(err)
-		error('LoadingArtistDB->'+err)
+		Alert('CreatingArtistDB->'+err)
 	}
 
 	// tag
-	if (!existsSync(paths.db+'tag')) try { jsonfile.writeFileSync(paths.db+'tag', {a:[],l:[],i:[]}) } catch(err) {
+	if (existsSync(paths.db+'tag')) try { db_tmp.tag = jsonfile.readFileSync(paths.db+'tag') } catch(err) {
+		db_tmp.tag = undefined
 		console.error(err)
-		error('CreatingTagDB->'+err)
+		Alert('LoadingTagDB->'+err)
 	} else try {
-		const data = jsonfile.readFileSync(paths.db+'tag')
-		db.tag = data.a
-		db.tag_index = data.i
-		db.tag_link = data.l
+		db_tmp.tag = { v:db.manager.tag, a:[], l:[], i:[] }
+		jsonfile.writeFileSync(paths.db+'tag', db_tmp.tag)
 	} catch(err) {
-		db.tag = []
-		db.tag_index = []
-		db.tag_link = []
+		db_tmp.tag = undefined
 		console.error(err)
-		error('LoadingTagDB->'+err)
+		Alert('CreatingTagDB->'+err)
 	}
-	
+
 	// parody
-	if (!existsSync(paths.db+'parody')) try { jsonfile.writeFileSync(paths.db+'parody', {a:[],l:[],i:[]}) } catch(err) {
+	if (existsSync(paths.db+'parody')) try { db_tmp.parody = jsonfile.readFileSync(paths.db+'parody') } catch(err) {
+		db_tmp.parody = undefined
 		console.error(err)
-		error('CreatingParodyDB->'+err)
+		Alert('LoadingParodyDB->'+err)
 	} else try {
-		const data = jsonfile.readFileSync(paths.db+'parody')
-		db.parody = data.a
-		db.parody_index = data.i
-		db.parody_link = data.l
+		db_tmp.parody = { v:db.manager.parody, a:[], l:[], i:[] }
+		jsonfile.writeFileSync(paths.db+'parody', db_tmp.parody)
 	} catch(err) {
-		db.parody = []
-		db.parody_index = []
-		db.parody_link = []
+		db_tmp.parody = undefined
 		console.error(err)
-		error('LoadingParodyDB->'+err)
+		Alert('CreatingParodyDB->'+err)
 	}
-	
+
 	// character
-	if (!existsSync(paths.db+'character')) try { jsonfile.writeFileSync(paths.db+'character', {a:[],l:[],i:[]}) } catch(err) {
+	if (existsSync(paths.db+'character')) try { db_tmp.character = jsonfile.readFileSync(paths.db+'character') } catch(err) {
+		db_tmp.character = undefined
 		console.error(err)
-		error('CreatingCharacterDB->'+err)
+		Alert('LoadingCharacterDB->'+err)
 	} else try {
-		const data = jsonfile.readFileSync(paths.db+'character')
-		db.character = data.a
-		db.character_index = data.i
-		db.character_link = data.l
+		db_tmp.character = { v:db.manager.character, a:[], l:[], i:[] }
+		jsonfile.writeFileSync(paths.db+'character', db_tmp.character)
 	} catch(err) {
-		db.character = []
-		db.character_index = []
-		db.character_link = []
+		db_tmp.character = undefined
 		console.error(err)
-		error('LoadingCharacterDB->'+err)
+		Alert('CreatingCharacterDB->'+err)
 	}
 
-	// Meta
-	if (!existsSync(paths.db+'meta')) try { jsonfile.writeFileSync(paths.db+'meta', {a:[],l:[],i:[]}) } catch(err) {
+	// meta
+	if (existsSync()) try { db_tmp.meta = jsonfile.readFileSync(paths.db+'meta') } catch(err) {
+		db_tmp.meta = undefined
 		console.error(err)
-		error('CreatingMetaDB->'+err)
+		Alert('LoadingMetaDB->'+err)
 	} else try {
-		const data = jsonfile.readFileSync(paths.db+'meta')
-		db.meta = data.a
-		db.meta_index = data.i
-		db.meta_link = data.l
+		db_tmp.meta = { v:db.manager.meta, a:[], l:[], i:[] }
+		jsonfile.writeFileSync(paths.db+'meta', db_tmp.meta)
 	} catch(err) {
-		db.meta = []
-		db.meta_index = []
-		db.meta_link = []
+		db_tmp.meta = undefined
 		console.error(err)
-		error('LoadingMetaDB->'+err)
+		Alert('CreatingMetaDB->'+err)
 	}
 
-	if (setting.seen_release != null && setting.seen_release != update_number) OpenReleaseNote()
-	else loading.Close()
-	CheckScriptUpdate()
-	KeyManager.ChangeCategory('default')
-	NewTab()
+	// -------------> Check Databases
+	const error_list = []
+	// history
+	if (typeof db_tmp.history === 'object') {
+		if (typeof db_tmp.history.v === 'number') {
+			if (db_tmp.history.v > db.manager.history) error_list.push('History Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.history.a)) {
+					db.history = db_tmp.history.a.slice()
+				} else error_list.push('History Database is Corrupted #Data')
+			}
+		} else error_list.push('History Database is Corrupted #Version')
+	} else error_list.push(db_tmp.history)
+	delete db_tmp.history
+
+	// post
+	if (typeof db_tmp.post === 'object') {
+		if (typeof db_tmp.post.v === 'number') {
+			if (db_tmp.post.v > db.manager.post) error_list.push('Post Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.post.a)) {
+					if (Array.isArray(db_tmp.post.h)) {
+						if (db_tmp.post.h.length < sites.length) for (let i = 0, l = sites.length; i < l; i++) if (!Array.isArray(db_tmp.post.h[i])) db_tmp.post.h[i] = []
+						db.post = db_tmp.post.a.slice()
+						db.post_have = db_tmp.post.h.slice()
+					} else error_list.push('Post Database is Corrupted #Data-1')
+				} else error_list.push('Post Database is Corrupted #Data-1')
+			}
+		} else error_list.push('Post Database is Corrupted #Version')
+	} else error_list.push(db_tmp.post)
+	delete db_tmp.post
+
+	// have
+	if (typeof db_tmp.have === 'object') {
+		if (typeof db_tmp.have.v === 'number') {
+			if (db_tmp.have.v > db.manager.have) error_list.push('Downloads Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.have.a)) {
+					if (db_tmp.have.a.length < sites.length) for (let i = 0, l = sites.length; i < l; i++) if (!Array.isArray(db_tmp.have.a[i])) db_tmp.have.a[i] = []
+					db.have = db_tmp.have.a.slice()
+				} else error_list.push('Downloads Database is Corrupted #Data')
+			}
+		} else error_list.push('Downloads Database is Corrupted #Version')
+	} else error_list.push(db_tmp.have)
+	delete db_tmp.have
+
+	// artist
+	if (typeof db_tmp.artist === 'object') {
+		if (typeof db_tmp.artist.v === 'number') {
+			if (db_tmp.artist.v > db.manager.artist) error_list.push('Artists Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.artist.a)) {
+					if (Array.isArray(db_tmp.artist.l)) {
+						if (Array.isArray(db_tmp.artist.i)) {
+							db.artist = db_tmp.artist.a.slice()
+							db.artist_index = db_tmp.artist.i.slice()
+							db.artist_link = db_tmp.artist.l.slice()
+						} else error_list.push('Artists Database is Corrupted #Data-3')
+					} else error_list.push('Artists Database is Corrupted #Data-2')
+				} else error_list.push('Artists Database is Corrupted #Data-1')
+			}
+		} else error_list.push('Artists Database is Corrupted #Version')
+	} else error_list.push(db_tmp.artist)
+	delete db_tmp.artist
+
+	// tag
+	if (typeof db_tmp.tag === 'object') {
+		if (typeof db_tmp.tag.v === 'number') {
+			if (db_tmp.tag.v > db.manager.tag) error_list.push('Tags Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.tag.a)) {
+					if (Array.isArray(db_tmp.tag.l)) {
+						if (Array.isArray(db_tmp.tag.i)) {
+							db.tag = db_tmp.tag.a.slice()
+							db.tag_index = db_tmp.tag.i.slice()
+							db.tag_link = db_tmp.tag.l.slice()
+						} else error_list.push('Tags Database is Corrupted #Data-3')
+					} else error_list.push('Tags Database is Corrupted #Data-2')
+				} else error_list.push('Tags Database is Corrupted #Data-1')
+			}
+		} else error_list.push('Tags Database is Corrupted #Version')
+	} else error_list.push(db_tmp.tag)
+	delete db_tmp.tag
+
+	// parody
+	if (typeof db_tmp.parody === 'object') {
+		if (typeof db_tmp.parody.v === 'number') {
+			if (db_tmp.parody.v > db.manager.parody) error_list.push('Parodies Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.parody.a)) {
+					if (Array.isArray(db_tmp.parody.l)) {
+						if (Array.isArray(db_tmp.parody.i)) {
+							db.parody = db_tmp.parody.a.slice()
+							db.parody_index = db_tmp.parody.i.slice()
+							db.parody_link = db_tmp.parody.l.slice()
+						} else error_list.push('Parodies Database is Corrupted #Data-3')
+					} else error_list.push('Parodies Database is Corrupted #Data-2')
+				} else error_list.push('Parodies Database is Corrupted #Data-1')
+			}
+		} else error_list.push('Parodies Database is Corrupted #Version')
+	} else error_list.push(db_tmp.parody)
+	delete db_tmp.parody
+
+	// character
+	if (typeof db_tmp.character === 'object') {
+		if (typeof db_tmp.character.v === 'number') {
+			if (db_tmp.character.v > db.manager.character) error_list.push('Characters Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.character.a)) {
+					if (Array.isArray(db_tmp.character.l)) {
+						if (Array.isArray(db_tmp.character.i)) {
+							db.character = db_tmp.character.a.slice()
+							db.character_index = db_tmp.character.i.slice()
+							db.character_link = db_tmp.character.l.slice()
+						} else error_list.push('Characters Database is Corrupted #Data-3')
+					} else error_list.push('Characters Database is Corrupted #Data-2')
+				} else error_list.push('Characters Database is Corrupted #Data-1')
+			}
+		} else error_list.push('Characters Database is Corrupted #Version')
+	} else error_list.push(db_tmp.character)
+	delete db_tmp.character
+
+	// meta
+	if (typeof db_tmp.meta === 'object') {
+		if (typeof db_tmp.meta.v === 'number') {
+			if (db_tmp.meta.v > db.manager.meta) error_list.push('Metas Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.meta.a)) {
+					if (Array.isArray(db_tmp.meta.l)) {
+						if (Array.isArray(db_tmp.meta.i)) {
+							db.meta = db_tmp.meta.a.slice()
+							db.meta_index = db_tmp.meta.i.slice()
+							db.meta_link = db_tmp.meta.l.slice()
+						} else error_list.push('Metas Database is Corrupted #Data-3')
+					} else error_list.push('Metas Database is Corrupted #Data-2')
+				} else error_list.push('Metas Database is Corrupted #Data-1')
+			}
+		} else error_list.push('Metas Database is Corrupted #Version')
+	} else error_list.push(db_tmp.meta)
+	delete db_tmp.meta
+
+	if (error_list.length == 0) {
+		if (setting.seen_release != null && setting.seen_release != update_number) OpenReleaseNote()
+		else loading.Close()
+		CheckScriptUpdate()
+		KeyManager.ChangeCategory('default')
+		NewTab()
+	} else {
+		CheckScriptUpdate()
+		loading.Close()
+		/** ----- **/
+		KeyManager.stop = true
+	}
 }
 
 function BRPostDL(site, id) {
@@ -2031,7 +2133,7 @@ function LoadHistory(tabId, page) {
 					browser.OpenInNewTab(db.history[ii][2], db.history[ii][3])
 					db.history.splice(ii, 1)
 					browser.SetNeedReload(-2)
-					try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+					try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history }) } catch(err) { console.log(err) }
 				}
 			}
 			save2.appendChild(save3)
@@ -2063,7 +2165,7 @@ function OpenLastHistory() {
 	browser.OpenInNewTab(db.history[i][2], db.history[i][3])
 	db.history.splice(i, 1)
 	browser.SetNeedReload(-2)
-	try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+	try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a: db.history }) } catch(err) { console.log(err) }
 }
 
 function OpenBookmarks() {

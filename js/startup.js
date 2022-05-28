@@ -56,7 +56,7 @@ function Startup() {
 		LoadDatabase()
 	} catch(err) {
 		console.error(err)
-		error(err)
+		Alert(err)
 	}
 }
 
