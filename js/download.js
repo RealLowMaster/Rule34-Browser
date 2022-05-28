@@ -696,14 +696,16 @@ class DownloadManager {
 
 	CancelAll(callback) {
 		for (let i = 0, l = this.dls.length; i < l; i++) {
-			if (this.dls[i].dl != null) this.dls[i].dl.Stop()
-			const site = this.dls[i].site, id = this.dls[i].id
-			const order = this.dl_order.indexOf(this.ids[i])
-			if (order >= 0) this.dl_order.splice(order, 1)
-			this.dls[i].container.remove()
-			this.ids.splice(i, 1)
-			this.dls.splice(i, 1)
-			browser.ChangeButtonsToDownloading(site, id, true)
+			try {
+				if (this.dls[i].dl != null) this.dls[i].dl.Stop()
+				const site = this.dls[i].site, id = this.dls[i].id
+				const order = this.dl_order.indexOf(this.ids[i])
+				if (order >= 0) this.dl_order.splice(order, 1)
+				this.dls[i].container.remove()
+				this.ids.splice(i, 1)
+				this.dls.splice(i, 1)
+				browser.ChangeButtonsToDownloading(site, id, true)
+			} catch(err) {}
 		}
 		if (typeof callback == 'function') callback()
 	}

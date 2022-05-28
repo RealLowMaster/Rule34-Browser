@@ -1024,6 +1024,7 @@ function LoadDatabase() {
 
 	if (setting.seen_release != null && setting.seen_release != update_number) OpenReleaseNote()
 	else loading.Close()
+	CheckScriptUpdate()
 	KeyManager.ChangeCategory('default')
 	NewTab()
 }
