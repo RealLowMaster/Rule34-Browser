@@ -1,6 +1,7 @@
 let UpdateScript = {
     checked: false,
-    timer: null
+    timer: null,
+	updating: false
 }
 
 function CheckScriptUpdate() {
@@ -15,7 +16,8 @@ function CheckScriptUpdate() {
 			return res.json()
 		}).then(json => {
 			if (json.app_version > app_version) {
-
+				UpdateScript.checked = true
+				Alert(Language('new-version-available'))
 			} else if (json.update_number > update_number) Update(json)
 			else {
 				UpdateScript.checked = true
@@ -29,6 +31,7 @@ function CheckScriptUpdate() {
 }
 
 function Update(json) {
+	UpdateScript.updating = true
 	loading.Show(2, Language('updating')+'...')
 	downloader.CancelAll(() => {
 		const dl = new Download(json.script_url, paths.tmp+'update.zip')
@@ -41,6 +44,7 @@ function Update(json) {
 		dl.OnError(err => {
 			console.error(err)
 			loading.Close()
+			UpdateScript.updating = false
 			Alert(Language('update-err'))
 		})
 
@@ -63,6 +67,7 @@ function Update(json) {
 			zip.on('error', err => {
 				console.error(err)
 				loading.Close()
+				UpdateScript.updating = false
 				Alert(Language('ext-update-err')+' -> '+err)
 			})
 
@@ -84,6 +89,7 @@ function Update(json) {
 				try { unlinkSync(filename) } catch(err) { console.error(err) }
 
 				loading.Forward(Language('update-completed'))
+				UpdateScript.updating = false
 				setTimeout(() => {
 					try {
 						remote.app.relaunch()
@@ -100,6 +106,7 @@ function Update(json) {
 			}).catch(err => {
 				console.error(err)
 				loading.Close()
+				UpdateScript.updating = false
 				Alert(Language('update-corrupt'))
 			})
 		})

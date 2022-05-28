@@ -11,6 +11,7 @@ const ThisWindow = remote.getCurrentWindow(), loading = new Loading(), update_nu
 // Set Windows Closing Event
 ThisWindow.addListener('close', e => {
 	e.preventDefault()
+	if (UpdateScript.updating) return
 	if (downloader.HasDownload()) {
 		Confirm(Language('ydl-are-sure-cls-app'), [
 			{
