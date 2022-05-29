@@ -104,7 +104,7 @@ function RemoveFromPack(site, id) {
 				pack.data[9][sid]
 			])
 			browser.SetNeedReload(-1)
-			try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
+			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
 		}
 		return
 	}
@@ -199,7 +199,7 @@ function Pack() {
 	ClosePacking()
 	loading.Close()
 	KeyManager.stop = false
-	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
+	try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
 	PopAlert(Language('pack-end'))
 }
 
@@ -252,7 +252,7 @@ function UnPack(id) {
 	loading.Close()
 	KeyManager.stop = false
 	browser.SetNeedReload(-1)
-	try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
+	try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
 	PopAlert(Language('unpack-end'))
 }
 
@@ -323,7 +323,7 @@ function ClosePacking() {
 			}
 		}
 		if (changed) {
-			try { jsonfile.writeFileSync(paths.db+'post', {a:db.post, h:db.post_have}) } catch(err) { console.error(err) }
+			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
 			browser.SetNeedReload(-1)
 		}
 	}

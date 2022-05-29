@@ -187,7 +187,7 @@ function SetContextMenus() {
 		browser.OpenInNewTab(db.history[ContextManager.save][2], db.history[ContextManager.save][3])
 		db.history.splice(ContextManager.save, 1)
 		browser.SetNeedReload(-2)
-		try { jsonfile.writeFileSync(dirDocument+'/history', {a:db.history}) } catch(err) { console.log(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history }) } catch(err) { console.log(err) }
 	} })
 	// ContextManager.AddItem(i, { text:'add-bookmarks', click: () => {} })
 	ContextManager.AddItem(i, { icon:'trash', text:'delete', click: () => DeleteHistory(ContextManager.save) })

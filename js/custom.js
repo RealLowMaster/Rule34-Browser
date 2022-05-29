@@ -793,17 +793,36 @@ function ShowStartup(list) {
 		save.innerText = Language('openfolder')
 		save.onclick = ChooseDLPath
 		container.appendChild(save)
-
-		document.body.appendChild(container)
 	} else {
-
+		let save
+		for (let i = 0, l = list.length; i < l; i++) {
+			save = document.createElement('div')
+			save.classList.add('alert')
+			save.classList.add('alert-danger')
+			save.innerText = list[i]
+			container.appendChild(save)
+		}
+		save = document.createElement('p')
+		save.innerText = Language('fix-database')
+		container.appendChild(save)
+		save = document.createElement('p')
+		save.style.paddingTop = '0'
+		save.innerText = Language('or')
+		container.appendChild(save)
+		save = document.createElement('div')
+		save.classList.add('btn')
+		save.classList.add('btn-primary')
+		save.innerText = Language('openfolder')
+		save.onclick = ChooseDLPath
+		container.appendChild(save)
 	}
+	document.body.appendChild(container)
 }
 
 function ChooseDLPath() {
 	const directory = remote.dialog.showOpenDialogSync({title:Language('choosedirectory'), properties:['openDirectory']})
 
-	if (directory == null || directory.length == 0 || directory[0] == null || !existsSync(directory[0])) return
+	if (UpdateScript.updating || directory == null || directory.length == 0 || directory[0] == null || !existsSync(directory[0])) return
 
 	setting.dl_path = directory[0]
 	try {
@@ -889,7 +908,7 @@ function LoadDatabase() {
 		console.error(err)
 		Alert('LoadingHaveDB->'+err)
 	} else try {
-		tmp_have
+		tmp_have = []
 		for (let i = 0, l = sites.length; i < l; i++) tmp_have.push([])
 		db_tmp.have = { v:db.manager.have, a:tmp_have.slice() }
 		delete tmp_have
@@ -1136,7 +1155,7 @@ function LoadDatabase() {
 	} else {
 		CheckScriptUpdate()
 		loading.Close()
-		/** ----- **/
+		ShowStartup(error_list)
 		KeyManager.stop = true
 	}
 }
