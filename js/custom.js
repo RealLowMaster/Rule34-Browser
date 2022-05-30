@@ -992,7 +992,7 @@ function LoadDatabase() {
 	}
 
 	// meta
-	if (existsSync()) try { db_tmp.meta = jsonfile.readFileSync(paths.db+'meta') } catch(err) {
+	if (existsSync(paths.db+'meta')) try { db_tmp.meta = jsonfile.readFileSync(paths.db+'meta') } catch(err) {
 		db_tmp.meta = undefined
 		console.error(err)
 		Alert('LoadingMetaDB->'+err)
@@ -2185,6 +2185,10 @@ function OpenLastHistory() {
 	db.history.splice(i, 1)
 	browser.SetNeedReload(-2)
 	try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a: db.history }) } catch(err) { console.log(err) }
+}
+
+function LoadByInfo() {
+
 }
 
 function OpenBookmarks() {

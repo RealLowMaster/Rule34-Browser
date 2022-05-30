@@ -122,6 +122,7 @@ class DownloadManager {
 		if (i < 0) return
 		this.dls[i].url = dl_url
 		this.dls[i].data = data
+		console.log(data)
 		this.dls[i].pause = false
 		this.dls[i].format = LastChar('?', LastChar('.', dl_url), true)
 		this.dls[i].dl_size = 0

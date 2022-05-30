@@ -161,8 +161,12 @@ function LoadSettings() {
 		save2.style.left = ((value - min) * 100) / (max - min)+'%'
 		save3 = document.createElement('div')
 		save2.appendChild(save3)
-		save3 = document.createElement('div')
-		save3.innerText = value
+		save3 = document.createElement('input')
+		save3.type = 'number'
+		save3.min = min
+		save3.max = max
+		save3.value = value
+		save3.setAttribute('onfocusout', 'OnRangeChanged(this)')
 		save2.appendChild(save3)
 		save.appendChild(save2)
 		save2 = document.createElement('span')
@@ -304,8 +308,18 @@ function OnRangeInput(who) {
 	const children = who.parentElement.children
 	const slider = children[1], value = who.value, min = Number(who.min), percent = ((value - min) * 100) / (Number(who.max) - min) + '%'
 	slider.style.left = percent
-	slider.children[1].innerText = value
+	slider.children[1].value = value
 	children[2].style.width = percent
+}
+
+function OnRangeChanged(who) {
+	const min = Number(who.min), max = Number(who.max)
+	let val = Number(who.value)
+	if (val > max) val = max
+	else if (val < min) val = min
+	const range = who.parentElement.parentElement.children[0]
+	range.value = val
+	OnRangeInput(range)
 }
 
 // Upload File

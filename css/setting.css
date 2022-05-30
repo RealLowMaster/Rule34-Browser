@@ -393,7 +393,7 @@
 	pointer-events: none;
 }
 
-.sto-range > div > div > div:first-child {
+.sto-range > div > div > div {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -407,7 +407,7 @@
 	pointer-events: none;
 }
 
-.sto-range > div > div > div:first-child::before {
+.sto-range > div > div > div::before {
 	content: '';
 	width: 24px;
 	height: 24px;
@@ -419,7 +419,8 @@
 	box-sizing: border-box;
 }
 
-.sto-range > div > div > div:last-child {
+.sto-range > div > div > input {
+	display: block;
 	min-width: 35px;
 	height: 35px;
 	padding: 0 4px;
@@ -431,8 +432,12 @@
 	font-size: 20px;
 	font-weight: 600;
 	user-select: none;
-	pointer-events: none;
+	pointer-events: visible;
+	appearance: none;
 }
+
+.sto-range > div > div > input::-webkit-inner-spin-button,
+.sto-range > div > div > input::-webkit-outer-spin-button { appearance: none }
 
 .sto-range > div > span {
 	display: block;
