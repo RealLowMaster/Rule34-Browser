@@ -371,6 +371,16 @@
 	filter: drop-shadow(0 1px #000f);
 }
 
+.post-counter {
+	display: inline-block;
+	color: var(--primary-header);
+	position: fixed;
+	bottom: 10px;
+	right: 20px;
+	user-select: none;
+	pointer-events: none;
+}
+
 .main-page-pagination {
 	display: block;
 	width: 100%;

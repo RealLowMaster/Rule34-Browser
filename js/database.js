@@ -291,7 +291,7 @@ function GetPost(site, id, index = true) {
 }
 
 function AddPost(site, id, imgId, format, data, animated = null) {
-	const arr = [site, id, imgId, format, null, null, null, null, null]
+	const arr = [site, id, imgId, format, [], [], [], [], []]
 	if (animated === true) arr[9] = '0'
 	if (data.parody != null) arr[4] = GetParodyIndex(data.parody)
 	if (data.character != null) arr[5] = GetCharacterIndex(data.character)
