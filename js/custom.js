@@ -470,7 +470,7 @@ class BrowserManager {
 
 	Link(tabId, index, value) {
 		switch(index) {
-			case -6: return
+			case -6: LoadByInfo(tabId, value[0], value[1]); return
 			case -5: Post(tabId, value[0], value[1]); return
 			case -4: LoadHistory(tabId, value); return
 			case -3: LoadCollections(tabId); return
@@ -1846,82 +1846,67 @@ function Post(tabId, site, id) {
 			data.tag = NoLoopArray(data.tag)
 			data.meta = NoLoopArray(data.meta)
 
-			// parody
+			// parody = 0
 			if (data.parody.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Parody:'
 				for (let j = 0, n = data.parody.length; j < n; j++) {
-					title += db.parody[data.parody[j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.parody[data.parody[j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.parody[data.parody[j]], tabId, tab.AddLink(-6, [])))
+					const index = data.parody[j]
+					title += db.parody[index]+', '
+					save.appendChild(NormalLinkElement('div', db.parody[index], tabId, tab.AddLink(-6, [0, index])))
 				}
 				container.appendChild(save)
 			}
 
-			// character
+			// character = 1
 			if (data.character.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Character:'
 				for (let j = 0, n = data.character.length; j < n; j++) {
-					title += db.character[data.character[j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.character[data.character[j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.character[data.character[j]], tabId, tab.AddLink(-6, [])))
+					const index = data.character[j]
+					title += db.character[index]+', '
+					save.appendChild(NormalLinkElement('div', db.character[index], tabId, tab.AddLink(-6, [1, index])))
 				}
 				container.appendChild(save)
 			}
 
-			// artist
+			// artist = 2
 			if (data.artist.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Artists:'
 				for (let j = 0, n = data.artist.length; j < n; j++) {
-					title += db.artist[data.artist[j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.artist[data.artist[j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.artist[data.artist[j]], tabId, tab.AddLink(-6, [])))
+					const index = data.artist[j]
+					title += db.artist[index]+', '
+					save.appendChild(NormalLinkElement('div', db.artist[index], tabId, tab.AddLink(-6, [2, index])))
 				}
 				container.appendChild(save)
 			}
 
-			// tag
+			// tag = 3
 			if (data.tag.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Tag:'
 				for (let j = 0, n = data.tag.length; j < n; j++) {
-					title += db.tag[data.tag[j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.tag[data.tag[j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.tag[data.tag[j]], tabId, tab.AddLink(-6, [])))
+					const index = data.tag[j]
+					title += db.tag[index]+', '
+					save.appendChild(NormalLinkElement('div', db.tag[index], tabId, tab.AddLink(-6, [3, index])))
 				}
 				container.appendChild(save)
 			}
 
-			// meta
+			// meta = 4
 			if (data.meta.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Meta:'
 				for (let j = 0, n = data.meta.length; j < n; j++) {
-					title += db.meta[data.meta[j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.meta[data.meta[j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.meta[data.meta[j]], tabId, tab.AddLink(-6, [])))
+					const index = data.meta[j]
+					title += db.meta[index]+', '
+					save.appendChild(NormalLinkElement('div', db.meta[index], tabId, tab.AddLink(-6, [4, index])))
 				}
 				container.appendChild(save)
 			}
@@ -1955,82 +1940,67 @@ function Post(tabId, site, id) {
 				container.appendChild(save)
 			}
 
-			// parody
+			// parody = 0
 			if (db.post[i][4] != null) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Parody:'
 				for (let j = 0, n = db.post[i][4].length; j < n; j++) {
-					title += db.parody[db.post[i][4][j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.parody[db.post[i][4][j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.parody[db.post[i][4][j]], tabId, tab.AddLink(-6, [])))
+					const index = db.post[i][4][j]
+					title += db.parody[index]+', '
+					save.appendChild(NormalLinkElement('div', db.parody[index], tabId, tab.AddLink(-6, [0, index])))
 				}
 				container.appendChild(save)
 			}
 
-			// character
+			// character = 1
 			if (db.post[i][5] != null) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Character:'
 				for (let j = 0, n = db.post[i][5].length; j < n; j++) {
-					title += db.character[db.post[i][5][j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.character[db.post[i][5][j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.character[db.post[i][5][j]], tabId, tab.AddLink(-6, [])))
+					const index = db.post[i][5][j]
+					title += db.character[index]+', '
+					save.appendChild(NormalLinkElement('div', db.character[index], tabId, tab.AddLink(-6, [1, index])))
 				}
 				container.appendChild(save)
 			}
 
-			// artist
+			// artist = 2
 			if (db.post[i][6] != null) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Artists:'
 				for (let j = 0, n = db.post[i][6].length; j < n; j++) {
-					title += db.artist[db.post[i][6][j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.artist[db.post[i][6][j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.artist[db.post[i][6][j]], tabId, tab.AddLink(-6, [])))
+					const index = db.post[i][6][j]
+					title += db.artist[index]+', '
+					save.appendChild(NormalLinkElement('div', db.artist[index], tabId, tab.AddLink(-6, [2, index])))
 				}
 				container.appendChild(save)
 			}
 
-			// tag
+			// tag = 3
 			if (db.post[i][7] != null) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Tag:'
 				for (let j = 0, n = db.post[i][7].length; j < n; j++) {
-					title += db.tag[db.post[i][7][j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.tag[db.post[i][7][j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.tag[db.post[i][7][j]], tabId, tab.AddLink(-6, [])))
+					const index = db.post[i][7][j]
+					title += db.tag[index]+', '
+					save.appendChild(NormalLinkElement('div', db.tag[index], tabId, tab.AddLink(-6, [3, index])))
 				}
 				container.appendChild(save)
 			}
 
-			// meta
+			// meta = 4
 			if (db.post[i][8] != null) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
 				save.innerText = 'Meta:'
 				for (let j = 0, n = db.post[i][8].length; j < n; j++) {
-					title += db.meta[db.post[i][8][j]]+', '
-					save2 = document.createElement('div')
-					save2.onmousedown = () => { PopAlert(Language('coming-soon'), 'warning') }
-					save2.innerText = db.meta[db.post[i][8][j]]
-					save.appendChild(save2)
-					// save.appendChild(NormalLinkElement('div', db.meta[db.post[i][8][j]], tabId, tab.AddLink(-6, [])))
+					const index = db.post[i][8][j]
+					title += db.meta[index]+', '
+					save.appendChild(NormalLinkElement('div', db.meta[index], tabId, tab.AddLink(-6, [4, index])))
 				}
 				container.appendChild(save)
 			}
@@ -2187,8 +2157,11 @@ function OpenLastHistory() {
 	try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a: db.history }) } catch(err) { console.log(err) }
 }
 
-function LoadByInfo() {
-
+function LoadByInfo(tabId, type, index) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading()
+	tab.AddHistory(-6, [type, index])
+	const container = document.createElement('div')
 }
 
 function OpenBookmarks() {
