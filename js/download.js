@@ -69,9 +69,9 @@ class Download {
 	}
 
 	Stop() {
-		this.#stream.destroy()
-		this.#file.close()
-		try { unlinkSync(this.#savepath) } catch(err) { console.error('StopingDownload->'+err) }
+		try { this.#stream.destroy() } catch(err) { console.error('StopDownload#1->'+err) }
+		try { this.#file.close() } catch(err) { console.error('StopDownload#2->'+err) }
+		try { unlinkSync(this.#savepath) } catch(err) { console.error('StopDownload#3->'+err) }
 	}
 }
 
@@ -122,7 +122,6 @@ class DownloadManager {
 		if (i < 0) return
 		this.dls[i].url = dl_url
 		this.dls[i].data = data
-		console.log(data)
 		this.dls[i].pause = false
 		this.dls[i].format = LastChar('?', LastChar('.', dl_url), true)
 		this.dls[i].dl_size = 0
@@ -181,7 +180,11 @@ class DownloadManager {
 	SendToAddPost(index) {
 		const i = this.ids.indexOf(index)
 		if (i < 0) return
-		const data = this.dls[i]
+		const data = this.dls[i].slice()
+		this.dls.splice(i, 1)
+		this.ids.splice(i, 1)
+		const order = this.dl_order.indexOf(index)
+		if (order != -1) this.dl_order.splice(order, 1)
 		data.container.setAttribute('d','')
 		const dled_i = this.dled.length
 		this.dled[dled_i] = data.container
@@ -194,11 +197,8 @@ class DownloadManager {
 		btn.innerText = Language('remove')
 		data.btn1.parentElement.appendChild(btn)
 		data.btn1.remove()
-		this.dls.splice(i, 1)
-		this.ids.splice(i, 1)
 		AddPost(data.site, data.id, data.save, data.format, data.data, data.animated || null)
 		browser.ChangeButtonsToDownloaded(data.site, data.id, false)
-
 		if (this.dls.length > 0) return
 		PopAlert(Language('adl-finish'), 'warning')
 	}
@@ -251,8 +251,6 @@ class DownloadManager {
 		let i = this.ids.indexOf(index)
 		if (i < 0) return
 		this.dls[i].dl = null
-		const order = this.dl_order.indexOf(index)
-		if (order >= 0) this.dl_order.splice(order, 1)
 		this.dls[i].btn1.style.display = 'none'
 		this.dls[i].btn2.remove()
 		this.dls[i].span.innerText = Language('optimizing')+'...'
@@ -309,7 +307,7 @@ class DownloadManager {
 				filename: name
 			}, paths.tmp, err => console.error(err))
 			vid.on('error', err => {
-				console.log(err)
+				console.error(err)
 				try { unlinkSync(paths.tmp+name+'.png') } catch(err) {}
 				finished()
 			})
