@@ -109,12 +109,12 @@ const release_notes = {
 }
 
 function OpenReleaseNote() {
-	if (release_notes.open || !existsSync('rn.json')) return
+	if (release_notes.open || !existsSync(__dirname+'/rn.json')) return
 	loading.Show(1, '...')
 	KeyManager.stop = true
 	let data = null
 	try {
-		data = jsonfile.readFileSync('rn.json')
+		data = jsonfile.readFileSync(__dirname+'/rn.json')
 	} catch(err) {
 		console.error(err)
 		data = null

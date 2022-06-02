@@ -223,7 +223,7 @@ function LoadSettings() {
 	if (setting.animations) document.body.classList.remove('no-animation')
 	else document.body.classList.add('no-animation')
 
-	if (!existsSync('rn.json')) {
+	if (!existsSync(__dirname+'/rn.json')) {
 		document.getElementById('stt-release').style.display = 'none'
 		setting.seen_release = null
 	}
