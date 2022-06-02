@@ -167,7 +167,7 @@ class rule34xxx {
 			callback(null, arr)
 		}).catch(err => {
 			console.error(err)
-			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			if (err == 'TypeError: Failed to fetch') err = Language('connection-timeout')
 			callback(err, null)
 		})
 	}
@@ -184,8 +184,8 @@ class rule34xxx {
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
-		}).then(htm => {
-			const html = new DOMParser().parseFromString(htm, 'text/html')
+		}).then(html => {
+			html = new DOMParser().parseFromString(html, 'text/html')
 			let arr = {url:url,size:'',id:'',thumb:'',format:''}, save
 
 			arr.title = html.title
@@ -237,7 +237,7 @@ class rule34xxx {
 			callback(null, arr)
 		}).catch(err => {
 			console.error(err)
-			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			if (err == 'TypeError: Failed to fetch') err = Language('connection-timeout')
 			callback(err, null)
 		})
 	}
@@ -255,8 +255,8 @@ class rule34xxx {
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
-		}).then(htm => {
-			const html = new DOMParser().parseFromString(htm, 'text/html')
+		}).then(html => {
+			html = new DOMParser().parseFromString(html, 'text/html')
 			let arr = {}, save
 			arr.title = 'Artists > '+(search == null ? '' : search+' > ')+'Page '+(page + 1)
 
@@ -290,7 +290,7 @@ class rule34xxx {
 			callback(null, arr)
 		}).catch(err => {
 			console.error(err)
-			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			if (err == 'TypeError: Failed to fetch') err = Language('connection-timeout')
 			callback(err, null)
 		})
 	}
@@ -308,8 +308,8 @@ class rule34xxx {
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
-		}).then(htm => {
-			const html = new DOMParser().parseFromString(htm, 'text/html')
+		}).then(html => {
+			html = new DOMParser().parseFromString(html, 'text/html')
 			let arr = {}, save
 			arr.title = 'Tags > '+(search == null ? '' : search+' > ')+'Page '+(page + 1)
 
@@ -342,7 +342,7 @@ class rule34xxx {
 			callback(null, arr)
 		}).catch(err => {
 			console.error(err)
-			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			if (err == 'TypeError: Failed to fetch') err = Language('connection-timeout')
 			callback(err, null)
 		})
 	}
@@ -360,8 +360,8 @@ class rule34xxx {
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
-		}).then(htm => {
-			const html = new DOMParser().parseFromString(htm, 'text/html')
+		}).then(html => {
+			html = new DOMParser().parseFromString(html, 'text/html')
 			let arr = {}, save
 			arr.title = 'Pools > Page '+(page + 1)
 
@@ -397,7 +397,7 @@ class rule34xxx {
 			callback(null, arr)
 		}).catch(err => {
 			console.error(err)
-			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			if (err == 'TypeError: Failed to fetch') err = Language('connection-timeout')
 			callback(err, null)
 		})
 	}
@@ -414,8 +414,8 @@ class rule34xxx {
 				else throw "Error::Code::"+response.status
 			}
 			return response.text()
-		}).then(htm => {
-			const html = new DOMParser().parseFromString(htm, 'text/html')
+		}).then(html => {
+			html = new DOMParser().parseFromString(html, 'text/html')
 			let arr = {}, save
 			save = html.getElementById('pool-show').children
 			arr.title = save[0].innerText.replace('Pool: ', '')
@@ -443,31 +443,7 @@ class rule34xxx {
 			callback(null, arr)
 		}).catch(err => {
 			console.error(err)
-			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
-			callback(err, null)
-		})
-	}
-
-	save(id, callback) {
-		if (typeof callback !== 'function') throw "Callback should be Function."
-		const url = this.baseURL+'index.php?page=post&s=view&id='+id
-
-		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
-		fetch(url).then(response => {
-			if (response.status != 200) {
-				const i = status.indexOf(response.status)
-				if (i > -1) throw Language('err'+response.status)
-				else throw "Error::Code::"+response.status
-			}
-			return response.text()
-		}).then(htm => {
-			const html = new DOMParser().parseFromString(htm, 'text/html')
-			let arr = {}, save
-			
-
-		}).catch(err => {
-			console.error(err)
-			if (err == 'TypeError: Failed to fetch') err = 'Connection Timeout, Check Internet Connection.'
+			if (err == 'TypeError: Failed to fetch') err = Language('connection-timeout')
 			callback(err, null)
 		})
 	}

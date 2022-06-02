@@ -22,15 +22,6 @@ const sites = [
 		ip: '104.26.1.234',
 		location: 'USA - California - San Francisco',
 		home: Rule34XXXHome
-	},
-	{
-		name: 'Rule34.xyz',
-		url: 'rule34.xyz',
-		icon: 'png',
-		tags: ['All'],
-		ip: '31.222.238.177',
-		location: 'Netherlands - Drenthe - 	Meppel',
-		home: Rule34XYZHome
 	}
 ]
 
@@ -1452,10 +1443,12 @@ function PostLink(tabId, link, site, id, sldIndex, pack) {
 			ContextManager.SetActiveItem('posts', 3, false)
 			ContextManager.SetActiveItem('posts', 4, true)
 			ContextManager.SetActiveItem('posts', 5, true)
+			ContextManager.SetActiveItem('posts', 6, false)
 		} else {
 			ContextManager.SetActiveItem('posts', 3, true)
 			ContextManager.SetActiveItem('posts', 4, false)
 			ContextManager.SetActiveItem('posts', 5, false)
+			ContextManager.SetActiveItem('posts', 6, true)
 		}
 
 		ContextManager.ShowMenu('posts')
