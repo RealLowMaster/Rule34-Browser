@@ -643,6 +643,7 @@ class BrowserManager {
 				}
 			}
 		} else {
+			const not_post = db.post_have[site].indexOf(id) != -1
 			for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) {
 				const elements = document.querySelectorAll(`[pid="${id}"]`)
 				for (let j = 0, n = elements.length; j < n; j++) {
@@ -656,10 +657,23 @@ class BrowserManager {
 						elements[j].innerText = Language('dled')
 					} else {
 						elements[j].innerHTML = null
-						const save = document.createElement('div')
-						save.setAttribute('l', 'dled')
-						save.innerText = Language('dled')
-						elements[j].appendChild(save)
+						if (not_post) {
+							const save = document.createElement('div')
+							save.setAttribute('l', 'dled')
+							save.innerText = Language('dled')
+							elements[j].appendChild(save)
+						} else {
+							let save = document.createElement('div')
+							save.setAttribute('l', 'delete')
+							save.innerText = Language('delete')
+							save.onclick = () => ConfirmDeletingPost(site, id, false)
+							elements[j].appendChild(save)
+							save = document.createElement('div')
+							save.setAttribute('l', 'delete-shave')
+							save.innerText = Language('delete-shave')
+							save.onclick = () => ConfirmDeletingPost(site, id, true)
+							elements[j].appendChild(save)
+						}
 					}
 				}
 			}
@@ -1252,10 +1266,23 @@ function BRDownloadElement(site, id) {
 	} else if (IsHave(site, id)) {
 		if (IsDownloaded(site, id)) {
 			container.setAttribute('dl','')
-			const save = document.createElement('div')
-			save.setAttribute('l', 'dled')
-			save.innerText = Language('dled')
-			container.appendChild(save)
+			if (db.post_have[site].indexOf(id) != -1) {
+				const save = document.createElement('div')
+				save.setAttribute('l', 'dled')
+				save.innerText = Language('dled')
+				container.appendChild(save)
+			} else {
+				let save = document.createElement('div')
+				save.setAttribute('l', 'delete')
+				save.innerText = Language('delete')
+				save.onclick = () => ConfirmDeletingPost(site, id, false)
+				container.appendChild(save)
+				save = document.createElement('div')
+				save.setAttribute('l', 'delete-shave')
+				save.innerText = Language('delete-shave')
+				save.onclick = () => ConfirmDeletingPost(site, id, true)
+				container.appendChild(save)
+			}
 		} else {
 			const save = document.createElement('div')
 			save.onclick = () => RemoveFromHave(site, id)

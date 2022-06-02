@@ -180,7 +180,7 @@ class DownloadManager {
 	SendToAddPost(index) {
 		const i = this.ids.indexOf(index)
 		if (i < 0) return
-		const data = this.dls[i].slice()
+		const data = this.dls[i]
 		this.dls.splice(i, 1)
 		this.ids.splice(i, 1)
 		const order = this.dl_order.indexOf(index)
