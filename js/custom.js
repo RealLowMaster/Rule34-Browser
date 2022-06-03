@@ -1,5 +1,5 @@
 const sharp = require('sharp'), request = require('request'), ffmpeg = require('fluent-ffmpeg')
-ffmpeg.setFfmpegPath('./bin/ffmpeg')
+ffmpeg.setFfmpegPath(__dirname+'/bin/ffmpeg')
 sharp.cache(false)
 // sharp('Image/sites/rule34.xyz-72x72.png').resize(32, 32).png({ quality: 100 }).toFile('Image/sites/img.png')
 
