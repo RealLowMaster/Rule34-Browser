@@ -120,44 +120,42 @@ function NoLoopArray(arr) {
 }
 
 function SetHotKeys() {
-	KeyManager.AddPublicHotKey(false, false, false, 122, 'ChangeScreenMode()')
+	KeyManager.AddPublicHotKey(false, false, false, 122, ChangeScreenMode)
 	KeyManager.use_public = true
 
 	KeyManager.AddCategory('default')
-	KeyManager.AddHotKey('default', false, false, false, 37, 'browser.PrevPage()')
-	KeyManager.AddHotKey('default', false, false, false, 39, 'browser.NextPage()')
-	KeyManager.AddHotKey('default', true, false, false, 74, 'downloader.OpenPanel()')
-	KeyManager.AddHotKey('default', true, false, false, 78, 'NewTab()')
-	KeyManager.AddHotKey('default', true, false, false, 82, 'browser.ReloadTab(browser.selectedTab)')
-	KeyManager.AddHotKey('default', true, true, false, 84, 'OpenLastHistory()')
-	KeyManager.AddHotKey('default', true, false, false, 87, 'browser.CloseTab(browser.selectedTab)')
-	KeyManager.AddHotKey('default', false, false, false, 27, 'AskForQuitApp()')
+	KeyManager.AddHotKey('default', false, false, false, 37, browser.PrevPage)
+	KeyManager.AddHotKey('default', false, false, false, 39, browser.NextPage)
+	KeyManager.AddHotKey('default', true, false, false, 74, downloader.OpenPanel)
+	KeyManager.AddHotKey('default', true, false, false, 78, NewTab)
+	KeyManager.AddHotKey('default', true, false, false, 82, () => browser.ReloadTab(browser.selectedTab))
+	KeyManager.AddHotKey('default', true, true, false, 84, OpenLastHistory)
+	KeyManager.AddHotKey('default', true, false, false, 87, () => browser.CloseTab(browser.selectedTab))
+	KeyManager.AddHotKey('default', false, false, false, 27, AskForQuitApp)
 	
 	KeyManager.AddCategory('slider')
-	KeyManager.AddHotKey('slider', false, false, false, 65, 'SliderPrev()')
-	KeyManager.AddHotKey('slider', false, false, false, 68, 'SliderNext()')
-	KeyManager.AddHotKey('slider', false, false, false, 37, 'SliderPrev()')
-	KeyManager.AddHotKey('slider', false, false, false, 39, 'SliderNext()')
-	KeyManager.AddHotKey('slider', false, false, false, 72, 'if (slider.hide) {SliderHide(false)} else SliderHide(true)')
-	KeyManager.AddHotKey('slider', false, false, false, 73, 'if (slider.overview) {SliderOverview(false)} else SliderOverview(true)')
-	KeyManager.AddHotKey('slider', false, false, false, 79, 'if (slider.osize) {SliderOriginalSize(false)} else SliderOriginalSize(true)')
-	KeyManager.AddHotKey('slider', false, false, false, 27, 'CloseSlider()')
+	KeyManager.AddHotKey('slider', false, false, false, 65, SliderPrev)
+	KeyManager.AddHotKey('slider', false, false, false, 68, SliderNext)
+	KeyManager.AddHotKey('slider', false, false, false, 37, SliderPrev)
+	KeyManager.AddHotKey('slider', false, false, false, 39, SliderNext)
+	KeyManager.AddHotKey('slider', false, false, false, 72, () => {if (slider.hide) {SliderHide(false)} else SliderHide(true)})
+	KeyManager.AddHotKey('slider', false, false, false, 73, () => {if (slider.overview) {SliderOverview(false)} else SliderOverview(true)})
+	KeyManager.AddHotKey('slider', false, false, false, 79, SliderToggleOSize)
+	KeyManager.AddHotKey('slider', false, false, false, 27, CloseSlider)
 	
 	KeyManager.AddCategory('downloads')
-	KeyManager.AddHotKey('downloads', false, false, false, 27, 'downloader.ClosePanel()')
+	KeyManager.AddHotKey('downloads', false, false, false, 27, downloader.ClosePanel)
 
 	KeyManager.AddCategory('setting')
-	KeyManager.AddHotKey('setting', true, false, false, 83, 'SaveSetting()')
-	KeyManager.AddHotKey('setting', false, false, false, 27, 'CloseSetting()')
+	KeyManager.AddHotKey('setting', true, false, false, 83, SaveSetting)
+	KeyManager.AddHotKey('setting', false, false, false, 27, CloseSetting)
 
-	KeyManager.AddCategory('theme-manager')
-	KeyManager.AddHotKey('theme-manager', true, false, false, 83, 'SaveThemeManager()')
-	KeyManager.AddHotKey('theme-manager', false, false, false, 27, 'CloseThemeManager()')
-
+	/*
 	KeyManager.AddCategory('icon-manager')
-	KeyManager.AddHotKey('icon-manager', true, false, false, 90, 'OpenAddIcon()')
-	KeyManager.AddHotKey('icon-manager', true, false, false, 83, 'SaveIconManager()')
-	KeyManager.AddHotKey('icon-manager', false, false, false, 27, 'CloseIconManager()')
+	KeyManager.AddHotKey('icon-manager', true, false, false, 90, OpenAddIcon)
+	KeyManager.AddHotKey('icon-manager', true, false, false, 83, SaveIconManager)
+	KeyManager.AddHotKey('icon-manager', false, false, false, 27, CloseIconManager)
+	*/
 }
 
 function SetContextMenus() {

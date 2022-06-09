@@ -23,9 +23,9 @@
 	<script type="text/javascript" src="js/main.js" defer></script>
 	<script type="text/javascript" src="js/actions.js"></script>
 	<script type="text/javascript" src="js/language-database.js" defer></script>
-	<!-- <script type="text/javascript" src="js/language.js" defer></script> -->
+	<script type="text/javascript" src="js/language.js" defer></script>
 	<script type="text/javascript" src="js/theme-database.js"></script>
-	<script type="text/javascript" src="js/theme.js" defer></script>
+	<!-- <script type="text/javascript" src="js/theme.js" defer></script> -->
 	<!-- <script type="text/javascript" src="js/release-note.js" defer></script> -->
 	<script type="text/javascript" src="js/applys.js" defer></script>
 	<script type="text/javascript" src="js/settings.js" defer></script>
@@ -115,7 +115,7 @@
 						<div lt="sld-prev" onclick="SliderPrev()"><i ic="prev"></i></div>
 						<div lt="sld-next" onclick="SliderNext()"><i ic="next"></i></div>
 						<div lt="sld-hide" onclick="if (slider.hide) {SliderHide(false)} else SliderHide(true)"><i ic="hide"></i></div>
-						<div lt="sld-osize" onclick="if (slider.osize) {SliderOriginalSize(false)} else SliderOriginalSize(true)"><i ic="maximize"></i></div>
+						<div lt="sld-osize" onclick="SliderToggleOSize()"><i ic="maximize"></i></div>
 						<div lt="close" onclick="CloseSlider()"><i ic="xmark"></i></div>
 					</div>
 					<div id="sld-toggle" l="overview" lt="sld-overview" onclick="if (slider.overview) {SliderOverview(false)} else SliderOverview(true)"></div>

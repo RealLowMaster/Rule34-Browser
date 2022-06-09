@@ -383,7 +383,6 @@ function DeletePost(site, id, keep) {
 }
 
 function ReDownloadPost(site, id) {
-	KeyManager.stop = true
 	loading.Show(4, 'Finding Post...')
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
 		try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
@@ -403,7 +402,6 @@ function ReDownloadPost(site, id) {
 	}
 	loading.Forward()
 	loading.Close()
-	KeyManager.stop = false
 	PopAlert(Language('pnf'), 'danger')
 }
 

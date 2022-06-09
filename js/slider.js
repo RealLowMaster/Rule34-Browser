@@ -39,7 +39,8 @@ const slider = {
 	osize: false,
 	overview: false,
 	hide: false,
-	is_url: false
+	is_url: false,
+	is_video: false
 }
 
 function OpenSlider(list, index, isurl = false, thumbList, animated) {
@@ -146,10 +147,10 @@ function SliderChange(index) {
 			slider.element = document.createElement('img')
 			slider.element.src = 'Image/no-img-225x225.webp'
 			slider.img_container.appendChild(slider.element)
+			slider.is_video = true
 			if (slider.osize) {
-				slider.img_container.scrollTop = 0
-				slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
-				SliderHighlight()
+				SliderOriginalSize(false)
+				slider.osize = true
 			}
 			return
 		}
@@ -165,36 +166,49 @@ function SliderChange(index) {
 		slider.element.autoplay = true
 		slider.element.controls = true
 		slider.element.setAttribute('controlsList', 'nodownload')
-		slider.element.classList.add('rule34-xxx-image')
 		slider.element.volume = 1 / 100 * setting.default_volume
 		slider.element.draggable = false
-		if (slider.osize) slider.element.onload = () => {
+		slider.is_video = true
+		slider.element.onloadeddata = () => {
+			slider.img_container.appendChild(slider.element)
 			if (slider.osize) {
-				slider.img_container.scrollTop = 0
-				slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
-				SliderHighlight()
+				SliderOriginalSize(false)
+				slider.osize = true
 			}
+			slider.element.onloadeddata = null
 		}
 		slider.element.src = src
 	} else {
-		slider.element = document.createElement('img')
+		slider.element = new Image()
 		slider.element.draggable = false
-		if (slider.osize) slider.element.onload = () => {
+		const ivsave = slider.is_video
+		slider.is_video = false
+		slider.element.onload = () => {
+			slider.img_container.appendChild(slider.element)
 			if (slider.osize) {
-				slider.img_container.scrollTop = 0
-				slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
-				SliderHighlight()
+				if (ivsave) SliderOriginalSize(true)
+				else {
+					slider.img_container.scrollTop = 0
+					slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
+					SliderHighlight()
+				}
 			}
 		}
+		
 		slider.element.src = src
 	}
 
-	slider.img_container.appendChild(slider.element)
 	if (slider.osize) {
 		slider.img_container.scrollTop = 0
 		slider.img_container.scrollLeft = (slider.element.clientWidth - slider.img_container.clientWidth) / 2
 		SliderHighlight()
 	}
+}
+
+function SliderToggleOSize() {
+	if (slider.is_video) return
+	if (slider.osize) SliderOriginalSize(false)
+	else SliderOriginalSize(true)
 }
 
 function SliderOriginalSize(active) {
@@ -309,6 +323,7 @@ function CloseSlider() {
 	slider.active = null
 	slider.sub_active = null
 	slider.sub_max = null
+	slider.is_video = false
 	KeyManager.ChangeCategory('default')
 	if (slider.element != null) {
 		slider.element.src = ''

@@ -27,7 +27,7 @@ class HotKeyManager {
 		if (typeof shift !== 'boolean') throw "shift Type Should Be Boolean"
 		if (typeof alt !== 'boolean') throw "alt Type Should Be Boolean"
 		if (typeof key !== 'number') throw "key Type Should Be Number (int)"
-		if (typeof job !== 'string') throw "Job Type Should Be String"
+		if (typeof job !== 'string' && typeof job !== 'function') throw "Job Type Should Be String/Function"
 		this.#public.push([ctrl, shift, alt, key, job])
 	}
 
@@ -41,7 +41,8 @@ class HotKeyManager {
 			if (event.altKey != this.#public[i][2]) continue
 			if (event.keyCode != this.#public[i][3]) continue
 			event.preventDefault()
-			try { eval(this.#public[i][4]) } catch(err) { console.error(err) }
+			if (typeof this.#public[i][4] === 'function') this.#public[i][4]()
+			else try { eval(this.#public[i][4]) } catch(err) { console.error(err) }
  			break
 		}
 	}
@@ -59,7 +60,7 @@ class HotKeyManager {
 		if (typeof shift !== 'boolean') throw "shift Type Should Be Boolean"
 		if (typeof alt !== 'boolean') throw "alt Type Should Be Boolean"
 		if (typeof key !== 'number') throw "key Type Should Be Number (int)"
-		if (typeof job !== 'string') throw "Job Type Should Be String"
+		if (typeof job !== 'string' && typeof job !== 'function') throw "Job Type Should Be String/Function"
 		if (typeof category === 'number') {
 			if (this.#categories[category] == undefined || this.#categories[category] == null) throw "Category Not Found."
 		} else if (typeof category === 'string') {
@@ -112,7 +113,8 @@ class HotKeyManager {
 
 		event.preventDefault()
 		
-		eval(this.#categories[this.#index][4][index])
+		if (typeof this.#categories[this.#index][4][index] === 'function') this.#categories[this.#index][4][index]()
+		else eval(this.#categories[this.#index][4][index])
 	}
 
 	SaveCategory(index = 0, value = null) { this.saved_category[index] = value == null ? this.#index : value }
