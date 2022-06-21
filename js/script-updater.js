@@ -24,7 +24,6 @@ function CheckScriptUpdate() {
 				PopAlert(Language('app-up-to-date'))
 			}
 		}).catch(err => {
-			// console.error(err)
 			UpdateScript.timer = setTimeout(CheckScriptUpdate, 4000)
 		})
 	} else UpdateScript.timer = setTimeout(CheckScriptUpdate, 4000)

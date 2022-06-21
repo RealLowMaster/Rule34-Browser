@@ -57,6 +57,28 @@ function FormatBytes(bytes, decimals = 2) {
 	return parseFloat((bytes / Math.pow(1024, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
+function FormatSeconds(second) {
+	if (second === 0) return '0 sec'
+	if (second < 60) return second+' secs'
+	else if (second < 3600) {
+		const remSec = second % 60
+		const min = (second - remSec) / 60
+		let res = min+' Mins'
+		if (remSec != 0) res += ' and '+remSec+' secs'
+		return res
+	} else {
+		const remSec = second % 60
+		const min = (second - remSec) / 60
+		const remMin = min % 60
+		const hours = (min - remMin) / 60
+		let res = hours+' Hours'
+		if (remMin != 0) res += ' and '+remMin+' Mins'
+		if (remSec != 0) res += ' and '+remSec+' secs'
+		return res
+	}
+	const sizes = ['Secends', 'Minutes', 'Hours']
+}
+
 function MemorySizeOf(obj) {
 	let bytes = 0
 	function sizeOf(obj) {

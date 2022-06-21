@@ -7,6 +7,9 @@ class Download {
 	#oncomplete
 	#ondata
 	#onresponse
+	#timer
+	#save_dled
+	#befor_sec
 
 	constructor(url, savepath) {
 		this.#url = url
@@ -17,6 +20,14 @@ class Download {
 		this.#oncomplete = null
 		this.#ondata = null
 		this.#onresponse = null
+		this.#timer = null
+		this.#save_dled = 0
+		this.#befor_sec = true
+		this.size = 0
+		this.dled = 0
+		this.speed = 0
+		this.remainTime = 0
+		this.finish = false
 	}
 
 	OnError(callback) {
@@ -35,8 +46,16 @@ class Download {
 	}
 
 	OnData(callback) {
-		if (typeof callback != 'function') return
-		this.#ondata = callback
+		if (typeof callback === 'function') this.#ondata = callback
+	}
+
+	CheckSpeed() {
+		this.speed = this.dled - this.#save_dled
+		this.remainTime = Math.ceil((this.size - this.dled) / this.speed)
+		this.#save_dled = this.dled
+		this.#befor_sec = false
+		if (this.finish) return
+		this.#timer = setTimeout(() => this.CheckSpeed(), 1000)
 	}
 
 	Start() {
@@ -44,31 +63,49 @@ class Download {
 		this.#stream = request(this.#url, { followRedirect:true, followAllRedirects:true })
 		this.#stream.pipe(this.#file)
 		this.#stream.on('error', err => {
+			clearTimeout(this.#timer)
 			this.#file.close()
 			try { unlinkSync(this.#savepath) } catch(e) {}
+			try { this.#stream.destroy() } catch(err) { console.error('DestroyStream->'+err) }
 			if (this.#onerror != null) this.#onerror(err)
 		})
 		this.#stream.on('response', resp => {
+			this.size = parseInt(resp.headers['content-length'])
+			this.#timer = setTimeout(() => this.CheckSpeed(), 1000)
 			if (this.#onresponse != null) this.#onresponse(resp)
 		})
 		this.#stream.on('complete', () => {
-			this.#file.close()
+			try { this.#file.close() } catch(err) { console.error('ClosingFile->'+err) }
+			this.finish = true
+			clearTimeout(this.#timer)
+			try { this.#stream.destroy() } catch(err) { console.error('DestroyStream->'+err) }
 			if (this.#oncomplete != null) this.#oncomplete(this.#savepath)
 		})
 		this.#stream.on('data', data => {
-			if (this.#ondata != null) this.#ondata(data.length)
+			const sbyte = data.length
+			this.dled += sbyte
+			if (this.#befor_sec) this.speed += sbyte
+			if (this.#ondata != null) this.#ondata(sbyte)
 		})
 	}
 
 	Pause() {
+		clearTimeout(this.#timer)
+		if (this.finish) return
 		this.#stream.pause()
 	}
 
 	Play() {
+		if (this.finish) return
 		this.#stream.resume()
+		this.speed = this.#save_dled - this.dled
+		this.#save_dled = this.dled
+		this.#timer = setTimeout(() => this.CheckSpeed(), 1000)
 	}
 
 	Stop() {
+		if (this.finish) return
+		clearTimeout(this.#timer)
 		try { this.#stream.destroy() } catch(err) { console.error('StopDownload#1->'+err) }
 		try { this.#file.close() } catch(err) { console.error('StopDownload#2->'+err) }
 		try { unlinkSync(this.#savepath) } catch(err) { console.error('StopDownload#3->'+err) }
@@ -124,7 +161,6 @@ class DownloadManager {
 		this.dls[i].data = data
 		this.dls[i].pause = false
 		this.dls[i].format = LastChar('?', LastChar('.', dl_url), true)
-		this.dls[i].dl_size = 0
 		this.dls[i].total_size = 0
 		this.dls[i].percent = 0
 		this.dls[i].animated = false
@@ -233,15 +269,14 @@ class DownloadManager {
 			const bytes = parseInt(resp.headers['content-length'])
 			this.dls[i].total_size = FormatBytes(bytes)
 			this.dls[i].percent = 100 / bytes
-			this.dls[i].span.innerText = '0 / '+this.dls[i].total_size
+			this.dls[i].span.innerText = '0 Bytes/s - 0 Bytes of '+this.dls[i].total_size
 		})
 		
-		this.dls[dl_index].dl.OnData(data => {
+		this.dls[dl_index].dl.OnData(() => {
 			const i = this.ids.indexOf(sindex)
 			if (i < 0) return
-			this.dls[i].dl_size += data
-			this.dls[i].procress.style.width = this.dls[i].percent * this.dls[i].dl_size+'%'
-			this.dls[i].span.innerText = FormatBytes(this.dls[i].dl_size)+' / '+this.dls[i].total_size
+			this.dls[i].procress.style.width = this.dls[i].percent * this.dls[i].dl.dled+'%'
+			this.dls[i].span.innerText = FormatBytes(this.dls[i].dl.speed)+'/s - '+FormatBytes(this.dls[i].dl.dled)+' of '+this.dls[i].total_size+', '+FormatSeconds(this.dls[i].dl.remainTime)+' left'
 		})
 
 		this.dls[dl_index].dl.Start()
@@ -250,13 +285,13 @@ class DownloadManager {
 	AfterDownload(index, path) {
 		let i = this.ids.indexOf(index)
 		if (i < 0) return
+		this.dls[i].dled = this.dls[i].dl.dled
 		this.dls[i].dl = null
 		this.dls[i].btn1.style.display = 'none'
 		this.dls[i].btn2.remove()
 		this.dls[i].span.innerText = Language('optimizing')+'...'
 		let save_path = paths.dl+this.dls[i].save+'.'
 		if (this.dls[i].format == 'jpeg') this.dls[i].format = 'jpg'
-
 		this.Optimize(path, save_path, index, this.dls[i].save, true)
 	}
 
@@ -356,7 +391,7 @@ class DownloadManager {
 						}
 						const opt_size = statSync(save_path).size
 						let dl_size
-						if (dl) dl_size = this.dls[i].dl_size
+						if (dl) dl_size = this.dls[i].dled
 						else dl_size = statSync(path).size
 						if (dl_size < opt_size) {
 							try {
@@ -412,7 +447,7 @@ class DownloadManager {
 						}
 						const opt_size = statSync(save_path+'webp').size
 						let dl_size
-						if (dl) dl_size = this.dls[i].dl_size
+						if (dl) dl_size = this.dls[i].dled
 						else dl_size = statSync(path).size
 						if (dl_size < opt_size) {
 							try {
@@ -482,7 +517,7 @@ class DownloadManager {
 						}
 						const opt_size = statSync(save_path).size
 						let dl_size
-						if (dl) dl_size = this.dls[i].dl_size
+						if (dl) dl_size = this.dls[i].dled
 						else dl_size = statSync(path).size
 						if (dl_size < opt_size) {
 							try {
@@ -539,7 +574,7 @@ class DownloadManager {
 						}
 						const opt_size = statSync(save_path+'webp').size
 						let dl_size
-						if (dl) dl_size = this.dls[i].dl_size
+						if (dl) dl_size = this.dls[i].dled
 						else dl_size = statSync(path).size
 						if (dl_size < opt_size) {
 							try {
