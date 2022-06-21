@@ -1,6 +1,7 @@
 const { app, BrowserWindow } = require('electron')
 
 app.setAppUserModelId("Rule34 Browser")
+app.disableHardwareAcceleration()
 
 function createWindow () {
 	const win = new BrowserWindow({

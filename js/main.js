@@ -124,8 +124,8 @@ function SetHotKeys() {
 	KeyManager.use_public = true
 
 	KeyManager.AddCategory('default')
-	KeyManager.AddHotKey('default', false, false, false, 37, browser.PrevPage)
-	KeyManager.AddHotKey('default', false, false, false, 39, browser.NextPage)
+	KeyManager.AddHotKey('default', false, false, false, 37, 'browser.PrevPage()')
+	KeyManager.AddHotKey('default', false, false, false, 39, 'browser.NextPage()')
 	KeyManager.AddHotKey('default', true, false, false, 74, downloader.OpenPanel)
 	KeyManager.AddHotKey('default', true, false, false, 78, NewTab)
 	KeyManager.AddHotKey('default', true, false, false, 82, () => browser.ReloadTab(browser.selectedTab))
