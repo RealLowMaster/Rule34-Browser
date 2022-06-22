@@ -338,7 +338,9 @@ class BrowserManager {
 				}
 			}
 
-			this.timeout = setTimeout(() => this.ResizeTabs(), 1000)
+			window.onmousemove = e => {
+				if (e.screenY > 65) this.ResizeTabs()
+			}
 			browser.SetNeedReload(-2)
 			try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
 			return
@@ -520,6 +522,7 @@ class BrowserManager {
 	}
 
 	ResizeTabs() {
+		window.onmousemove = null
 		const count = this.tabs.length
 		if (count == 0) return
 
