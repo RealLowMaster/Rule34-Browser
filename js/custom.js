@@ -19,10 +19,17 @@ const sites = [
 		name: 'Rule34.xxx',
 		url: 'rule34.xxx',
 		icon: 'png',
-		tags: ['All'],
 		ip: '104.26.1.234',
 		location: 'USA - California - San Francisco',
 		home: Rule34XXXHome
+	},
+	{
+		name: 'E621.net',
+		url: 'e621.net',
+		icon: 'webp',
+		ip: '',
+		location: '',
+		home: E621Home
 	}
 ]
 
@@ -2121,13 +2128,6 @@ function LoadSites(tabId) {
 		save4 = document.createElement('p')
 		save4.innerText = sites[i].name
 		save2.appendChild(save4)
-		save3 = document.createElement('div')
-		for (let j = 0, n = sites[i].tags.length; j < n; j++){
-			save4 = document.createElement('div')
-			save4.innerText = sites[i].tags[j]
-			save3.appendChild(save4)
-		}
-		save2.appendChild(save3)
 		save.appendChild(save2)
 	}
 	container.appendChild(save)
@@ -2390,4 +2390,42 @@ function LoadByInfo(tabId, page, type, index) {
 
 function OpenBookmarks() {
 	PopAlert(Language('coming-soon'), 'warning')
+}
+
+function ToURL(txt) {
+	return new String(txt).replace(/%/g, '%25')
+		.replace(/'/g, '%27')
+		.replace(/\(/g, '%28')
+		.replace(/\)/g, '%29')
+		.replace(/\?/g, '%3f')
+		.replace(/&/g, '%26')
+		.replace(/\//g, '%2f')
+		.replace(/\\/g, '%5c')
+		.replace(/#/g, '%23')
+		.replace(/\*/g, '%2a')
+		.replace(/!/g, '%21')
+		.replace(/@/g, '%40')
+		.replace(/\$/g, '%24')
+		.replace(/\^/g, '%5e')
+		.replace(/=/g, '%3d')
+		.replace(/\+/g, '%2b')
+		.replace(/ /g, '+')
+		.replace(/{/g, '%7b')
+		.replace(/}/g, '%7d')
+		.replace(/\[/g, '%5b')
+		.replace(/]/g, '%5d')
+		.replace(/:/g, '%3a')
+		.replace(/;/g, '%3b')
+		.replace(/`/g, '%60')
+		.replace(/,/g, '%2c')
+		.replace(/\|/g, '%7c')
+}
+
+function test() {
+	const e621 = new e621net();
+
+	e621.Page(0, null, (err, result) => {
+		console.error(err)
+		console.log(result)
+	})
 }

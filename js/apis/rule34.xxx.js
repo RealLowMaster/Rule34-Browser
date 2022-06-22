@@ -4,35 +4,6 @@ class rule34xxx {
 		this.maxPage = 4762
 	}
 
-	#ToURL(txt) {
-		return new String(txt).replace(/%/g, '%25')
-			.replace(/'/g, '%27')
-			.replace(/\(/g, '%28')
-			.replace(/\)/g, '%29')
-			.replace(/\?/g, '%3f')
-			.replace(/&/g, '%26')
-			.replace(/\//g, '%2f')
-			.replace(/\\/g, '%5c')
-			.replace(/#/g, '%23')
-			.replace(/\*/g, '%2a')
-			.replace(/!/g, '%21')
-			.replace(/@/g, '%40')
-			.replace(/\$/g, '%24')
-			.replace(/\^/g, '%5e')
-			.replace(/=/g, '%3d')
-			.replace(/\+/g, '%2b')
-			.replace(/ /g, '+')
-			.replace(/{/g, '%7b')
-			.replace(/}/g, '%7d')
-			.replace(/\[/g, '%5b')
-			.replace(/]/g, '%5d')
-			.replace(/:/g, '%3a')
-			.replace(/;/g, '%3b')
-			.replace(/`/g, '%60')
-			.replace(/,/g, '%2c')
-			.replace(/\|/g, '%7c')
-	}
-
 	#GetTags(html, arr, p = 0) {
 		const data = [
 			[], // 0 Copyright
@@ -114,7 +85,7 @@ class rule34xxx {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		page--
 		if (search == null) search = 'all'
-		else search = this.#ToURL(search)
+		else search = ToURL(search)
 		const url = this.baseURL+'index.php?page=post&s=list&tags='+search+'&pid='+(page * 42)
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
@@ -245,7 +216,7 @@ class rule34xxx {
 	Artists(page, search, callback) {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		page--
-		const url = this.baseURL+'index.php?page=artist&s=list&search='+(search == null ? '' : this.#ToURL(search))+'&pid='+(page * 25)
+		const url = this.baseURL+'index.php?page=artist&s=list&search='+(search == null ? '' : ToURL(search))+'&pid='+(page * 25)
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
@@ -298,7 +269,7 @@ class rule34xxx {
 	Tags(page, search, callback) {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		page--
-		const url = this.baseURL+'index.php?page=tags&s=list&pid='+(page * 50)+(search == null ? '' : '&sort=asc&order_by=tag&tags='+this.#ToURL(search))
+		const url = this.baseURL+'index.php?page=tags&s=list&pid='+(page * 50)+(search == null ? '' : '&sort=asc&order_by=tag&tags='+ToURL(search))
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {

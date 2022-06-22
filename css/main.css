@@ -438,6 +438,7 @@
 	display: grid;
 	grid-template-columns: 64px 10fr 150px;
 	width: 100%;
+	padding: 5px 0;
 	background-color: var(--secondary-bg);
 	color: var(--primary-header);
 	cursor: pointer;
@@ -461,18 +462,6 @@
 	align-items: center;
 	text-align: left;
 	user-select: none;
-}
-
-.main-page-sites > div > div:last-child {
-	display: flex;
-	padding: 10px;
-	text-align: left;
-}
-
-.main-page-sites > div > div:last-child > div {
-	padding: 2px 5px;
-	background-color: var(--text-danger);
-	border-radius: 4px;
 }
 
 /* Downloads */
