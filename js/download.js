@@ -84,7 +84,10 @@ class Download {
 		this.#stream.on('data', data => {
 			const sbyte = data.length
 			this.dled += sbyte
-			if (this.#befor_sec) this.speed += sbyte
+			if (this.#befor_sec) {
+				this.speed += sbyte
+				this.remainTime = Math.ceil((this.size - this.dled) / this.speed)
+			}
 			if (this.#ondata != null) this.#ondata(sbyte)
 		})
 	}
