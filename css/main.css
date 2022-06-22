@@ -362,6 +362,7 @@
 	top: 10px;
 	right: 10px;
 	filter: drop-shadow(0 1px #000f);
+	pointer-events: none;
 }
 
 .main-page-posts > div > p {
@@ -369,6 +370,7 @@
 	bottom: 10px;
 	left: 10px;
 	filter: drop-shadow(0 1px #000f);
+	pointer-events: none;
 }
 
 .post-counter {

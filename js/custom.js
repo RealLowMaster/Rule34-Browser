@@ -11,6 +11,7 @@ const mb_pages = document.getElementById('mb-pages')
 const mb_search = document.getElementById('mb-search')
 const mb_jump_page = document.getElementById('mb-jump-page')
 
+const pack_overview = { id: null, element: null, index: null, timer: null }
 const status = [403, 404, 500, 503]
 
 const sites = [
@@ -1450,6 +1451,45 @@ function PostLink(tabId, link, site, id, sldIndex, pack) {
 	}
 }
 
+function ChangePackOverview(i) {
+	if (pack_overview.id != i || pack_overview.element == null) return
+	pack_overview.index++
+	if (pack_overview.index >= db.post[i][10].length) pack_overview.index = 0
+	const src = paths.thumb+db.post[i][2][pack_overview.index]+'.jpg'
+	if (existsSync(src)) pack_overview.element.src = src
+	else pack_overview.element.src = 'Image/no-img-225x225.webp'
+	pack_overview.timer = setTimeout(() => ChangePackOverview(i), 700)
+}
+
+function EnablePackOverview(i, who) {
+	if (pack_overview.id != i) {
+		clearTimeout(pack_overview.timer)
+		if (pack_overview.element != null) DisablePackOverview(pack_overview.id, pack_overview.element)
+		pack_overview.id = i
+		pack_overview.element = who
+		pack_overview.index = 0
+		pack_overview.timer = setTimeout(() => ChangePackOverview(i), 700)
+	} else if (pack_overview.element == null) {
+		DisablePackOverview(i, who)
+		pack_overview.id = i
+		pack_overview.element = who
+		pack_overview.index = 0
+		pack_overview.timer = setTimeout(() => ChangePackOverview(i), 700)
+	}
+}
+
+function DisablePackOverview(i, who) {
+	if (pack_overview.id == i) {
+		pack_overview.id = null
+		pack_overview.element = null
+		pack_overview.index = null
+		clearTimeout(pack_overview.timer)
+	}
+	const src = paths.thumb+db.post[i][2][0]+'.jpg'
+	if (existsSync(src)) who.src = src
+	else who.src = 'Image/no-img-225x225.webp'
+}
+
 function GetPostElement(tab, i, date = 0) {
 	let pack = false
 	if (db.post[i][0] == -1) pack = true
@@ -1460,6 +1500,8 @@ function GetPostElement(tab, i, date = 0) {
 	save.loading = 'lazy'
 	if (pack) {
 		tab.save.push(i)
+		save.setAttribute('onmouseenter', "EnablePackOverview("+i+", this)")
+		save.setAttribute('onmouseout', "DisablePackOverview("+i+", this)")
 		const src = paths.thumb+db.post[i][2][0]+'.jpg'
 		if (existsSync(src)) save.src = src+'?'+date
 		else save.src = 'Image/no-img-225x225.webp'
