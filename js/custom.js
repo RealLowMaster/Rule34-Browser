@@ -233,7 +233,8 @@ class Tab {
 		this.page.remove()
 	}
 
-	Error(err) {
+	Error(token, err) {
+		if (token != this.token) return
 		this.Change('Image/alert-24x24.webp', 'Error')
 		let save = document.createElement('div')
 		save.classList.add('alert')
@@ -2093,7 +2094,7 @@ function Post(tabId, site, id) {
 		tab.Load(token, container, title)
 		return
 	}
-	tab.Error(Language('pnf'))
+	tab.Error(token, Language('pnf'))
 }
 
 function LoadSites(tabId) {
@@ -2251,7 +2252,7 @@ function LoadByInfo(tabId, page, type, index) {
 	switch(type) {
 		case 0: // parody
 			if (typeof db.parody[index] !== 'string') {
-				tab.Error(Language('no-result'))
+				tab.Error(token, Language('no-result'))
 				return
 			}
 			for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][0] == -1) {
@@ -2264,7 +2265,7 @@ function LoadByInfo(tabId, page, type, index) {
 			break
 		case 1: // character
 			if (typeof db.character[index] !== 'string') {
-				tab.Error(Language('no-result'))
+				tab.Error(token, Language('no-result'))
 				return
 			}
 			for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][0] == -1) {
@@ -2277,7 +2278,7 @@ function LoadByInfo(tabId, page, type, index) {
 			break
 		case 2: // artist
 			if (typeof db.artist[index] !== 'string') {
-				tab.Error(Language('no-result'))
+				tab.Error(token, Language('no-result'))
 				return
 			}
 			for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][0] == -1) {
@@ -2290,7 +2291,7 @@ function LoadByInfo(tabId, page, type, index) {
 			break
 		case 3: // tag
 			if (typeof db.tag[index] !== 'string') {
-				tab.Error(Language('no-result'))
+				tab.Error(token, Language('no-result'))
 				return
 			}
 			for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][0] == -1) {
@@ -2303,7 +2304,7 @@ function LoadByInfo(tabId, page, type, index) {
 			break
 		case 4: // meta
 			if (typeof db.meta[index] !== 'string') {
-				tab.Error(Language('no-result'))
+				tab.Error(token, Language('no-result'))
 				return
 			}
 			for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][0] == -1) {

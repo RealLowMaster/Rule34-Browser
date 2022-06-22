@@ -131,7 +131,7 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 
 	r34xxx.Page(page, search, (err, arr) => {
 		if (err) {
-			tab.Error(err)
+			tab.Error(token, err)
 			return
 		}
 		const container = document.createElement('div')
@@ -168,7 +168,7 @@ function Rule34XXXPost(tabId, id) {
 
 	r34xxx.Post(id, (err, arr) => {
 		if (err) {
-			tab.Error(err)
+			tab.Error(token, err)
 			return
 		}
 		const container = document.createElement('div')
@@ -234,7 +234,7 @@ function Rule34XXXArtists(tabId, page = 1, search = null) {
 
 	r34xxx.Artists(page, search, (err, arr) => {
 		if (err) {
-			tab.Error(err)
+			tab.Error(token, err)
 			return
 		}
 		const container = document.createElement('div')
@@ -296,7 +296,7 @@ function Rule34XXXTags(tabId, page = 1, search = null) {
 
 	r34xxx.Tags(page, search, (err, arr) => {
 		if (err) {
-			tab.Error(err)
+			tab.Error(token, err)
 			return
 		}
 		const container = document.createElement('div')
@@ -357,7 +357,7 @@ function Rule34XXXPools(tabId, page) {
 
 	r34xxx.Pools(page, (err, arr) => {
 		if (err) {
-			tab.Error(err)
+			tab.Error(token, err)
 			return
 		}
 		const container = document.createElement('div')
@@ -405,7 +405,7 @@ function Rule34XXXPool(tabId, id) {
 	
 	r34xxx.Pool(id, (err, arr) => {
 		if (err) {
-			tab.Error(err)
+			tab.Error(token, err)
 			return
 		}
 		const container = document.createElement('div')
