@@ -771,11 +771,6 @@ mbs.oninput = () => {
 	if (browser.selectedTabIndex == null) return
 	browser.tabs[browser.selectedTabIndex].search = mbs.value
 }
-mbs.onfocus = () => KeyManager.stop = true
-mbs.addEventListener('focusout', () => KeyManager.stop = false )
-
-mbjp.onfocus = () => KeyManager.stop = true
-mbjp.addEventListener('focusout', () => KeyManager.stop = false )
 
 window.onmousedown = e => { if (e.which == 2) e.preventDefault() }
 
