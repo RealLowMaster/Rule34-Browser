@@ -97,7 +97,7 @@ class e621net {
 			return response.text()
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
-			let arr = { maxPages: null }, save
+			let arr = { maxPages: null }, save, save2
 
 			// Posts
 			arr.posts = []
@@ -111,10 +111,15 @@ class e621net {
 			if (save != null) {
 				for (let i = 0, l = save.length; i < l; i++) {
 					const t = document.createElement('div')
+					let save2 = save[i].getAttribute('data-flags')
+					if (save2 == 'pending') save2 = 0
+					else if (save2 == '') save2 = null
+					else if (save2 == 'pending flagged') save2 = 1
 					arr.posts.push({
 						id: Number(save[i].id.replace('post_', '')),
 						thumb: save[i].children[0].children[0].children[0].getAttribute('srcset'),
-						video: (save[i].classList.contains('post-status-pending') || save[i].classList.contains('post-status-flagged')) && !save[i].classList.contains('mod-queue-preview')
+						flag: save2,
+						format: save[i].getAttribute('data-file-ext') 
 					})
 				}
 			} else throw Language('npost')
