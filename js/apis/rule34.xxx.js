@@ -30,14 +30,11 @@ class rule34xxx {
 		}
 		
 
-		if (data[0].length > 0) {
-			for (let i = 0, l = data[0].length; i < l; i++) data[0][i][0] = data[0][i][0].replace(' (series)', '')
-			arr.parody = data[0]
-		}
-		if (data[1].length > 0) arr.character = data[1]
-		if (data[2].length > 0) arr.artist = data[2]
-		if (data[3].length > 0) arr.tag = data[3]
-		if (data[4].length > 0) arr.meta = data[4]
+		if (data[0].length != 0) arr.parody = data[1]
+		if (data[1].length != 0) arr.character = data[1]
+		if (data[2].length != 0) arr.artist = data[2]
+		if (data[3].length != 0) arr.tag = data[3]
+		if (data[4].length != 0) arr.meta = data[4]
 
 		return arr
 	}
@@ -182,7 +179,7 @@ class rule34xxx {
 				arr.video = false
 			}
 
-			// Stase
+			// States
 			try {
 				save = html.getElementById('stats').children[1].children
 				arr.id = save[0].innerText.replace(/ /g, '').replace(/\n/g, '').toLowerCase().replace('id:', '')

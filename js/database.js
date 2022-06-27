@@ -281,6 +281,54 @@ function LinkMeta(name1, name2) {
 	PopAlert('Linked: '+name1+' To '+name2)
 }
 
+// Species
+function GetSpeciesIndex(list) {
+	const arr = []
+	let save = false
+	for (let i = 0, l = list.length; i < l; i++) {
+		let index = db.species.indexOf(list[i].toLowerCase())
+		if (index >= 0) {
+			const link_index = db.species_index.indexOf(index)
+			if (link_index >= 0) index = db.species_link[link_index]
+			arr.push(index)
+		} else {
+			index = db.species.length
+			db.species[index] = list[i].toLowerCase()
+			arr.push(index)
+			save = true
+		}
+	}
+	if (save) try { jsonfile.writeFileSync(paths.db+'species', { v:db.manager.species, a:db.species, l:db.species_link, i:db.species_index }) } catch(err) { console.error(err) }
+	return NoLoopArray(arr)
+}
+
+function LinkSpecies(name1, name2) {
+	name1 = name1.toLowerCase()
+	name2 = name2.toLowerCase()
+	let i1 = db.species.indexOf(name1)
+	let i2 = db.species.indexOf(name2)
+	if (i1 < 0) {
+		i1 = db.species.length
+		db.species[i1] = name1
+	}
+	if (i2 < 0) {
+		i2 = db.species.length
+		db.species[i2] = name2
+	}
+
+	let ii1 = db.species_index.indexOf(i1)
+	if (ii1 >= 0) db.species_link[ii1] = i2
+	else {
+		ii1 = db.species_index.length
+		db.species_index[ii1] = i1
+		db.species_link[ii1] = i2
+	}
+
+	try { jsonfile.writeFileSync(paths.db+'species', { v:db.manager.species, a:db.species, l:db.species_link, i:db.species_index }) } catch(err) { console.error(err) }
+
+	PopAlert('Linked: '+name1+' To '+name2)
+}
+
 // Post
 function GetPost(site, id, index = true) {
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
@@ -298,6 +346,7 @@ function AddPost(site, id, imgId, format, data, animated = null) {
 	if (data.artist != null) arr[6] = GetArtistIndex(data.artist)
 	if (data.tag != null) arr[7] = GetTagIndex(data.tag)
 	if (data.meta != null) arr[8] = GetMetaIndex(data.meta)
+	if (data.species != null) arr[8] = GetSpeciesIndex(data.species)
 	db.post.push(arr)
 	db.have[site].push(id)
 	browser.SetNeedReload(-1)

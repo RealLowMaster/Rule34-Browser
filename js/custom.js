@@ -54,6 +54,9 @@ const db = {
 	meta: [],
 	meta_index: [],
 	meta_link: [],
+	species: [],
+	species_index: [],
+	species_link: [],
 	manager: {
 		history: 0,
 		post: 0,
@@ -63,7 +66,8 @@ const db = {
 		tag: 0,
 		parody: 0,
 		character: 0,
-		meta: 0
+		meta: 0,
+		species: 0
 	}
 }
 
@@ -1018,6 +1022,20 @@ function LoadDatabase() {
 		Alert('CreatingMetaDB->'+err)
 	}
 
+	// species
+	if (existsSync(paths.db+'species')) try { db_tmp.species = jsonfile.readFileSync(paths.db+'species') } catch(err) {
+		db_tmp.species = undefined
+		console.error(err)
+		Alert('LoadingSpeciesDB->'+err)
+	} else try {
+		db_tmp.species = { v:db.manager.species, a:[], l:[], i:[] }
+		jsonfile.writeFileSync(paths.db+'species', db_tmp.species)
+	} catch(err) {
+		db_tmp.species = undefined
+		console.error(err)
+		Alert('CreatingSpeciesDB->'+err)
+	}
+
 	// -------------> Check Databases
 	const error_list = []
 	// history
@@ -1158,6 +1176,25 @@ function LoadDatabase() {
 		} else error_list.push('Metas Database is Corrupted #Version')
 	} else error_list.push(db_tmp.meta)
 	delete db_tmp.meta
+
+	// species
+	if (typeof db_tmp.species === 'object') {
+		if (typeof db_tmp.species.v === 'number') {
+			if (db_tmp.species.v > db.manager.species) error_list.push('Species Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.species.a)) {
+					if (Array.isArray(db_tmp.species.l)) {
+						if (Array.isArray(db_tmp.species.i)) {
+							db.species = db_tmp.species.a.slice()
+							db.species_index = db_tmp.species.i.slice()
+							db.species_link = db_tmp.species.l.slice()
+						} else error_list.push('Species Database is Corrupted #Data-3')
+					} else error_list.push('Species Database is Corrupted #Data-2')
+				} else error_list.push('Species Database is Corrupted #Data-1')
+			}
+		} else error_list.push('Species Database is Corrupted #Version')
+	} else error_list.push(db_tmp.species)
+	delete db_tmp.species
 
 	if (error_list.length == 0) {
 		if (setting.seen_release != null && setting.seen_release != update_number) OpenReleaseNote()
@@ -2424,7 +2461,11 @@ function ToURL(txt) {
 function test() {
 	const e621 = new e621net();
 
-	e621.Page(1, null, (err, result) => {
+	e621.Post(3414987, (err, result) => {
 		console.log(result)
 	})
+
+	// r34xxx.Page(1, null, (err, result) => {
+	// 	console.log(result)
+	// })
 }
