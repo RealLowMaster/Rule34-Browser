@@ -99,7 +99,7 @@ class e621net {
 			arr.maxPages = save[0]
 			arr.pagination = save[1]
 
-			// Tags
+			// Tag
 			try {
 				save = html.getElementById('tag-box').children[1].children
 				if (save.length == 0) save = null
@@ -108,13 +108,13 @@ class e621net {
 				save = null
 			}
 			if (save != null) {
-				arr.tags = []
+				arr.tag = []
 
 				for (let i = 0, l = save.length; i < l; i++) {
 					save2 = save[i].children
-					arr.tags.push([
-						save2[1].innerText,
-						save2[2].innerText
+					arr.tag.push([
+						save2[save2.length-2].innerText,
+						save2[save2.length-1].innerText
 					])
 				}
 			}

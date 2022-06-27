@@ -489,6 +489,8 @@ class BrowserManager {
 			case 7: Rule34XXXPools(tabId, value); return
 			case 8: Rule34XXXPost(tabId, value); return
 			case 9: Rule34XXXPool(tabId, value); return
+			case 10: E621Home(tabId, value[0], value[1]); return
+			case 11: E621XXXPost(tabId, value); return
 		}
 	}
 	
@@ -774,6 +776,9 @@ function JumpPage() {
 			}
 			return
 		case 1:
+			switch(tab.jumpPage) {
+				case 0: E621Home(tab.id, value, tab.submit_search); return
+			}
 			return
 	}
 }
