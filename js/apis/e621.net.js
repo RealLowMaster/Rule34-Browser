@@ -42,14 +42,10 @@ class e621net {
 		return arr
 	}
 
-	#GetPagination(html, perPage = 42, limit = true) {
+	#GetPagination(html, cpage) {
 		let save
 		try {
-			save = html.getElementById('paginator').children[0]
-			if (save.classList.contains('pagination')) {
-				save = save.children
-				if (save.length < 2) save = null
-			} else save = null
+			save = html.getElementsByClassName('paginator')[0].children[0].children
 		} catch(err) {
 			console.error(err)
 			save = null
@@ -57,27 +53,39 @@ class e621net {
 
 		const arr = [0, []]
 		if (save != null) {
-			for (let i = 0, l = save.length; i < l; i++) {
-				if (save[i].tagName == 'A') arr[1].push([Number(LastChar('=', save[i].href)) / perPage + 1, save[i].innerText])
-				else if (save[i].tagName == 'B') arr[1].push([null, save[i].innerText])
-			}
-			for (let i = save.length - 1; i >= 0; i--) {
-				if (save[i].tagName == 'B') {
-					arr[0] = Number(save[i].innerHTML)
-					break
-				}
-				if (save[i].tagName == 'A') {
-					let num = Number(LastChar('=', save[i].href))
-					if (isNaN(num)) arr[0] = 1
-					else {
-						num = num / perPage + 1
-						if (limit) arr[0] = num > this.maxPage ? this.maxPage : num
-						else arr[0] = num
+			if (cpage >= this.maxPage) {
+				cpage = this.maxPage
+				arr[0] = cpage
+				return
+			} else {
+				const l = save.length
+				if (l > 1) {
+					let save2 = [0, 0]
+					switch (save[l-1].className) {
+						case 'arrow': save2[0] = Number(LastChar("=", LastChar("&", save[l-1].children[0].href, true))); break
+						case 'numbered-page': save2[0] = Number(save[l-1].children[0].innerText); break
+						case 'current-page': save2[0] = Number(save[l-1].children[0].innerText); break
 					}
-					break
-				}
+					switch (save[l-2].className) {
+						case 'numbered-page': save2[1] = Number(save[l-2].children[0].innerText); break
+						case 'current-page': save2[1] = Number(save[l-2].children[0].innerText); break
+						case 'arrow': save2[1] = Number(LastChar("=", LastChar("&", save[l-2].children[0].href, true))); break
+					}
+
+					if (save2[0] >= save2[1]) arr[0] = save2[0]
+					else arr[0] = save2[1]
+				} else if (l == 1) {
+					switch (save[0].className) {
+						case 'current-page': arr[0] = save2[1] = Number(save[0].children[0].innerText); break
+						case 'arrow': arr[0] = Number(LastChar("=", LastChar("&", save[0].children[0].href, true))); break
+						case 'numbered-page': arr[0] = Number(save[0].children[0].innerText); break
+					}
+				} else arr[0] = cpage
 			}
+			if (arr[0] < 1) arr[0] = 1
+			arr[1] = GetPaginationList(arr[0], cpage)
 		} else arr[0] = 1
+
 		return arr
 	}
 
@@ -124,13 +132,14 @@ class e621net {
 				}
 			} else throw Language('npost')
 
-			callback(null, arr)
-			return
-
 			// Pagination
-			save = this.#GetPagination(html)
+			save = this.#GetPagination(html, page)
+			arr.pagination = save
 			arr.maxPages = save[0]
 			arr.pagination = save[1]
+
+			callback(null, arr)
+			return
 
 			// Tags
 			try {

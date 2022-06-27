@@ -2424,8 +2424,7 @@ function ToURL(txt) {
 function test() {
 	const e621 = new e621net();
 
-	e621.Page(0, null, (err, result) => {
-		console.error(err)
+	e621.Page(1, null, (err, result) => {
 		console.log(result)
 	})
 }
