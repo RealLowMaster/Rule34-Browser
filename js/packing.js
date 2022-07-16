@@ -33,6 +33,7 @@ function OpenPacking(site, id) {
 	if (index == null) return
 	if (!pack.open) {
 		pack.open = true
+		if (mb_pages.hasAttribute('p')) CloseReads()
 		document.getElementById('packing').style.display = 'block'
 		mb_pages.setAttribute('p', '')
 	}
@@ -266,6 +267,7 @@ function EditPack(id) {
 	pack.listSite = []
 	pack.listId = []
 	pack.listBack = [[],[]]
+	if (mb_pages.hasAttribute('p')) CloseReads()
 	document.getElementById('packing').style.display = 'block'
 	mb_pages.setAttribute('p', '')
 	const index = GetPost(-1, id)
@@ -336,4 +338,44 @@ function ClosePacking() {
 	document.getElementById('packing').style.display = 'none'
 	mb_pages.removeAttribute('p')
 	pack.container.innerHTML = null
+}
+
+// Pack Overview
+function ChangePackOverview(i) {
+	if (pack_overview.id != i || pack_overview.element == null) return
+	pack_overview.index++
+	if (pack_overview.index >= db.post[i][10].length) pack_overview.index = 0
+	const src = paths.thumb+db.post[i][2][pack_overview.index]+'.jpg'
+	if (existsSync(src)) pack_overview.element.src = src
+	else pack_overview.element.src = 'Image/no-img-225x225.webp'
+	pack_overview.timer = setTimeout(() => ChangePackOverview(i), 700)
+}
+
+function EnablePackOverview(i, who) {
+	if (pack_overview.id != i) {
+		clearTimeout(pack_overview.timer)
+		if (pack_overview.element != null) DisablePackOverview(pack_overview.id, pack_overview.element)
+		pack_overview.id = i
+		pack_overview.element = who
+		pack_overview.index = 0
+		pack_overview.timer = setTimeout(() => ChangePackOverview(i), 700)
+	} else if (pack_overview.element == null) {
+		DisablePackOverview(i, who)
+		pack_overview.id = i
+		pack_overview.element = who
+		pack_overview.index = 0
+		pack_overview.timer = setTimeout(() => ChangePackOverview(i), 700)
+	}
+}
+
+function DisablePackOverview(i, who) {
+	if (pack_overview.id == i) {
+		pack_overview.id = null
+		pack_overview.element = null
+		pack_overview.index = null
+		clearTimeout(pack_overview.timer)
+	}
+	const src = paths.thumb+db.post[i][2][0]+'.jpg'
+	if (existsSync(src)) who.src = src
+	else who.src = 'Image/no-img-225x225.webp'
 }

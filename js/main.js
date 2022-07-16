@@ -146,10 +146,12 @@ function SetHotKeys() {
 	KeyManager.use_public = true
 
 	KeyManager.AddCategory('default')
-	KeyManager.AddHotKey('default', false, false, false, 37, 'browser.PrevPage()')
-	KeyManager.AddHotKey('default', false, false, false, 39, 'browser.NextPage()')
-	KeyManager.AddHotKey('default', true, false, false, 74, downloader.OpenPanel)
-	KeyManager.AddHotKey('default', true, false, false, 78, NewTab)
+	KeyManager.AddHotKey('default', false, false, false, 37, 'browser.PrevPage()') // LeftArrow
+	KeyManager.AddHotKey('default', false, false, false, 39, 'browser.NextPage()') // RightArrow
+	KeyManager.AddHotKey('default', true, false, false, 74, downloader.OpenPanel) // j
+	KeyManager.AddHotKey('default', true, false, false, 78, NewTab) // n
+	KeyManager.AddHotKey('default', true, false, false, 68, OpenReads) // d
+	KeyManager.AddHotKey('default', true, false, false, 83, 'AddThisTabToReads(browser.selectedTab)') // s
 	KeyManager.AddHotKey('default', true, false, false, 82, () => browser.ReloadTab(browser.selectedTab))
 	KeyManager.AddHotKey('default', true, true, false, 84, OpenLastHistory)
 	KeyManager.AddHotKey('default', true, false, false, 87, () => browser.CloseTab(browser.selectedTab))
@@ -172,12 +174,10 @@ function SetHotKeys() {
 	KeyManager.AddHotKey('setting', true, false, false, 83, SaveSetting)
 	KeyManager.AddHotKey('setting', false, false, false, 27, CloseSetting)
 
-	/*
 	KeyManager.AddCategory('icon-manager')
 	KeyManager.AddHotKey('icon-manager', true, false, false, 90, OpenAddIcon)
 	KeyManager.AddHotKey('icon-manager', true, false, false, 83, SaveIconManager)
 	KeyManager.AddHotKey('icon-manager', false, false, false, 27, CloseIconManager)
-	*/
 }
 
 function SetContextMenus() {
@@ -191,7 +191,7 @@ function SetContextMenus() {
 	} })
 	ContextManager.AddItem(i, { icon:'download', text:'downloads', click: () => downloader.OpenPanel() })
 	// ContextManager.AddItem(i, { icon:'bookmarks', text:'bookmarks', click: () => OpenBookmarks() })
-	ContextManager.AddItem(i, {})
+	ContextManager.AddItem(i, { icon:'reads', text:'reads', click: () => OpenReads() })
 	ContextManager.AddItem(i, { icon:'setting', text:'settings', click: () => OpenSettings() })
 	ContextManager.AddItem(i, { icon:'exit', text:'exit', click: () => remote.app.quit() })
 
@@ -215,6 +215,7 @@ function SetContextMenus() {
 	i = ContextManager.AddMenu('tab')
 	ContextManager.AddItem(i, { icon:'copy', text:'copy', click: () => browser.CopyTab(ContextManager.save) })
 	ContextManager.AddItem(i, { icon:'reload', text:'reload', click: () => browser.ReloadTab(ContextManager.save) })
+	ContextManager.AddItem(i, { icon:'add-reads', text:'addtoreads', click: () => AddThisTabToReads(ContextManager.save) })
 	ContextManager.AddItem(i, { icon:'duplicate', text:'duplicate', click: () => browser.DuplicateTab(ContextManager.save) })
 	// ContextManager.AddItem(i, { icon:'pin', text:'pin', click: () => browser.PinTab(ContextManager.save) })
 	// ContextManager.AddItem(i, { text:'add-bookmarks', click: () =>  })

@@ -19,7 +19,7 @@
 	</script>
 	<!-- From My Template -->
 	<script type="text/javascript" src="js/icons-database.js"></script>
-	<!-- <script type="text/javascript" src="js/icons.js"></script> -->
+	<script type="text/javascript" src="js/icons.js"></script>
 	<script type="text/javascript" src="js/defualt-classes.js"></script>
 	<script type="text/javascript" src="js/main.js" defer></script>
 	<script type="text/javascript" src="js/actions.js"></script>
@@ -42,6 +42,7 @@
 	<script type="text/javascript" src="js/custom.js" defer></script>
 	<script type="text/javascript" src="js/slider.js" defer></script>
 	<script type="text/javascript" src="js/packing.js" defer></script>
+	<script type="text/javascript" src="js/readlist.js" defer></script>
 	<script type="text/javascript" src="js/database.js" defer></script>
 	<script type="text/javascript" src="js/download.js" defer></script>
 	<script type="text/javascript" src="js/script-updater.js" defer></script>
@@ -85,12 +86,21 @@
 			</div>
 
 			<!-- Packing -->
-			<div id="packing">
+			<div id="packing" class="sidebar">
 				<div>
 					<div lt="unpack" onclick="ClosePacking()"><i ic="box-open"></i></div>
 					<div lt="pack" onclick="Pack()"><i ic="box"></i></div>
 				</div>
 				<div id="packing-container"></div>
+			</div>
+
+			<!-- ReadList -->
+			<div id="readlist" class="sidebar">
+				<div>
+					<div lt="closereads" onclick="CloseReads()"><i ic="exit"></i></div>
+					<div lt="addtabreads" onclick="AddThisTabToReads(browser.selectedTab)"><i ic="add-reads"></i></div>
+				</div>
+				<div id="reads"></div>
 			</div>
 
 			<!-- Properties -->

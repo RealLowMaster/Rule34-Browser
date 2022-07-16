@@ -24,7 +24,7 @@ const sites = [
 		home: Rule34XXXHome
 	},
 	{
-		name: 'E621.net',
+		name: 'E621.net (demo)',
 		url: 'e621.net',
 		icon: 'webp',
 		ip: '',
@@ -35,6 +35,7 @@ const sites = [
 
 const db = {
 	history: [],
+	reads: [],
 	post: [],
 	post_have: [],
 	have: [],
@@ -59,6 +60,7 @@ const db = {
 	species_link: [],
 	manager: {
 		history: 0,
+		reads: 0,
 		post: 0,
 		have: 0,
 		collection: 0,
@@ -895,6 +897,7 @@ function LoadDatabase() {
 
 	// -------------> Load/Create Global Databases
 	const db_tmp = {}
+	// history
 	if (existsSync(dirDocument+'/history')) try { db_tmp.history = jsonfile.readFileSync(dirDocument+'/history') } catch(err) {
 		db_tmp.history = 'LoadingHistoryDB->'+err
 		console.error(err)
@@ -903,6 +906,18 @@ function LoadDatabase() {
 		jsonfile.writeFileSync(dirDocument+'/history', db_tmp.history)
 	} catch(err) {
 		db_tmp.history = 'CreatingHistoryDB->'+err
+		console.log(err)
+	}
+
+	// reads
+	if (existsSync(dirDocument+'/reads')) try { db_tmp.reads = jsonfile.readFileSync(dirDocument+'/reads') } catch(err) {
+		db_tmp.reads = 'LoadingReadsDB->'+err
+		console.error(err)
+	} else try {
+		db_tmp.reads = { v:db.manager.history, a:[] }
+		jsonfile.writeFileSync(dirDocument+'/reads', db_tmp.reads)
+	} catch(err) {
+		db_tmp.reads = 'CreatingReadsDB->'+err
 		console.log(err)
 	}
 
@@ -1055,6 +1070,19 @@ function LoadDatabase() {
 		} else error_list.push('History Database is Corrupted #Version')
 	} else error_list.push(db_tmp.history)
 	delete db_tmp.history
+
+	// reads
+	if (typeof db_tmp.reads === 'object') {
+		if (typeof db_tmp.reads.v === 'number') {
+			if (db_tmp.reads.v > db.manager.reads) error_list.push('Reads Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.reads.a)) {
+					db.reads = db_tmp.reads.a.slice()
+				} else error_list.push('Reads Database is Corrupted #Data')
+			}
+		} else error_list.push('Reads Database is Corrupted #Version')
+	} else error_list.push(db_tmp.reads)
+	delete db_tmp.reads
 
 	// post
 	if (typeof db_tmp.post === 'object') {
@@ -1502,45 +1530,6 @@ function PostLink(tabId, link, site, id, sldIndex, pack) {
 
 		ContextManager.ShowMenu('posts')
 	}
-}
-
-function ChangePackOverview(i) {
-	if (pack_overview.id != i || pack_overview.element == null) return
-	pack_overview.index++
-	if (pack_overview.index >= db.post[i][10].length) pack_overview.index = 0
-	const src = paths.thumb+db.post[i][2][pack_overview.index]+'.jpg'
-	if (existsSync(src)) pack_overview.element.src = src
-	else pack_overview.element.src = 'Image/no-img-225x225.webp'
-	pack_overview.timer = setTimeout(() => ChangePackOverview(i), 700)
-}
-
-function EnablePackOverview(i, who) {
-	if (pack_overview.id != i) {
-		clearTimeout(pack_overview.timer)
-		if (pack_overview.element != null) DisablePackOverview(pack_overview.id, pack_overview.element)
-		pack_overview.id = i
-		pack_overview.element = who
-		pack_overview.index = 0
-		pack_overview.timer = setTimeout(() => ChangePackOverview(i), 700)
-	} else if (pack_overview.element == null) {
-		DisablePackOverview(i, who)
-		pack_overview.id = i
-		pack_overview.element = who
-		pack_overview.index = 0
-		pack_overview.timer = setTimeout(() => ChangePackOverview(i), 700)
-	}
-}
-
-function DisablePackOverview(i, who) {
-	if (pack_overview.id == i) {
-		pack_overview.id = null
-		pack_overview.element = null
-		pack_overview.index = null
-		clearTimeout(pack_overview.timer)
-	}
-	const src = paths.thumb+db.post[i][2][0]+'.jpg'
-	if (existsSync(src)) who.src = src
-	else who.src = 'Image/no-img-225x225.webp'
 }
 
 function GetPostElement(tab, i, date = 0) {

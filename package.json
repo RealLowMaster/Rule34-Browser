@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "A Browser for Easily View, Download and Manage Rule34 pictures :)",
 	"main": "index.js",
-	"author": "Mehdi Enayatzadeh (LowMaster)",
+	"author": "LowMaster",
 	"license": "MIT",
 	"private": true,
 	"keywords": [
@@ -18,7 +18,7 @@
 	"build": {
 		"appId": "me.lowmaster.rule34-browser",
 		"productName": "Rule34 Browser",
-		"copyright": "Copyright © 2022 Mehdi Enayatzadeh (LowMaster)",
+		"copyright": "Copyright © 2022 LowMaster",
 		"compression": "maximum",
 		"directories": {
 			"output": "build"
@@ -59,7 +59,7 @@
 		},
 		"win": {
 			"target": "NSIS",
-			"publisherName": "Mehdi Enayatzadeh (LowMaster)",
+			"publisherName": "LowMaster",
 			"icon": "Image/favicon.ico"
 		},
 		"asar": false,

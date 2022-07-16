@@ -30,7 +30,7 @@ class rule34xxx {
 		}
 		
 
-		if (data[0].length != 0) arr.parody = data[1]
+		if (data[0].length != 0) arr.parody = data[0]
 		if (data[1].length != 0) arr.character = data[1]
 		if (data[2].length != 0) arr.artist = data[2]
 		if (data[3].length != 0) arr.tag = data[3]

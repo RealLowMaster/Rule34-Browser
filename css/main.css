@@ -873,8 +873,8 @@
 #slider[h] > div:last-child > *:not(#sld-img):hover { opacity: 1 }
 #slider[h] > div:last-child > #sld-img { border: none !important }
 
-/* Packing */
-#packing {
+/* Sidebar */
+.sidebar {
 	display: none;
 	width: 233px !important;
 	height: calc(100% - var(--topMenuSize) - 69px) !important;
@@ -883,7 +883,7 @@
 	right: 0;
 }
 
-#packing > div:first-child {
+.sidebar > div:first-child {
 	display: flex;
 	width: 100%;
 	height: 39px;
@@ -892,7 +892,7 @@
 	direction: rtl;
 }
 
-#packing > div:first-child > div {
+.sidebar > div:first-child > div {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -902,16 +902,17 @@
 	transition: background-color .1s;
 }
 
-#packing > div:first-child > div:first-child:hover { background-color: var(--text-danger) }
-#packing > div:first-child > div:last-child:hover { background-color: var(--text-brand) }
+.sidebar > div:first-child > div:first-child:hover { background-color: var(--text-danger) }
+.sidebar > div:first-child > div:last-child:hover { background-color: var(--text-brand) }
 
-#packing-container {
+.sidebar > div:last-child {
 	width: 100%;
 	height: calc(100% - 39px);
 	background-color: var(--secondary-bg-alt);
 	overflow-y: auto;
 }
 
+/* Packing */
 #packing-container > div {
 	width: 100%;
 	height: 233px;
@@ -928,3 +929,51 @@
 }
 
 #packing-container > div:hover { background-color: var(--text-brand); }
+
+/* Reads */
+#reads > div {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: 40px;
+	background-color: var(--tertiary-bg);
+	position: relative;
+}
+
+#reads > div > img {
+	width: 24px;
+	height: 24px;
+	margin: 0 5px 0 10px;
+	
+}
+
+#reads > div > p {
+	display: flex;
+	align-items: center;
+	width: calc(100% - 60px);
+	height: 100%;
+	color: var(--primary-header);
+	font-size: 14px;
+	white-space: nowrap;
+	overflow: hidden;
+	cursor: pointer;
+}
+
+#reads > div > p:hover {
+	background-color: var(--secondary-bg-alt);
+}
+
+#reads > div > div {
+	width: 17px;
+	height: 17px;
+	color: var(--primary-header);
+	border-radius: 50%;
+	text-align: center;
+	line-height: 14px;
+	font-size: 20px;
+	position: absolute;
+	right: 2px;
+	user-select: none;
+}
+
+#reads > div > div:hover { background-color: #ed4245; color: #fff }
