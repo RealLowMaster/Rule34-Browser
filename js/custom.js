@@ -1910,7 +1910,7 @@ function Post(tabId, site, id) {
 	container.classList.add('main-page')
 
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
-		let save, title = ''
+		let save, save2, title = ''
 		if (db.post[i][0] == -1) {
 			tab.save = [[], [], []]
 			const data = {parody:[], character:[], artist:[], tag:[], meta:[]}
@@ -1963,6 +1963,49 @@ function Post(tabId, site, id) {
 				if (db.post[i][7][j].length != 0) data.tag = data.tag.concat(db.post[i][7][j])
 				if (db.post[i][8][j].length != 0) data.meta = data.meta.concat(db.post[i][8][j])
 			}
+
+			// Buttons
+			save = document.createElement('div')
+			save.classList.add('post-btns')
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-primary')
+			save2.innerHTML = Icon('box-open')+Language('unpack')
+			save2.onclick = () => AskForUnPack(id)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-secondary')
+			save2.innerHTML = Icon('edit')+Language('editpack')
+			save2.onclick = () => EditPack(id)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-danger')
+			save2.innerHTML = Icon('trash')+Language('delete')
+			save2.onclick = () => ConfirmDeletingPost(site, id, false)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-danger')
+			save2.innerHTML = Icon('delete-file')+Language('delete-shave')
+			save2.onclick = () => ConfirmDeletingPost(site, id, true)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-success')
+			save2.innerHTML = Icon('info')+Language('properties')
+			save2.onclick = () => OpenPostProperties(site, id)
+			save.appendChild(save2)
+
+			container.appendChild(save)
+
+			// tags
 			data.parody = NoLoopArray(data.parody)
 			data.character = NoLoopArray(data.character)
 			data.artist = NoLoopArray(data.artist)
@@ -2062,6 +2105,47 @@ function Post(tabId, site, id) {
 				save.src = 'Image/no-img-225x225.webp'
 				container.appendChild(save)
 			}
+
+			// Buttons
+			save = document.createElement('div')
+			save.classList.add('post-btns')
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-primary')
+			save2.innerHTML = Icon('box')+Language('pack')
+			save2.onclick = () => OpenPacking(site, id)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-secondary')
+			save2.innerHTML = Icon('redownload')+Language('redownload')
+			save2.onclick = () => ReDownloadPost(site, id)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-danger')
+			save2.innerHTML = Icon('trash')+Language('delete')
+			save2.onclick = () => ConfirmDeletingPost(site, id, false)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-danger')
+			save2.innerHTML = Icon('delete-file')+Language('delete-shave')
+			save2.onclick = () => ConfirmDeletingPost(site, id, true)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-success')
+			save2.innerHTML = Icon('info')+Language('properties')
+			save2.onclick = () => OpenPostProperties(site, id)
+			save.appendChild(save2)
+
+			container.appendChild(save)
 
 			// parody = 0
 			if (db.post[i][4].length != 0) {

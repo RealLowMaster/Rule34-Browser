@@ -630,6 +630,15 @@
 	cursor: zoom-in;
 }
 
+.post-btns {
+	width: 100%;
+	margin: 10px 0;
+	text-align: center;
+	user-select: none;
+}
+
+.post-btns > div > svg { margin-right: 5px }
+
 .post-tags {
 	display: block;
 	width: 95%;
