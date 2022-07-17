@@ -1,3 +1,4 @@
+const { async } = require('node-stream-zip')
 const sharp = require('sharp'), request = require('request'), ffmpeg = require('fluent-ffmpeg')
 ffmpeg.setFfmpegPath(__dirname+'/bin/ffmpeg')
 sharp.cache(false)
@@ -867,6 +868,7 @@ function LoadDatabase() {
 	}
 	paths.db = setting.dl_path+'/R34DB/'
 	paths.dl = setting.dl_path+'/R34DL/'
+	paths.backup = setting.dl_path+'/R34Backup/'
 	paths.thumb = setting.dl_path+'/R34thumb/'
 	paths.tmp = setting.dl_path+'/R34tmp/'
 
@@ -880,6 +882,12 @@ function LoadDatabase() {
 	if (!existsSync(paths.dl)) try { mkdirSync(paths.dl) } catch(err) {
 		console.error(err)
 		Alert('MakingDownloadFolder->'+err)
+		return
+	}
+
+	if (!existsSync(paths.backup)) try { mkdirSync(paths.backup) } catch(err) {
+		console.error(err)
+		Alert('MakingBackupFolder->'+err)
 		return
 	}
 
@@ -1232,6 +1240,7 @@ function LoadDatabase() {
 	if (error_list.length == 0) {
 		if (setting.seen_release != null && setting.seen_release != update_number) OpenReleaseNote()
 		else loading.Close()
+		if (setting.auto_backup) try { BackUp() } catch(err) { console.error(err) }
 		CheckScriptUpdate()
 		KeyManager.ChangeCategory('default')
 		NewTab()
@@ -2536,7 +2545,62 @@ function ToURL(txt) {
 		.replace(/\|/g, '%7c')
 }
 
-function test() {
+// Backup
+function GetBackup() {
+	const date = new Date()
+	const save_path = remote.dialog.showSaveDialogSync({
+		defaultPath: `${date.getFullYear()}-${date.getMonth() < 12 ? date.getMonth() + 1 : 1}-${date.getDate()}  [${date.getHours() < 10 ? '0'+date.getHours() : date.getHours()};${date.getMinutes() < 10 ? '0'+date.getMinutes() : date.getMinutes()};${date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds()}] R34B`,
+		title: Language('backup'),
+		properties: ['showOverwriteConfirmation'],
+		filters: [{name:'ZIP', extensions:['zip']}]
+	})
+
+	if (typeof save_path !== 'string') return
+	BackUp(save_path)
+}
+
+async function BackUp(save_path = null, callback = null) {
+	const backup_files = [
+		'artist',
+		'character',
+		'have',
+		'meta',
+		'parody',
+		'post',
+		'species',
+		'tag'
+	]
+
+	const zip = await new require('jszip')()
+
+	for (let i = 0; i < backup_files.length; i++) {
+		let src = `${paths.db}/${backup_files[i]}`
+		if (existsSync(src)) await zip.file(backup_files[i], readFileSync(src), { base64: true })
+	}
+	if (existsSync(dirDocument+'/reads')) await zip.file('reads', readFileSync(dirDocument+'/reads'), { base64: true })
+
+	const content = await zip.generateAsync({ type: "nodebuffer" })
+	const date = new Date()
+	let filename
+	if (typeof save_path !== 'string') {
+		filename = `${date.getFullYear()}-${date.getMonth() < 12 ? date.getMonth() + 1 : 1}-${date.getDate()}  [${date.getHours() < 10 ? '0'+date.getHours() : date.getHours()};${date.getMinutes() < 10 ? '0'+date.getMinutes() : date.getMinutes()};${date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds()}].zip`
+
+		const files = readdirSync(paths.backup), backups = []
+		for (let i = 0, l = files.length; i < l; i++) if (LastChar('.', files[i]) == 'zip') backups.push(files[i])
+		if (backups.length >= 5) try { unlinkSync(paths.backup+backups[0]) } catch(err) { console.error(err) }
+	}
+	if (!existsSync(paths.backup)) mkdirSync(paths.backup)
+	try {
+		if (typeof save_path !== 'string') writeFileSync(`${paths.backup}/${filename}`, content)
+		else writeFileSync(save_path, content)
+		if (callback != null) callback()
+		PopAlert(Language('backuped'))
+	} catch(err) {
+		console.error('Backuping-ERR::'+err)
+	}
+}
+
+async function test() {
 	const e621 = new e621net();
 
 	e621.Post(3414987, (err, result) => {

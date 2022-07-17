@@ -99,6 +99,7 @@ function SliderNext() {
 }
 
 function SliderChange(index) {
+	console.log(index)
 	if (slider.overview) {
 		const children = document.getElementById('sld-overview').children
 		children[slider.active].removeAttribute('active')
@@ -143,6 +144,7 @@ function SliderChange(index) {
 			sldpinput.style.display = 'none'
 		}
 
+		console.log(src, !existsSync(src))
 		if (!existsSync(src)) {
 			slider.element = document.createElement('img')
 			slider.element.src = 'Image/no-img-225x225.webp'

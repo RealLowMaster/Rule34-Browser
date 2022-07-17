@@ -148,6 +148,7 @@
 						<button type="button" onclick="OpenSettingTab(this,'st_Notifications')" l="notifications"></button>
 						<button type="button" onclick="OpenSettingTab(this,'st_Language')" l="language"></button>
 						<button type="button" onclick="OpenSettingTab(this,'st_Advanced')" l="advanced"></button>
+						<hr>
 						<button id="stt-release" type="button" onclick="OpenReleaseNote()" l="release-note"></button>
 					</div>
 				</div>
@@ -166,6 +167,12 @@
 							<div id="sto_default_volume"></div>
 							<hr>
 							<div id="sto_maximum_pixel"></div>
+							<hr>
+							<div id="sto_auto_backup"></div>
+							<div class="sto-checkbox">
+								<div class="btn btn-primary" l="backup" style="display:inline-flex;width:auto" onclick="GetBackup()"></div>
+								<div class="btn btn-secondary" l="sautobackup" style="display:inline-flex;width:auto" onclick="BackUp()"></div>
+							</div>
 						</div>
 
 						<div id="st_Sites">
@@ -201,7 +208,7 @@
 							<div id="sto_developer_mode"></div>
 							<hr>
 							<div class="sto-checkbox">
-								<div class="btn btn-danger" l="clear-cache" style="display:inline-flex;width:auto" onclick="ClearCaches()">Clear Cache</div>
+								<div class="btn btn-danger" l="clear-cache" style="display:inline-flex;width:auto" onclick="ClearCaches()"></div>
 								<p l="clear-cache-tip"></p>
 								<p id="clear-cache-size"></p>
 							</div>

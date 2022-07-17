@@ -12,6 +12,7 @@ const defaultSetting = {
 	default_volume: 100,
 	maximum_pixel: 2,
 	seen_release: update_number - 1,
+	auto_backup: true,
 	full_screen: true,
 	developer_mode: false
 }
@@ -23,7 +24,8 @@ const sto_checkbox = [
 	['not', 'notifications', 'nottip'],
 	['not_sound', 'notsound', 'notsoundtip'],
 	['full_screen', 'fullscreen', 'fullscreentip'],
-	['developer_mode', 'devmode', 'devmodetip']
+	['developer_mode', 'devmode', 'devmodetip'],
+	['auto_backup', 'autobackup', 'autobackuptip']
 ]
 
 // [ 'setting name', 'translate name', [index = 0 => value 1, index = 1 => value 2, etc ...] ]
