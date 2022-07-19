@@ -84,22 +84,21 @@ function OpenSlider(list, index, isurl = false, thumbList, animated) {
 	} else SliderChange(slider.active)
 }
 
-function SliderPrev() {
-	if (slider.sub_max != null && slider.sub_active > 0) {
+function SliderPrev(jump) {
+	if (!jump && slider.sub_max != null && slider.sub_active > 0) {
 		slider.sub_active--
 		SliderChange(slider.active)
 	} else if (slider.active > 0) SliderChange(slider.active - 1)
 }
 
-function SliderNext() {
-	if (slider.sub_max != null && slider.sub_active < slider.sub_max) {
+function SliderNext(jump) {
+	if (!jump && slider.sub_max != null && slider.sub_active < slider.sub_max) {
 		slider.sub_active++
 		SliderChange(slider.active)
 	} else if (slider.active < slider.listLength - 1) SliderChange(slider.active + 1)
 }
 
 function SliderChange(index) {
-	console.log(index)
 	if (slider.overview) {
 		const children = document.getElementById('sld-overview').children
 		children[slider.active].removeAttribute('active')
@@ -144,7 +143,6 @@ function SliderChange(index) {
 			sldpinput.style.display = 'none'
 		}
 
-		console.log(src, !existsSync(src))
 		if (!existsSync(src)) {
 			slider.element = document.createElement('img')
 			slider.element.src = 'Image/no-img-225x225.webp'
@@ -350,11 +348,23 @@ function SliderHighlight() {
 
 slider.img_container.onwheel = e => {
 	if (!slider.osize) {
-		if (e.deltaY > 0) SliderNext()
-		else SliderPrev()
+		if (e.ctrlKey) {
+			if (e.deltaY > 0) SliderNext(true)
+			else SliderPrev(true)
+		} else {
+			if (e.deltaY > 0) SliderNext()
+			else SliderPrev()
+		}
 	} else {
 		if (e.target.tagName == 'IMG') SliderHighlight()
-		else if (e.deltaY > 0) SliderNext()
-		else SliderPrev()
+		else {
+			if (e.ctrlKey) {
+				if (e.deltaY > 0) SliderNext(true)
+				else SliderPrev(true)
+			} else {
+				if (e.deltaY > 0) SliderNext()
+				else SliderPrev()
+			}
+		}
 	}
 }

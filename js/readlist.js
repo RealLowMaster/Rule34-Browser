@@ -82,8 +82,33 @@ function AddThisTabToReads(id) {
 	}
 	if (tab.history[tab.selectedHistory] != undefined) {
 		const i = db.reads.length
-		if (tab.historyValue[tab.selectedHistory] != undefined) db.reads.push([tab.title.innerText, tab.site, tab.history[tab.selectedHistory], tab.historyValue[tab.selectedHistory]])
-		else db.reads.push([tab.title.innerText, tab.site, tab.history[tab.selectedHistory]])
+		const site = tab.site, link = tab.history[tab.selectedHistory], value = tab.historyValue[tab.selectedHistory]
+		if (value != undefined) {
+			if (typeof value == 'object') {
+				for (let i = 0, l = db.reads.length; i < l; i++) if (db.reads[i][1] == site && db.reads[i][2] == link && typeof db.reads[i][3] == 'object' && db.reads[i][3].length == value.length) {
+					let counter = 0
+					for (let j = 0, n = value.length; j < n; j++) if (db.reads[i][3][j] === value[j]) counter++
+					if (counter == value.length) {
+						PopAlert(Language('readshad'), 'warning')
+						return
+					}
+				}
+			} else {
+				for (let i = 0, l = db.reads.length; i < l; i++) if (db.reads[i][1] == site && db.reads[i][2] == link && db.reads[i][3] == value) {
+					PopAlert(Language('readshad'), 'warning')
+					return
+				}
+			}
+
+			db.reads.push([tab.title.innerText, site, link, value])
+		} else {
+			for (let i = 0, l = db.reads.length; i < l; i++) if (db.reads[i][1] == site && db.reads[i][2] == link && db.reads[i][3] == undefined) {
+				PopAlert(Language('readshad'), 'warning')
+				return
+			}
+
+			db.reads.push([tab.title.innerText, site, link])
+		}
 
 		const save = document.createElement('div')
 		save.setAttribute('i', i)

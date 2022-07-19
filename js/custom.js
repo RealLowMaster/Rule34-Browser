@@ -479,6 +479,7 @@ class BrowserManager {
 
 	Link(tabId, index, value) {
 		switch(index) {
+			case -7: LoadTagsMenu(tabId); return
 			case -6: LoadByInfo(tabId, value[0], value[1], value[2]); return
 			case -5: Post(tabId, value[0], value[1]); return
 			case -4: LoadHistory(tabId, value); return
@@ -1382,6 +1383,7 @@ function BRDownloadElement(site, id) {
 	return container
 }
 
+// Format
 function IsFormatSupported(src) {
 	src = LastChar('?', LastChar('.', src), true)
 	const supported_formats = [
@@ -1510,10 +1512,11 @@ function GetMainMenu(tab, page) {
 	const container = document.createElement('div')
 	container.classList.add('main-page-menu')
 
-	if (page != -1) container.appendChild(NormalLinkElement('div', 'home', tab.id, tab.AddLink(-1, 1), false, true))
-	if (page != -2) container.appendChild(NormalLinkElement('div', 'sites', tab.id, tab.AddLink(-2), false, true))
-	if (page != -3) container.appendChild(NormalLinkElement('div', 'collections', tab.id, tab.AddLink(-3), false, true))
-	if (page != -4) container.appendChild(NormalLinkElement('div', 'history', tab.id, tab.AddLink(-4, 1), false, true))
+	if (page != 1) container.appendChild(NormalLinkElement('div', 'home', tab.id, tab.AddLink(-1, 1), false, true))
+	if (page != 2) container.appendChild(NormalLinkElement('div', 'sites', tab.id, tab.AddLink(-2), false, true))
+	if (page != 3) container.appendChild(NormalLinkElement('div', 'collections', tab.id, tab.AddLink(-3), false, true))
+	if (page != 4) container.appendChild(NormalLinkElement('div', 'history', tab.id, tab.AddLink(-4, 1), false, true))
+	if (page != 5) container.appendChild(NormalLinkElement('div', 'tags', tab.id, tab.AddLink(-7), false, true))
 
 	return container
 }
@@ -1845,7 +1848,7 @@ function LoadPage(tabId, page = 1) {
 	tab.AddHistory(-1, page)
 	const container = document.createElement('div')
 	container.classList.add('main-page')
-	container.appendChild(GetMainMenu(tab, -1))
+	container.appendChild(GetMainMenu(tab, 1))
 
 	let save = document.createElement('div')
 	save.classList.add('main-page-filter')
@@ -2025,7 +2028,7 @@ function Post(tabId, site, id) {
 			if (data.parody.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Parody:'
+				save.innerText = Language('parodies')+':'
 				for (let j = 0, n = data.parody.length; j < n; j++) {
 					const index = data.parody[j]
 					title += db.parody[index]+', '
@@ -2038,7 +2041,7 @@ function Post(tabId, site, id) {
 			if (data.character.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Character:'
+				save.innerText = Language('characters')+':'
 				for (let j = 0, n = data.character.length; j < n; j++) {
 					const index = data.character[j]
 					title += db.character[index]+', '
@@ -2051,7 +2054,7 @@ function Post(tabId, site, id) {
 			if (data.artist.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Artists:'
+				save.innerText = Language('artists')+':'
 				for (let j = 0, n = data.artist.length; j < n; j++) {
 					const index = data.artist[j]
 					title += db.artist[index]+', '
@@ -2064,7 +2067,7 @@ function Post(tabId, site, id) {
 			if (data.tag.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Tag:'
+				save.innerText = Language('tags')+':'
 				for (let j = 0, n = data.tag.length; j < n; j++) {
 					const index = data.tag[j]
 					title += db.tag[index]+', '
@@ -2077,7 +2080,7 @@ function Post(tabId, site, id) {
 			if (data.meta.length > 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Meta:'
+				save.innerText = Language('metas')+':'
 				for (let j = 0, n = data.meta.length; j < n; j++) {
 					const index = data.meta[j]
 					title += db.meta[index]+', '
@@ -2160,7 +2163,7 @@ function Post(tabId, site, id) {
 			if (db.post[i][4].length != 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Parody:'
+				save.innerText = Language('parodies')+':'
 				for (let j = 0, n = db.post[i][4].length; j < n; j++) {
 					const index = db.post[i][4][j]
 					title += db.parody[index]+', '
@@ -2173,7 +2176,7 @@ function Post(tabId, site, id) {
 			if (db.post[i][5].length != 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Character:'
+				save.innerText = Language('characters')+':'
 				for (let j = 0, n = db.post[i][5].length; j < n; j++) {
 					const index = db.post[i][5][j]
 					title += db.character[index]+', '
@@ -2186,7 +2189,7 @@ function Post(tabId, site, id) {
 			if (db.post[i][6].length != 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Artists:'
+				save.innerText = Language('artists')+':'
 				for (let j = 0, n = db.post[i][6].length; j < n; j++) {
 					const index = db.post[i][6][j]
 					title += db.artist[index]+', '
@@ -2199,7 +2202,7 @@ function Post(tabId, site, id) {
 			if (db.post[i][7].length != 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Tag:'
+				save.innerText = Language('tags')+':'
 				for (let j = 0, n = db.post[i][7].length; j < n; j++) {
 					const index = db.post[i][7][j]
 					title += db.tag[index]+', '
@@ -2212,7 +2215,7 @@ function Post(tabId, site, id) {
 			if (db.post[i][8].length != 0) {
 				save = document.createElement('div')
 				save.classList.add('post-tags')
-				save.innerText = 'Meta:'
+				save.innerText = Language('metas')+':'
 				for (let j = 0, n = db.post[i][8].length; j < n; j++) {
 					const index = db.post[i][8][j]
 					title += db.meta[index]+', '
@@ -2237,7 +2240,7 @@ function LoadSites(tabId) {
 	tab.AddHistory(-2)
 	const container = document.createElement('div')
 	container.classList.add('main-page')
-	container.appendChild(GetMainMenu(tab, -2))
+	container.appendChild(GetMainMenu(tab, 2))
 
 	let save = document.createElement('div')
 	save.classList.add('main-page-sites')
@@ -2258,15 +2261,18 @@ function LoadSites(tabId) {
 	tab.Load(token, container, 'Sites')
 }
 
-function LoadCollections(tabId) {}
+function LoadCollections(tabId) {
+	PopAlert(Language('coming-soon'), 'warning')
+}
 
+// History
 function LoadHistory(tabId, page) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading(-2, 0)
 	tab.AddHistory(-4, page)
 	const container = document.createElement('div')
 	container.classList.add('main-page')
-	container.appendChild(GetMainMenu(tab, -4))
+	container.appendChild(GetMainMenu(tab, 4))
 	let save
 
 	if (db.history.length == 0) {
@@ -2371,6 +2377,64 @@ function OpenLastHistory() {
 	try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a: db.history }) } catch(err) { console.log(err) }
 }
 
+// Tag
+function LoadTagsMenu(tabId) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading(-1)
+	tab.AddHistory(-7)
+	const container = document.createElement('div')
+	container.classList.add('main-page')
+	container.appendChild(GetMainMenu(tab, 5))
+
+	const row = document.createElement('div')
+	row.classList.add('tag-menu')
+
+	let save = document.createElement('div')
+	save.innerHTML = Icon('gear')+`<p l="parodies">${Language('parodies')}</p>`
+	save.onclick = () => {
+		
+	}
+	row.appendChild(save)
+
+	save = document.createElement('div')
+	save.innerHTML = Icon('gear')+`<p l="characters">${Language('characters')}</p>`
+	save.onclick = () => {
+
+	}
+	row.appendChild(save)
+
+	save = document.createElement('div')
+	save.innerHTML = Icon('gear')+`<p l="artists">${Language('artists')}</p>`
+	save.onclick = () => {
+
+	}
+	row.appendChild(save)
+
+	save = document.createElement('div')
+	save.innerHTML = Icon('gear')+`<p l="tags">${Language('tags')}</p>`
+	save.onclick = () => {
+
+	}
+	row.appendChild(save)
+
+	save = document.createElement('div')
+	save.innerHTML = Icon('gear')+`<p l="metas">${Language('metas')}</p>`
+	save.onclick = () => {
+
+	}
+	row.appendChild(save)
+
+	save = document.createElement('div')
+	save.innerHTML = Icon('gear')+`<p l="species">${Language('species')}</p>`
+	save.onclick = () => {
+
+	}
+	row.appendChild(save)
+
+	container.appendChild(row)
+	tab.Load(token, container, 'Tags Menu', null)
+}
+
 function LoadByInfo(tabId, page, type, index) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading(-1, 1)
@@ -2446,7 +2510,7 @@ function LoadByInfo(tabId, page, type, index) {
 
 	const container = document.createElement('div')
 	container.classList.add('main-page')
-	container.appendChild(GetMainMenu(tab, -1))
+	container.appendChild(GetMainMenu(tab, 1))
 
 	let save = document.createElement('div')
 	save.classList.add('main-page-filter')

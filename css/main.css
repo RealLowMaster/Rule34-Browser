@@ -986,3 +986,35 @@
 }
 
 #reads > div > div:hover { background-color: #ed4245; color: #fff }
+
+/* Tags */
+.tag-menu {
+	width: 100%;
+	margin: 20px 0;
+	text-align: center;
+}
+
+.tag-menu > div {
+	display: inline-flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	width: 120px;
+	height: 120px;
+	margin: 10px;
+	background-color: var(--secondary-bg);
+	color: var(--primary-header);
+	border: 1px solid var(--secondary-bg-alt);
+	border-radius: 4px;
+	user-select: none;
+	cursor: pointer;
+	transition: background-color .15s, border-color .15s;
+}
+
+.tag-menu > div > svg { font-size: 30px }
+.tag-menu > div > p { display: block; margin-top: 10px }
+
+.tag-menu > div:hover {
+	background-color: var(--secondary-bg-alt);
+	border-color: var(--tertiary-bg);
+}
