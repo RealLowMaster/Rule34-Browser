@@ -12,6 +12,12 @@ const mb_pages = document.getElementById('mb-pages')
 const mb_search = document.getElementById('mb-search')
 const mb_jump_page = document.getElementById('mb-jump-page')
 
+mbs.onfocus = () => KeyManager.stop = true
+mbs.addEventListener('focusout', () => KeyManager.stop = false )
+
+mbjp.onfocus = () => KeyManager.stop = true
+mbjp.addEventListener('focusout', () => KeyManager.stop = false )
+
 const pack_overview = { id: null, element: null, index: null, timer: null }
 const status = [403, 404, 500, 503]
 
