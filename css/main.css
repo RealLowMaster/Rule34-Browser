@@ -1018,3 +1018,32 @@
 	background-color: var(--secondary-bg-alt);
 	border-color: var(--tertiary-bg);
 }
+
+.tagList {
+	display: block;
+	width: 85%;
+	background-color: var(--secondary-bg);
+	color: var(--primary-header);
+	margin: 20px auto;
+}
+
+.tagList > div {
+	display: flex;
+	width: 100%;
+	border: 1px solid var(--secondary-bg-alt);
+}
+
+.tagList > div > div:first-child {
+	padding: 8px 10px;
+	border-right: 1px solid var(--secondary-bg-alt);
+	user-select: none;
+}
+
+.tagList > div > div:last-child {
+	flex: 1 0 0;
+	max-width: 100%;
+	padding: 8px 10px;
+	user-select: text;
+	cursor: pointer;
+}
+.tagList > div > div:last-child:hover { background-color: var(--tertiary-bg) }

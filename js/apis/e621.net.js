@@ -209,7 +209,7 @@ class e621net {
 				if (data[0].length != 0) arr.artist = data[0]
 				if (data[1].length != 0) arr.parody = data[1]
 				if (data[2].length != 0) arr.character = data[2]
-				if (data[3].length != 0) arr.species = data[3]
+				if (data[3].length != 0) arr.specie = data[3]
 				if (data[4].length != 0) arr.tag = data[4]
 				if (data[5].length != 0) arr.meta = data[5]
 			}

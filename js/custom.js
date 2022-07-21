@@ -485,6 +485,7 @@ class BrowserManager {
 
 	Link(tabId, index, value) {
 		switch(index) {
+			case -8: LoadInfo(tabId, value[0], value[1]); return
 			case -7: LoadTagsMenu(tabId); return
 			case -6: LoadByInfo(tabId, value[0], value[1], value[2]); return
 			case -5: Post(tabId, value[0], value[1]); return
@@ -771,12 +772,14 @@ function JumpPage() {
 	let value = Math.min(Math.abs(Number(mbjp.value)), tab.maxPages)
 	if (value < 1) value = 1
 	switch(tab.site) {
+		case -3: LoadInfo(tab.id, value, tab.jumpPage); return
 		case -2: LoadHistory(tab.id, value); return
 		case -1:
 			switch(tab.jumpPage) {
 				case 0: LoadPage(tab.id, value); return
 				case 1: LoadByInfo(tab.id, value, tab.historyValue[tab.selectedHistory][1], tab.historyValue[tab.selectedHistory][2]); return
 			}
+			return
 		case 0:
 			switch(tab.jumpPage) {
 				case 0: Rule34XXXHome(tab.id, value, tab.submit_search); return
@@ -1462,6 +1465,10 @@ function DownloadClick(site, id) {
 			data.meta = []
 			for (let i = 0, l = arr.meta.length; i < l; i++) data.meta.push(arr.meta[i][0])
 		}
+		if (arr.specie != null) {
+			data.specie = []
+			for (let i = 0, l = arr.specie.length; i < l; i++) data.specie.push(arr.specie[i][0])
+		}
 		return data
 	}
 	switch(site) {
@@ -1931,7 +1938,7 @@ function Post(tabId, site, id) {
 		let save, save2, title = ''
 		if (db.post[i][0] == -1) {
 			tab.save = [[], [], []]
-			const data = {parody:[], character:[], artist:[], tag:[], meta:[]}
+			const data = {parody:[], character:[], artist:[], tag:[], meta:[], specie:[]}
 			for (let j = 0, n = db.post[i][10].length; j < n; j++) {
 				const url = paths.dl+db.post[i][2][j]+'.'+db.post[i][3][j]
 				tab.save[0].push(url)
@@ -1980,6 +1987,7 @@ function Post(tabId, site, id) {
 				if (db.post[i][6][j].length != 0) data.artist = data.artist.concat(db.post[i][6][j])
 				if (db.post[i][7][j].length != 0) data.tag = data.tag.concat(db.post[i][7][j])
 				if (db.post[i][8][j].length != 0) data.meta = data.meta.concat(db.post[i][8][j])
+				if (typeof db.post[i][12] == 'object' && db.post[i][12][j].length != 0) data.specie = data.specie.concat(db.post[i][12][j])
 			}
 
 			// Buttons
@@ -2029,6 +2037,7 @@ function Post(tabId, site, id) {
 			data.artist = NoLoopArray(data.artist)
 			data.tag = NoLoopArray(data.tag)
 			data.meta = NoLoopArray(data.meta)
+			data.specie = NoLoopArray(data.specie)
 
 			// parody = 0
 			if (data.parody.length > 0) {
@@ -2091,6 +2100,19 @@ function Post(tabId, site, id) {
 					const index = data.meta[j]
 					title += db.meta[index]+', '
 					save.appendChild(NormalLinkElement('div', db.meta[index], tabId, tab.AddLink(-6, [1, 4, index])))
+				}
+				container.appendChild(save)
+			}
+
+			// specie = 5
+			if (data.specie.length > 0) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = Language('species')+':'
+				for (let j = 0, n = data.specie.length; j < n; j++) {
+					const index = data.specie[j]
+					title += db.species[index]+', '
+					save.appendChild(NormalLinkElement('div', db.species[index], tabId, tab.AddLink(-6, [1, 5, index])))
 				}
 				container.appendChild(save)
 			}
@@ -2226,6 +2248,19 @@ function Post(tabId, site, id) {
 					const index = db.post[i][8][j]
 					title += db.meta[index]+', '
 					save.appendChild(NormalLinkElement('div', db.meta[index], tabId, tab.AddLink(-6, [1, 4, index])))
+				}
+				container.appendChild(save)
+			}
+
+			// species = 5
+			if (typeof db.post[i][12] == 'object' && db.post[i][12].length != 0) {
+				save = document.createElement('div')
+				save.classList.add('post-tags')
+				save.innerText = Language('species')+':'
+				for (let j = 0, n = db.post[i][12].length; j < n; j++) {
+					const index = db.post[i][12][j]
+					title += db.species[index]+', '
+					save.appendChild(NormalLinkElement('div', db.species[index], tabId, tab.AddLink(-6, [1, 5, index])))
 				}
 				container.appendChild(save)
 			}
@@ -2386,7 +2421,7 @@ function OpenLastHistory() {
 // Tag
 function LoadTagsMenu(tabId) {
 	const tab = browser.GetTab(tabId)
-	const token = tab.Loading(-1)
+	const token = tab.Loading(-3)
 	tab.AddHistory(-7)
 	const container = document.createElement('div')
 	container.classList.add('main-page')
@@ -2395,50 +2430,208 @@ function LoadTagsMenu(tabId) {
 	const row = document.createElement('div')
 	row.classList.add('tag-menu')
 
-	let save = document.createElement('div')
-	save.innerHTML = Icon('gear')+`<p l="parodies">${Language('parodies')}</p>`
-	save.onclick = () => {
-		
-	}
+	// Parody 0
+	let save = NormalLinkElement('div', null, tabId, tab.AddLink(-8, [1, 0]), false, false)
+	save.innerHTML = Icon('film')+`<p l="parodies">${Language('parodies')}</p>`
 	row.appendChild(save)
 
-	save = document.createElement('div')
-	save.innerHTML = Icon('gear')+`<p l="characters">${Language('characters')}</p>`
-	save.onclick = () => {
-
-	}
+	// Character 1
+	save = NormalLinkElement('div', null, tabId, tab.AddLink(-8, [1, 1]), false, false)
+	save.innerHTML = Icon('person')+`<p l="characters">${Language('characters')}</p>`
 	row.appendChild(save)
 
-	save = document.createElement('div')
-	save.innerHTML = Icon('gear')+`<p l="artists">${Language('artists')}</p>`
-	save.onclick = () => {
-
-	}
+	// Artist 2
+	save = NormalLinkElement('div', null, tabId, tab.AddLink(-8, [1, 2]), false, false)
+	save.innerHTML = Icon('palette')+`<p l="artists">${Language('artists')}</p>`
 	row.appendChild(save)
 
-	save = document.createElement('div')
-	save.innerHTML = Icon('gear')+`<p l="tags">${Language('tags')}</p>`
-	save.onclick = () => {
-
-	}
+	// Tag 3
+	save = NormalLinkElement('div', null, tabId, tab.AddLink(-8, [1, 3]), false, false)
+	save.innerHTML = Icon('tags')+`<p l="tags">${Language('tags')}</p>`
 	row.appendChild(save)
 
-	save = document.createElement('div')
-	save.innerHTML = Icon('gear')+`<p l="metas">${Language('metas')}</p>`
-	save.onclick = () => {
-
-	}
+	// Meta 4
+	save = NormalLinkElement('div', null, tabId, tab.AddLink(-8, [1, 4]), false, false)
+	save.innerHTML = Icon('meteor')+`<p l="metas">${Language('metas')}</p>`
 	row.appendChild(save)
 
-	save = document.createElement('div')
-	save.innerHTML = Icon('gear')+`<p l="species">${Language('species')}</p>`
-	save.onclick = () => {
-
-	}
+	// Specie 5
+	save = NormalLinkElement('div', null, tabId, tab.AddLink(-8, [1, 5]), false, false)
+	save.innerHTML = Icon('chess')+`<p l="species">${Language('species')}</p>`
 	row.appendChild(save)
 
 	container.appendChild(row)
-	tab.Load(token, container, 'Tags Menu', null)
+	tab.Load(token, container, 'Tags Page', null)
+}
+
+function LoadInfo(tabId, page, type) {
+	const tab = browser.GetTab(tabId)
+	let token, title, post_cont, save, save2, save3
+	switch(type) {
+		case 0:
+			token = tab.Loading(-3, 0)
+			title = 'Parodies - Page '+page
+			post_cont = db.parody.length
+			break
+		case 1:
+			token = tab.Loading(-3, 1)
+			title = 'Characters - Page '+page
+			post_cont = db.character.length
+			break
+		case 2:
+			token = tab.Loading(-3, 2)
+			title = 'Artists - Page '+page
+			post_cont = db.artist.length
+			break
+		case 3:
+			token = tab.Loading(-3, 3)
+			title = 'Tags - Page '+page
+			post_cont = db.tag.length
+			break
+		case 4:
+			token = tab.Loading(-3, 4)
+			title = 'Metas - Page '+page
+			post_cont = db.meta.length
+			break
+		case 5:
+			token = tab.Loading(-3, 5)
+			title = 'Species - Page '+page
+			post_cont = db.species.length
+			break
+	}
+	tab.AddHistory(-8, [page, type])
+	const container = document.createElement('div')
+	container.classList.add('main-page')
+	container.appendChild(GetMainMenu(tab, 0))
+
+	const total_pages = Math.ceil(post_cont / setting.pic_per_page)
+	if (page > total_pages) page = total_pages
+
+	if (total_pages > 0) {
+		save = document.createElement('div')
+		save.classList.add('tagList')
+		
+		let min = 0, max
+		tab.save = []
+		if (post_cont < 30) max = post_cont
+		else {
+			const use_page = page - 1
+			max = use_page * 30
+			max = post_cont - max
+			min = max - 30
+			if (min < 0) min = 0
+		}
+
+		switch(type) {
+			case 0:
+				for (let i = max - 1; i >= min; i--) {
+					save2 = document.createElement('div')
+					save3 = document.createElement('div')
+					save3.innerText = i+1
+					save2.appendChild(save3)
+		
+					save3 = NormalLinkElement('div', db.parody[i], tabId, tab.AddLink(-6, [1, 0, i]), true, false)
+					save3.title = db.parody[i]
+					save2.appendChild(save3)
+					save.appendChild(save2)
+				}
+				break
+			case 1:
+				for (let i = max - 1; i >= min; i--) {
+					save2 = document.createElement('div')
+					save3 = document.createElement('div')
+					save3.innerText = i+1
+					save2.appendChild(save3)
+		
+					save3 = NormalLinkElement('div', db.character[i], tabId, tab.AddLink(-6, [1, 1, i]), true, false)
+					save3.title = db.character[i]
+					save2.appendChild(save3)
+					save.appendChild(save2)
+				}
+				break
+			case 2:
+				for (let i = max - 1; i >= min; i--) {
+					save2 = document.createElement('div')
+					save3 = document.createElement('div')
+					save3.innerText = i+1
+					save2.appendChild(save3)
+		
+					save3 = NormalLinkElement('div', db.artist[i], tabId, tab.AddLink(-6, [1, 2, i]), true, false)
+					save3.title = db.artist[i]
+					save2.appendChild(save3)
+					save.appendChild(save2)
+				}
+				break
+			case 3:
+				for (let i = max - 1; i >= min; i--) {
+					save2 = document.createElement('div')
+					save3 = document.createElement('div')
+					save3.innerText = i+1
+					save2.appendChild(save3)
+		
+					save3 = NormalLinkElement('div', db.tag[i], tabId, tab.AddLink(-6, [1, 3, i]), true, false)
+					save3.title = db.tag[i]
+					save2.appendChild(save3)
+					save.appendChild(save2)
+				}
+				break
+			case 4:
+				for (let i = max - 1; i >= min; i--) {
+					save2 = document.createElement('div')
+					save3 = document.createElement('div')
+					save3.innerText = i+1
+					save2.appendChild(save3)
+		
+					save3 = NormalLinkElement('div', db.meta[i], tabId, tab.AddLink(-6, [1, 4, i]), true, false)
+					save3.title = db.meta[i]
+					save2.appendChild(save3)
+					save.appendChild(save2)
+				}
+				break
+			case 5:
+				for (let i = max - 1; i >= min; i--) {
+					save2 = document.createElement('div')
+					save3 = document.createElement('div')
+					save3.innerText = i+1
+					save2.appendChild(save3)
+		
+					save3 = NormalLinkElement('div', db.species[i], tabId, tab.AddLink(-6, [1, 5, i]), true, false)
+					save3.title = db.species[i]
+					save2.appendChild(save3)
+					save.appendChild(save2)
+				}
+				break
+		}
+		container.appendChild(save)
+		const pagination = GetPaginationList(total_pages, page)
+
+		save = document.createElement('div')
+		save.classList.add('main-page-pagination')
+		for (let i = 0, l = pagination.length; i < l; i++) {
+			if (pagination[i][1] != null) save.appendChild(NormalLinkElement('div', pagination[i][0], tab.id, tab.AddLink(-8, [pagination[i][1], type])))
+			else {
+				const btn = document.createElement('div')
+				btn.setAttribute('active', '')
+				btn.innerText = pagination[i][0]
+				save.appendChild(btn)
+			}
+		}
+		container.appendChild(save)
+	} else {
+		page = 1
+		save = document.createElement('div')
+		save.classList.add('alert')
+		save.classList.add('alert-danger')
+		save.setAttribute('l', 'notag')
+		save.innerText = Language('notag')
+		container.appendChild(save)
+	}
+
+	save = document.createElement('div')
+	save.classList.add('post-counter')
+	save.innerText = post_cont
+	container.appendChild(save)
+	tab.Load(token, container, title, null, page, total_pages)
 }
 
 function LoadByInfo(tabId, page, type, index) {
@@ -2511,6 +2704,19 @@ function LoadByInfo(tabId, page, type, index) {
 				}
 			} else if (db.post[i][8].indexOf(index) != -1) loads.push(i)
 			title = 'Meta '+db.meta[index]
+			break
+		case 5: // species
+			if (typeof db.species[index] !== 'string') {
+				tab.Error(token, Language('no-result'))
+				return
+			}
+			for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][0] == -1) {
+				for (let j = 0, n = db.post[i][8].length; j < n; j++) if (typeof db.post[i][12] == 'object' && db.post[i][12][j].indexOf(index) != -1) {
+					loads.push(i)
+					break
+				}
+			} else if (typeof db.post[i][12] == 'object' && db.post[i][12].indexOf(index) != -1) loads.push(i)
+			title = 'Specie '+db.species[index]
 			break
 	}
 

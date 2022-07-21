@@ -92,7 +92,22 @@ function RemoveFromPack(site, id) {
 				pack.listBack[0].push(site)
 				pack.listBack[1].push(id)
 			}
-			db.post.push([
+			if (typeof pack.data[12] == 'object') db.post.push([
+				site,
+				id,
+				pack.data[2][sid],
+				pack.data[3][sid],
+				pack.data[4][sid],
+				pack.data[5][sid],
+				pack.data[6][sid],
+				pack.data[7][sid],
+				pack.data[8][sid],
+				pack.data[9][sid],
+				null,
+				null,
+				pack.data[12][sid]
+			])
+			else db.post.push([
 				site,
 				id,
 				pack.data[2][sid],
@@ -134,7 +149,7 @@ function Pack() {
 			idList.push(id)
 		}
 	}
-	const save = [-1, new Date().getTime(), [], [], [], [], [], [], [], [], [], []]
+	const save = [-1, new Date().getTime(), [], [], [], [], [], [], [], [], [], [], []]
 	for (let i = 0, l = idList.length; i < l; i++) {
 		if (siteList[i] != -1) {
 			save[2].push(db.post[idList[i]][2])
@@ -147,6 +162,7 @@ function Pack() {
 			save[9].push(db.post[idList[i]][9] || null)
 			save[10].push(db.post[idList[i]][0])
 			save[11].push(db.post[idList[i]][1])
+			save[12].push(db.post[idList[i]][12] || [])
 		} else {
 			save[2].push(pack.data[2][idList[i]])
 			save[3].push(pack.data[3][idList[i]])
@@ -158,6 +174,7 @@ function Pack() {
 			save[9].push(pack.data[9][idList[i]])
 			save[10].push(pack.data[10][idList[i]])
 			save[11].push(pack.data[11][idList[i]])
+			save[12].push(pack.data[12][idList[i]])
 		}
 	}
 
@@ -236,17 +253,32 @@ function UnPack(id) {
 	for (let i = 0, l = data[10].length; i < l; i++) {
 		const hindex = db.post_have[data[10][i]].indexOf(data[11][i])
 		if (hindex >= 0) db.post_have[data[10][i]].splice(hindex, 1)
-		db.post.push([
-			data[10][i],
-			data[11][i],
-			data[2][i],
-			data[3][i],
-			data[4][i],
-			data[5][i],
-			data[6][i],
-			data[7][i],
-			data[8][i],
-			data[9][i]
+		if (typeof data[12] == 'object') db.post.push([
+			data[10][i], // 0
+			data[11][i], // 1
+			data[2][i], // 2
+			data[3][i], // 3
+			data[4][i], // 4
+			data[5][i], // 5
+			data[6][i], // 6
+			data[7][i], // 7
+			data[8][i], // 8
+			data[9][i], // 9
+			null, // 10
+			null, // 11
+			data[12][i], // 12
+		])
+		else db.post.push([
+			data[10][i], // 0
+			data[11][i], // 1
+			data[2][i], // 2
+			data[3][i], // 3
+			data[4][i], // 4
+			data[5][i], // 5
+			data[6][i], // 6
+			data[7][i], // 7
+			data[8][i], // 8
+			data[9][i] // 9
 		])
 	}
 

@@ -346,7 +346,12 @@ function AddPost(site, id, imgId, format, data, animated = null) {
 	if (data.artist != null) arr[6] = GetArtistIndex(data.artist)
 	if (data.tag != null) arr[7] = GetTagIndex(data.tag)
 	if (data.meta != null) arr[8] = GetMetaIndex(data.meta)
-	if (data.species != null) arr[8] = GetSpeciesIndex(data.species)
+	if (data.species != null) {
+		arr[9] = null
+		arr[10] = null
+		arr[11] = null
+		arr[12] = GetSpeciesIndex(data.species)
+	}
 	db.post.push(arr)
 	db.have[site].push(id)
 	browser.SetNeedReload(-1)
