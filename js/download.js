@@ -163,7 +163,7 @@ class DownloadManager {
 		this.dls[i].url = dl_url
 		this.dls[i].data = data
 		this.dls[i].pause = false
-		this.dls[i].format = LastChar('?', LastChar('.', dl_url), true)
+		this.dls[i].format = data.format
 		this.dls[i].total_size = 0
 		this.dls[i].percent = 0
 		this.dls[i].animated = false
@@ -236,7 +236,7 @@ class DownloadManager {
 		btn.innerText = Language('remove')
 		data.btn1.parentElement.appendChild(btn)
 		data.btn1.remove()
-		AddPost(data.site, data.id, data.save, data.format, data.data, data.animated || null)
+		try { AddPost(data.site, data.id, data.save, data.format, data.data, data.animated || null) } catch(err) { console.error(err) }
 		browser.ChangeButtonsToDownloaded(data.site, data.id, false)
 		if (this.dls.length > 0) return
 		PopAlert(Language('adl-finish'), 'warning')
@@ -253,7 +253,11 @@ class DownloadManager {
 		}
 		this.dls[dl_index].dl = new Download(this.dls[dl_index].url, paths.tmp+this.dls[dl_index].save+'.'+this.dls[dl_index].format)
 		this.dls[dl_index].dl.OnError(err => {
+			const i = this.ids.indexOf(sindex)
+			if (i < 0) return
 			console.error(err)
+			this.dls[i].btn1.style.display = 'none'
+			this.dls[i].btn2.remove()
 			this.SendToAddPost(sindex)
 		})
 
@@ -641,9 +645,9 @@ class DownloadManager {
 		}
 	}
 
-	ReDownload(src, i) {
+	ReDownload(src, format, i) {
 		let total_size = 0, dl_size = 0
-		const tmp = paths.tmp+db.post[i][2]+'.'+LastChar('?', LastChar('.', src), true)
+		const tmp = paths.tmp+db.post[i][2]+'.'+format
 
 		loading.Forward('Getting Response...')
 		const dl = new Download(src, tmp)

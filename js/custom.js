@@ -2,6 +2,8 @@ const { async } = require('node-stream-zip')
 const sharp = require('sharp'), request = require('request'), ffmpeg = require('fluent-ffmpeg')
 ffmpeg.setFfmpegPath(__dirname+'/bin/ffmpeg')
 sharp.cache(false)
+
+
 // sharp('Image/sites/rule34.xyz-72x72.png').resize(32, 32).png({ quality: 100 }).toFile('Image/sites/img.png')
 
 const loading_img = new Image()
@@ -130,7 +132,7 @@ class Tab {
 		if (!this.customizing) {
 			browser.AddHistory(this.title.innerText, this.site, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 			browser.SetNeedReload(-2)
-			try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
+			try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
 		}
 		this.loading = true
 		this.needReload = false
@@ -213,7 +215,7 @@ class Tab {
 		this.selectedHistory--
 		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 		this.customizing = false
-		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
 	}
 	
 	Next() {
@@ -227,7 +229,7 @@ class Tab {
 		this.selectedHistory++
 		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 		this.customizing = false
-		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
 	}
 
 	Reload() {
@@ -362,7 +364,7 @@ class BrowserManager {
 				if (e.screenY > 65) this.ResizeTabs()
 			}
 			browser.SetNeedReload(-2)
-			try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
+			try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
 			return
 		}
 	}
@@ -420,7 +422,7 @@ class BrowserManager {
 		this.ActivateTab(index)
 		this.ResizeTabs()
 		browser.SetNeedReload(-2)
-		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history }) } catch(err) { console.log(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history }) } catch(err) { console.error(err) }
 	}
 
 	CloseAllTabs() {
@@ -432,7 +434,7 @@ class BrowserManager {
 		this.selectedTab = null
 		this.selectedTabIndex = null
 		this.SetNeedReload(-2)
-		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.log(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
 	}
 
 	AddHistory(txt, site, val, val2) {
@@ -763,7 +765,7 @@ mb_search.onsubmit = e => {
 	e.preventDefault()
 	switch(browser.GetActiveSite()) {
 		case 0: Rule34XXXHome(browser.selectedTab, 1, mbs.value); return
-		case 1: return
+		case 1: E621Home(browser.selectedTab, 1, mbs.value); return
 	}
 }
 
@@ -924,7 +926,7 @@ function LoadDatabase() {
 		jsonfile.writeFileSync(dirDocument+'/history', db_tmp.history)
 	} catch(err) {
 		db_tmp.history = 'CreatingHistoryDB->'+err
-		console.log(err)
+		console.error(err)
 	}
 
 	// reads
@@ -936,7 +938,7 @@ function LoadDatabase() {
 		jsonfile.writeFileSync(dirDocument+'/reads', db_tmp.reads)
 	} catch(err) {
 		db_tmp.reads = 'CreatingReadsDB->'+err
-		console.log(err)
+		console.error(err)
 	}
 
 	// -------------> Load/Create Databases
@@ -1394,7 +1396,6 @@ function BRDownloadElement(site, id) {
 
 // Format
 function IsFormatSupported(src) {
-	src = LastChar('?', LastChar('.', src), true)
 	const supported_formats = [
 		'jpeg',
 		'jpg',
@@ -1469,6 +1470,7 @@ function DownloadClick(site, id) {
 			data.specie = []
 			for (let i = 0, l = arr.specie.length; i < l; i++) data.specie.push(arr.specie[i][0])
 		}
+		data.format = arr.format
 		return data
 	}
 	switch(site) {
@@ -1480,7 +1482,7 @@ function DownloadClick(site, id) {
 					PopAlert(Language('cto'), 'danger')
 					return
 				}
-				if (!IsFormatSupported(arr.src)) {
+				if (!IsFormatSupported(arr.format)) {
 					downloader.StopFromStarting(dl_index)
 					PopAlert(Language('fns'), 'danger')
 					return
@@ -1489,6 +1491,20 @@ function DownloadClick(site, id) {
 			}, true)
 			return
 		case 1:
+			e621.Post(id, (err, arr) => {
+				if (err) {
+					console.error(err)
+					downloader.StopFromStarting(dl_index)
+					PopAlert(Language('cto'), 'danger')
+					return
+				}
+				if (!IsFormatSupported(arr.format)) {
+					downloader.StopFromStarting(dl_index)
+					PopAlert(Language('fns'), 'danger')
+					return
+				}
+				downloader.Add(dl_index, arr.thumb, arr.url, arr.src, GetData(arr))
+			}, true)
 			return
 	}
 }
@@ -2378,7 +2394,7 @@ function LoadHistory(tabId, page) {
 					browser.OpenInNewTab(db.history[ii][2], db.history[ii][3])
 					db.history.splice(ii, 1)
 					browser.SetNeedReload(-2)
-					try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history }) } catch(err) { console.log(err) }
+					try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history }) } catch(err) { console.error(err) }
 				}
 			}
 			save2.appendChild(save3)
@@ -2415,7 +2431,7 @@ function OpenLastHistory() {
 	browser.OpenInNewTab(db.history[i][2], db.history[i][3])
 	db.history.splice(i, 1)
 	browser.SetNeedReload(-2)
-	try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a: db.history }) } catch(err) { console.log(err) }
+	try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a: db.history }) } catch(err) { console.error(err) }
 }
 
 // Tag
@@ -2876,10 +2892,14 @@ async function BackUp(save_path = null, callback = null) {
 	}
 }
 
-async function test() {
+function test() {
 	const e621 = new e621net();
 
-	e621.Post(3414987, (err, result) => {
+	// const path = __dirname+'/test/vid.mp4'
+	// tvid = new ffmpeg(path)
+	
+	// 3461755 | 3414987 | 3461843
+	e621.Post(3461843, (err, result) => {
 		console.log(result)
 	})
 

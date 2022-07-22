@@ -87,7 +87,7 @@ class rule34xxx {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
@@ -146,7 +146,7 @@ class rule34xxx {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
@@ -181,10 +181,10 @@ class rule34xxx {
 
 			// States
 			try {
+				arr.format = LastChar('?', LastChar('.', arr.src), true)
 				save = html.getElementById('stats').children[1].children
 				arr.id = save[0].innerText.replace(/ /g, '').replace(/\n/g, '').toLowerCase().replace('id:', '')
 				arr.size = save[2].innerText.replace(/ /g, '').replace(/\n/g, '').toLowerCase().replace('size:', '')
-				arr.format = LastChar('?', LastChar('.', arr.src), true)
 			} catch(err) { console.error(err) }
 
 			// Thumb
@@ -217,7 +217,7 @@ class rule34xxx {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
@@ -270,7 +270,7 @@ class rule34xxx {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
@@ -322,7 +322,7 @@ class rule34xxx {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
@@ -376,7 +376,7 @@ class rule34xxx {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status

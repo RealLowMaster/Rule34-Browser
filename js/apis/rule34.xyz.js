@@ -9,7 +9,7 @@ class rule34xyz {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
@@ -46,7 +46,7 @@ class rule34xyz {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status

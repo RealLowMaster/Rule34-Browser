@@ -59,7 +59,7 @@ class e621net {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
@@ -133,7 +133,7 @@ class e621net {
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
-			if (response.status != 200) {
+			if (!response.ok) {
 				const i = status.indexOf(response.status)
 				if (i > -1) throw Language('err'+response.status)
 				else throw "Error::Code::"+response.status
@@ -141,14 +141,16 @@ class e621net {
 			return response.text()
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
-			let arr = {url:url,size:'',id:id,thumb:'',format:''}, save
+			let arr = {url:url,size:'',id:id,thumb:'',format:''}, save, save2
 
 			arr.title = html.title
 			// Source
 			save = html.getElementById('image') || null
 			if (save != null) {
-				arr.src = html.getElementById('image-resize-link').href
 				arr.srcresize = save.src
+				save2 = html.getElementById('image-resize-link')
+				if (save2 != undefined) arr.src = save2.href
+				else arr.src = arr.srcresize				
 				arr.video = save.tagName == 'VIDEO'
 			} else {
 				callback(Language('err404'), null)
@@ -158,8 +160,14 @@ class e621net {
 			// States
 			try {
 				save = html.getElementById('post-information').children[1].children
-				arr.size = save[5].innerText.replace(/ /g, '').replace('Size:', '')
 				arr.format = LastChar('.', arr.src)
+				
+				save2 = save[5].innerText.replace(/ /g, '').replace(/\t/g, '').replace(/\n/g, '').toLowerCase()
+				if (save2.indexOf('size') == 0) arr.size = save2.replace('size:', '')
+				else if (save[6] != undefined) {
+					save2 = save[6].innerText.replace(/ /g, '').replace(/\t/g, '').replace(/\n/g, '').toLowerCase()
+					if (save2.indexOf('size') == 0) arr.size = save2.replace('size:', '')
+				}
 			} catch(err) { console.error(err) }
 
 			// Thumb
@@ -182,7 +190,7 @@ class e621net {
 					[], // 4 General
 					[], // 5 Meta
 				]
-				let index = 0, save2, save3
+				let index = 0, save3
 				for (let i = 0, l = save.length; i < l; i++) {
 					if (save[i].tagName == 'H2') {
 						switch(save[i].innerText) {

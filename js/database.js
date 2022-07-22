@@ -346,11 +346,11 @@ function AddPost(site, id, imgId, format, data, animated = null) {
 	if (data.artist != null) arr[6] = GetArtistIndex(data.artist)
 	if (data.tag != null) arr[7] = GetTagIndex(data.tag)
 	if (data.meta != null) arr[8] = GetMetaIndex(data.meta)
-	if (data.species != null) {
+	if (data.specie != null) {
 		arr[9] = null
 		arr[10] = null
 		arr[11] = null
-		arr[12] = GetSpeciesIndex(data.species)
+		arr[12] = GetSpeciesIndex(data.specie)
 	}
 	db.post.push(arr)
 	db.have[site].push(id)
@@ -438,7 +438,8 @@ function DeletePost(site, id, keep) {
 
 function ReDownloadPost(site, id) {
 	loading.Show(4, 'Finding Post...')
-	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
+	const i = GetPost(site, id)
+	if (i != null) {
 		try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
 		try { unlinkSync(paths.dl+db.post[i][2]+'.'+db.post[i][3]) } catch(err) {}
 
@@ -450,13 +451,24 @@ function ReDownloadPost(site, id) {
 					KeyManager.stop = false
 					return
 				}
-				downloader.ReDownload(arr.src, i)
+				downloader.ReDownload(arr.src, arr.format, i)
 			}); return
+			case 1: e621.Post(id, (err, arr) => {
+				if (err) {
+					loading.Close()
+					KeyManager.stop = false
+					return
+				}
+				downloader.ReDownload(arr.src, arr.format, i)
+			}); return
+				
 		}
+	} else {
+		loading.Forward()
+		loading.Close()
+		PopAlert(Language('pnf'), 'danger')
 	}
-	loading.Forward()
-	loading.Close()
-	PopAlert(Language('pnf'), 'danger')
+	
 }
 
 // History

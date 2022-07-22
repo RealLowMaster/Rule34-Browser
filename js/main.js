@@ -5,7 +5,7 @@ const KeyManager = new HotKeyManager()
 const ContextManager = new ContextMenuManager()
 const dirDocument = remote.app.getPath('documents')+'\\Rule34 Browser'
 if (!existsSync(dirDocument)) mkdirSync(dirDocument)
-const ThisWindow = remote.getCurrentWindow(), loading = new Loading(), update_number = 1, app_version = 0
+const ThisWindow = remote.getCurrentWindow(), loading = new Loading(), update_number = 2, app_version = 0
 
 // Set Windows Closing Event
 ThisWindow.addListener('close', e => {
@@ -58,21 +58,21 @@ function FormatBytes(bytes, decimals = 2) {
 
 function FormatSeconds(second) {
 	if (second === 0) return '0 sec'
-	if (second < 60) return second+' secs'
+	if (second < 60) return isNaN(second) ? '?' : second+' secs'
 	else if (second < 3600) {
 		const remSec = second % 60
 		const min = (second - remSec) / 60
-		let res = min+' Mins'
-		if (remSec != 0) res += ' and '+remSec+' secs'
+		let res = isNaN(min) ? '?' : min+' Mins'
+		if (remSec != 0) res += ' and '+isNaN(remSec) ? '?' : remSec+' secs'
 		return res
 	} else {
 		const remSec = second % 60
 		const min = (second - remSec) / 60
 		const remMin = min % 60
 		const hours = (min - remMin) / 60
-		let res = hours+' Hours'
-		if (remMin != 0) res += ' and '+remMin+' Mins'
-		if (remSec != 0) res += ' and '+remSec+' secs'
+		let res = isNaN(hours) ? '?' : hours+' Hours'
+		if (remMin != 0) res += ' and '+isNaN(remMin) ? '?' : remMin+' Mins'
+		if (remSec != 0) res += ' and '+isNaN(remSec) ? '?' : remSec+' secs'
 		return res
 	}
 	const sizes = ['Secends', 'Minutes', 'Hours']
@@ -174,9 +174,9 @@ function SetHotKeys() {
 	KeyManager.AddHotKey('setting', false, false, false, 27, CloseSetting)
 
 	KeyManager.AddCategory('icon-manager')
-	KeyManager.AddHotKey('icon-manager', true, false, false, 90, OpenAddIcon)
-	KeyManager.AddHotKey('icon-manager', true, false, false, 83, SaveIconManager)
-	KeyManager.AddHotKey('icon-manager', false, false, false, 27, CloseIconManager)
+	KeyManager.AddHotKey('icon-manager', true, false, false, 90, 'OpenAddIcon()')
+	KeyManager.AddHotKey('icon-manager', true, false, false, 83, 'SaveIconManager()')
+	KeyManager.AddHotKey('icon-manager', false, false, false, 27, 'CloseIconManager()')
 }
 
 function SetContextMenus() {

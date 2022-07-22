@@ -30,6 +30,19 @@ function E621XXXGetTags(tab, arr) {
 			container.appendChild(row)
 		}
 	}
+	if (arr.specie != undefined) {
+		save = document.createElement('p')
+		save.innerText = 'Species'
+		container.appendChild(save)
+		for (let i = 0, l = arr.specie.length; i < l; i++) {
+			const row = document.createElement('div')
+			row.appendChild(NormalLinkElement('span', arr.specie[i][0], tab.id, tab.AddLink(10, [1, arr.specie[i][0].replace(/ /g, '_')])))
+			save = document.createElement('span')
+			save.innerText = arr.specie[i][1]
+			row.appendChild(save)
+			container.appendChild(row)
+		}
+	}
 	if (arr.artist != undefined) {
 		save = document.createElement('p')
 		save.innerText = 'Artist'
@@ -151,5 +164,70 @@ function E621Home(tabId, page = 1, search = null) {
 }
 
 function E621XXXPost(tabId, id) {
+	const tab = browser.GetTab(tabId)
+	const token = tab.Loading(1)
+	tab.AddHistory(11, id)
+	
+	e621.Post(id, (err, arr) => {
+		if (err) {
+			tab.Error(token, err)
+			return
+		}
+		const container = document.createElement('div')
+		container.classList.add('e621-xxx-page')
+		// container.appendChild(Rule34XXXMenu(tab))
 
+		const sides = document.createElement('div')
+		sides.classList.add('e621-xxx-sides')
+
+		let side = document.createElement('div')
+		side.appendChild(E621XXXGetTags(tab, arr))
+		let save = document.createElement('div')
+		save.classList.add('e621-xxx-tags')
+		save.classList.add('pt-1')
+		let save2 = document.createElement('p')
+		save2.innerText = 'States'
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = 'Id: '+arr.id
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = 'Size: '+arr.size
+		save.appendChild(save2)
+		save2 = document.createElement('div')
+		save2.innerText = 'Format: '+arr.format
+		save.appendChild(save2)
+		side.appendChild(save)
+		sides.appendChild(side)
+
+		side = document.createElement('div')
+		const src = arr.src
+		if (arr.video) {
+			const vid = document.createElement('video')
+			vid.loop = true
+			vid.muted = false
+			vid.autoplay = false
+			vid.controls = true
+			vid.setAttribute('controlsList', 'nodownload')
+			vid.classList.add('rule34-xxx-image')
+			vid.volume = 1 / 100 * setting.default_volume
+			vid.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
+			vid.src = src
+			side.appendChild(vid)
+		} else {
+			const img = document.createElement('img')
+			img.classList.add('rule34-xxx-image')
+			img.loading = 'lazy'
+			if (setting.r34_xxx_original_size) img.src = src
+			else img.src = arr.srcresize
+			img.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
+			side.appendChild(img)
+		}
+		side.appendChild(BRDownloadElement(1, id))
+
+		sides.appendChild(side)
+
+		container.appendChild(sides)
+		tab.Load(token, container, arr.title, 'var(--e621-secondary-bg)')
+	})
 }
