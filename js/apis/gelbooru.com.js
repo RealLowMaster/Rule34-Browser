@@ -1,13 +1,13 @@
-class e621net {
+class GelBooru {
 	constructor() {
-		this.baseURL = 'https://e621.net/'
-		this.maxPage = 750
+		this.baseURL = 'https://gelbooru.com/'
+		this.maxPage = 477
 	}
 
 	#GetPagination(html, cpage) {
 		let save
 		try {
-			save = html.getElementsByClassName('paginator')[0].children[0].children
+			save = html.getElementById('paginator').children
 		} catch(err) {
 			console.error(err)
 			save = null
@@ -18,50 +18,34 @@ class e621net {
 			if (cpage >= this.maxPage) {
 				cpage = this.maxPage
 				arr[0] = cpage
-				return
+				arr[1] = GetPaginationList(cpage, cpage)
+				return arr
 			} else {
 				const l = save.length
 				if (l > 1) {
-					let save2 = [0, 0]
-					switch (save[l-1].className) {
-						case 'arrow':
-							if (save[l-1].children[0].tagName == 'A') save2[0] = Number(LastChar("=", LastChar("&", save[l-1].children[0].href, true)))
-							else save2[0] = cpage
-							break
-						case 'numbered-page': save2[0] = Number(save[l-1].children[0].innerText); break
-						case 'current-page': save2[0] = Number(save[l-1].children[0].innerText); break
-					}
-					switch (save[l-2].className) {
-						case 'numbered-page': save2[1] = Number(save[l-2].children[0].innerText); break
-						case 'current-page': save2[1] = Number(save[l-2].children[0].innerText); break
-						case 'arrow':
-							if (save[l-2].children[0].tagName == 'A') save2[1] = Number(LastChar("=", LastChar("&", save[l-2].children[0].href, true)))
-							else save2[1] = cpage
-							break
-					}
-
-					if (save2[0] >= save2[1]) arr[0] = save2[0]
-					else arr[0] = save2[1]
-				} else if (l == 1) {
-					switch (save[0].className) {
-						case 'current-page': arr[0] = save2[1] = Number(save[0].children[0].innerText); break
-						case 'arrow': arr[0] = Number(LastChar("=", LastChar("&", save[0].children[0].href, true))); break
-						case 'numbered-page': arr[0] = Number(save[0].children[0].innerText); break
-					}
-				} else arr[0] = cpage
+					if (save[l-1].tagName == 'B') arr[0] = cpage
+					else arr[0] = Number(LastChar('=', save[l-1].href)) / 42 + 1
+					if (arr[0] > this.maxPage) arr[0] = this.maxPage
+					arr[1] = GetPaginationList(arr[0], cpage)
+				} else {
+					arr[0] = cpage
+					arr[1] = GetPaginationList(cpage, cpage)
+				}
+				return arr
 			}
-			if (arr[0] < 1) arr[0] = 1
-			arr[1] = GetPaginationList(arr[0], cpage)
-		} else arr[0] = 1
-
+		} else {
+			arr[0] = 1
+			arr[1] = GetPaginationList(1, 1)
+		}
 		return arr
 	}
-
+	
 	Page(page, search, callback) {
 		if (typeof callback !== 'function') throw "Callback should be Function."
-		if (search == null) search = ''
+		if (search == null) search = 'all'
 		else search = ToURL(search)
-		const url = this.baseURL+'posts?page='+page+'&tags='+search
+		page--
+		const url = this.baseURL+'index.php?page=post&s=list&tags='+search+'&pid='+(page * 42)
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
@@ -73,41 +57,38 @@ class e621net {
 			return response.text()
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
-			let arr = { url:url, maxPages: null }, save, save2
+			let arr = { maxPages: null }, save, save2
 
 			// Posts
 			arr.posts = []
 			try {
-				save = html.getElementById('posts-container').children
+				save = html.getElementsByClassName('thumbnail-container')[0].children
 				if (save.length == 0) save = null
 			} catch(err) {
 				console.error(err)
 				save = null
 			}
+
 			if (save != null) {
 				for (let i = 0, l = save.length; i < l; i++) {
-					save2 = save[i].getAttribute('data-flags')
-					if (save2 == 'pending') save2 = 0
-					else if (save2 == '') save2 = null
-					else if (save2 == 'pending flagged') save2 = 1
+					save2 = save[i].children[0]
 					arr.posts.push({
-						id: Number(save[i].id.replace('post_', '')),
-						thumb: save[i].children[0].children[0].children[0].getAttribute('srcset'),
-						flag: save2,
-						format: save[i].getAttribute('data-file-ext') 
+						id: Number(save2.id.replace('p', '')),
+						thumb: save2.children[0].src,
+						video: save2.children[0].className == 'webm'
 					})
 				}
 			} else throw Language('npost')
 
 			// Pagination
-			save = this.#GetPagination(html, page)
+			save = this.#GetPagination(html, page + 1)
 			arr.pagination = save
 			arr.maxPages = save[0]
 			arr.pagination = save[1]
 
 			// Tag
 			try {
-				save = html.getElementById('tag-box').children[1].children
+				save = html.getElementById('tag-list').children
 				if (save.length == 0) save = null
 			} catch(err) {
 				console.error(err)
@@ -115,7 +96,6 @@ class e621net {
 			}
 			if (save != null) {
 				arr.tag = []
-
 				for (let i = 0, l = save.length; i < l; i++) {
 					save2 = save[i].children
 					arr.tag.push([
@@ -135,7 +115,7 @@ class e621net {
 
 	Post(id, callback) {
 		if (typeof callback !== 'function') throw "Callback should be Function."
-		const url = this.baseURL+'posts/'+id
+		const url = this.baseURL+'index.php?page=post&s=view&id='+id
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
@@ -147,26 +127,59 @@ class e621net {
 			return response.text()
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
+
 			let arr = {url:url,size:'',id:id,thumb:'',format:''}, save, save2
+
+			const t = document.createElement('div')
+			t.click()
 
 			arr.title = html.title
 			// Source
 			save = html.getElementById('image') || null
 			if (save != null) {
 				arr.srcresize = save.src
-				save2 = html.getElementById('image-resize-link')
-				if (save2 != undefined) arr.src = save2.href
-				else arr.src = arr.srcresize				
-				arr.video = save.tagName == 'VIDEO'
+				arr.video = false
+
+				save2 = html.body.getElementsByTagName('script')
+				for (let i = 0, l = save2.length; i < l; i++) {
+					if (save2[i].type == 'text/javascript') {
+						let save3 = [save2[i].innerText]
+						save3[1] = save3[0].indexOf('resizeTransition')
+						if (save3[1] != -1) {
+							save3[0] = save3[0].slice(save3[1])
+							save3[0] = save3[0].slice(save3[0].indexOf("image.attr('src','") + 18)
+							arr.src = save3[0].slice(0, save3[0].indexOf("'"))
+						}
+					}
+				}
+				if (arr.src == null) arr.src = arr.srcresize
 			} else {
-				callback(Language('err404'), null)
-				return
+				save = html.getElementById('gelcomVideoPlayer') || null
+				if (save != null) {
+					arr.video = true
+					arr.srcresize = null
+					save2 = save.children
+					for (let i = 0, l = save2.length; i < l; i++) {
+						if (save2[i].type == 'video/webm') {
+							arr.srcresize = save2[i].src
+							break
+						}
+					}
+					if (arr.srcresize == null) arr.srcresize = save2[0].src
+					arr.src = arr.srcresize
+				} else {
+					callback(Language('err404'), null)
+					return
+				}
 			}
+
+			callback(null, arr)
+			return
 
 			// States
 			try {
-				save = html.getElementById('post-information').children[1].children
 				arr.format = LastChar('.', arr.src)
+				save = html.getElementById('post-information').children[1].children
 				
 				save2 = save[5].innerText.replace(/ /g, '').replace(/\t/g, '').replace(/\n/g, '').toLowerCase()
 				if (save2.indexOf('size') == 0) arr.size = save2.replace('size:', '')
@@ -198,14 +211,13 @@ class e621net {
 				]
 				let index = 0, save3
 				for (let i = 0, l = save.length; i < l; i++) {
-					if (save[i].tagName == 'H2') {
+					if (save[i].tagName == 'SPAN') {
 						switch(save[i].innerText) {
-							case 'Artists': index = 0; break
-							case 'Copyrights': index = 1; break
-							case 'Characters': index = 2; break
-							case 'Species': index = 3; break
-							case 'General': index = 4; break
-							case 'Meta': index = 5; break
+							case 'Artist': index = 0; break
+							case 'Copyright': index = 1; break
+							case 'Character': index = 2; break
+							case 'Tag': index = 3; break
+							case 'Metadata': index = 4; break
 						}
 					} else {
 						save2 = save[i].children
@@ -223,9 +235,8 @@ class e621net {
 				if (data[0].length != 0) arr.artist = data[0]
 				if (data[1].length != 0) arr.parody = data[1]
 				if (data[2].length != 0) arr.character = data[2]
-				if (data[3].length != 0) arr.specie = data[3]
-				if (data[4].length != 0) arr.tag = data[4]
-				if (data[5].length != 0) arr.meta = data[5]
+				if (data[3].length != 0) arr.tag = data[3]
+				if (data[4].length != 0) arr.meta = data[4]
 			}
 			
 			callback(null, arr)

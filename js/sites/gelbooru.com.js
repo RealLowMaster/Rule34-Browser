@@ -1,0 +1,1 @@
+function GelBooruHome(tabId, page, search) {}
