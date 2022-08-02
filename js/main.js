@@ -5,7 +5,7 @@ const KeyManager = new HotKeyManager()
 const ContextManager = new ContextMenuManager()
 const dirDocument = remote.app.getPath('documents')+'\\Rule34 Browser'
 if (!existsSync(dirDocument)) mkdirSync(dirDocument)
-const ThisWindow = remote.getCurrentWindow(), loading = new Loading(), update_number = 2, app_version = 0
+const ThisWindow = remote.getCurrentWindow(), loading = new Loading(), update_number = 3, app_version = 0
 
 // Set Windows Closing Event
 ThisWindow.addListener('close', e => {

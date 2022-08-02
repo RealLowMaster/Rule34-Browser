@@ -24,14 +24,20 @@ class e621net {
 				if (l > 1) {
 					let save2 = [0, 0]
 					switch (save[l-1].className) {
-						case 'arrow': save2[0] = Number(LastChar("=", LastChar("&", save[l-1].children[0].href, true))); break
+						case 'arrow':
+							if (save[l-1].children[0].tagName == 'A') save2[0] = Number(LastChar("=", LastChar("&", save[l-1].children[0].href, true)))
+							else save2[0] = cpage
+							break
 						case 'numbered-page': save2[0] = Number(save[l-1].children[0].innerText); break
 						case 'current-page': save2[0] = Number(save[l-1].children[0].innerText); break
 					}
 					switch (save[l-2].className) {
 						case 'numbered-page': save2[1] = Number(save[l-2].children[0].innerText); break
 						case 'current-page': save2[1] = Number(save[l-2].children[0].innerText); break
-						case 'arrow': save2[1] = Number(LastChar("=", LastChar("&", save[l-2].children[0].href, true))); break
+						case 'arrow':
+							if (save[l-2].children[0].tagName == 'A') save2[1] = Number(LastChar("=", LastChar("&", save[l-2].children[0].href, true)))
+							else save2[1] = cpage
+							break
 					}
 
 					if (save2[0] >= save2[1]) arr[0] = save2[0]

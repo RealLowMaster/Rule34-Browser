@@ -30,7 +30,8 @@ const sites = [
 		icon: 'png',
 		ip: '104.26.1.234',
 		location: 'USA - California - San Francisco',
-		home: Rule34XXXHome
+		home: Rule34XXXHome,
+		cooming: false
 	},
 	{
 		name: 'E621.net (demo)',
@@ -38,7 +39,17 @@ const sites = [
 		icon: 'webp',
 		ip: '',
 		location: '',
-		home: E621Home
+		home: E621Home,
+		cooming: false
+	},
+	{
+		name: 'GelBooru.com',
+		url: 'gelbooru.com',
+		icon: 'webp',
+		ip: '',
+		location: '',
+		home: null,
+		cooming: true
 	}
 ]
 
@@ -2302,17 +2313,36 @@ function LoadSites(tabId) {
 	let save = document.createElement('div')
 	save.classList.add('main-page-sites')
 	for (let i = 0, l = sites.length; i < l; i++) {
-		const save2 = NormalLinkElement('div', null, tabId, tab.AddLink(3, i), false, true)
-		let save3 = document.createElement('div')
-		let save4 = document.createElement('img')
-		save4.src = 'Image/sites/'+sites[i].url+'-32x32.'+sites[i].icon
-		save4.title = sites[i].url
-		save3.appendChild(save4)
-		save2.appendChild(save3)
-		save4 = document.createElement('p')
-		save4.innerText = sites[i].name
-		save2.appendChild(save4)
-		save.appendChild(save2)
+		if (sites[i].cooming) {
+			const save2 = document.createElement('div')
+			save2.onmousedown = () => PopAlert(Language('coming-soon'), 'warning')
+			save2.setAttribute('lt', 'coming-soon')
+			save2.title = Language('coming-soon')
+			save2.style.border = '1px solid #E67E22'
+			let save3 = document.createElement('div')
+			let save4 = document.createElement('img')
+			save4.src = 'Image/sites/'+sites[i].url+'-32x32.'+sites[i].icon
+			save4.title = sites[i].url
+			save3.appendChild(save4)
+			save2.appendChild(save3)
+			save4 = document.createElement('p')
+			save4.innerText = sites[i].name
+			save2.appendChild(save4)
+			save.appendChild(save2)
+		} else {
+			const save2 = NormalLinkElement('div', null, tabId, tab.AddLink(3, i), false, true)
+			save2.title = sites[i].url
+			let save3 = document.createElement('div')
+			let save4 = document.createElement('img')
+			save4.src = 'Image/sites/'+sites[i].url+'-32x32.'+sites[i].icon
+			save4.title = sites[i].url
+			save3.appendChild(save4)
+			save2.appendChild(save3)
+			save4 = document.createElement('p')
+			save4.innerText = sites[i].name
+			save2.appendChild(save4)
+			save.appendChild(save2)
+		}
 	}
 	container.appendChild(save)
 	tab.Load(token, container, 'Sites')
@@ -2892,16 +2922,26 @@ async function BackUp(save_path = null, callback = null) {
 	}
 }
 
-function test() {
+function test(old_path, new_path) {
 	const e621 = new e621net();
+
+	console.log(old_path)
+
+	const { rename } = require('fs')
+
+	rename()
+
+	renameSync(old_path, new_path, {
+		crossOriginIsolated: true
+	})
 
 	// const path = __dirname+'/test/vid.mp4'
 	// tvid = new ffmpeg(path)
 	
 	// 3461755 | 3414987 | 3461843
-	e621.Post(3461843, (err, result) => {
-		console.log(result)
-	})
+	// e621.Post(3461843, (err, result) => {
+	// 	console.log(result)
+	// })
 
 	// r34xxx.Page(1, null, (err, result) => {
 	// 	console.log(result)
