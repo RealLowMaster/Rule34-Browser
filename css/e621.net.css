@@ -51,11 +51,12 @@
 .e621-xxx-sides > div:last-child { width: calc(100% - 260px) }
 
 .e621-xxx-sides > div:last-child > dlr {
-	display: block;
+	display: flex;
+	align-items: center;
 	width: 100%;
 	padding: 10px;
 	margin: 10px 0;
-	color: #222;
+	color: #fff;
 	user-select: none;
 	cursor: pointer;
 }
@@ -75,7 +76,7 @@
 	width: 32px;
 	height: 32px;
 	padding: 0;
-	background-color: var(--e621-link);
+	background-color: #2d8bdc;
 	cursor: default;
 	box-shadow: none;
 	transition: none;
@@ -83,13 +84,13 @@
 
 .e621-xxx-sides > div:last-child > dlr > div:first-child { background-color: #2d8bdc }
 .e621-xxx-sides > div:last-child > dlr > div:first-child:hover { background-color: #1474c7 }
-.e621-xxx-sides > div:last-child > dlr > div:last-child { background-color: #4f729b }
-.e621-xxx-sides > div:last-child > dlr > div:last-child:hover { background-color: #3e5979 }
+.e621-xxx-sides > div:last-child > dlr > div:last-child { background-color: #a0a }
+.e621-xxx-sides > div:last-child > dlr > div:last-child:hover { background-color: #7a007a }
 
-.e621-xxx-sides > div:last-child > dlr > div:first-child { background-color: #2d8bdc }
-.e621-xxx-sides > div:last-child > dlr > div:first-child:hover { background-color: #1474c7 }
-.e621-xxx-sides > div:last-child > dlr > div:last-child { background-color: #4f729b }
-.e621-xxx-sides > div:last-child > dlr > div:last-child:hover { background-color: #3e5979 }
+.e621-xxx-sides > div:last-child > dlr[dl] > div:first-child { background-color: #f00 }
+.e621-xxx-sides > div:last-child > dlr[dl] > div:first-child:hover { background-color: #960000 }
+.e621-xxx-sides > div:last-child > dlr[dl] > div:last-child { background-color: #ff0062 }
+.e621-xxx-sides > div:last-child > dlr[dl] > div:last-child:hover { background-color: #b40246 }
 
 .e621-xxx-tags {
 	display: block;
@@ -257,8 +258,4 @@
 	text-align: center;
 	background-color: var(--e621-secondary-bg);
 	color: #222;
-}
-
-.e621-net-image {
-	
 }

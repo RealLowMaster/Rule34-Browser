@@ -90,7 +90,7 @@ function E621XXXGetPosts(tab, arr) {
 	container.classList.add('e621-xxx-posts')
 	arr = arr.posts
 	for (let i = 0, l = arr.length; i < l; i++) {
-		const post = BRPostLinkElement(tab.id, tab.AddLink(11, arr[i].id), 0, arr[i].id)
+		const post = BRPostLinkElement(tab.id, tab.AddLink(11, arr[i].id), 1, arr[i].id)
 		if (arr[i].video) post.setAttribute('v', '')
 		post.appendChild(BRPostDL(1, arr[i].id))
 		const img = document.createElement('img')
@@ -218,15 +218,13 @@ function E621XXXPost(tabId, id) {
 			const img = document.createElement('img')
 			img.classList.add('rule34-xxx-image')
 			img.loading = 'lazy'
-			if (setting.r34_xxx_original_size) img.src = src
+			if (setting.e621_net_orginal_size) img.src = src
 			else img.src = arr.srcresize
 			img.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
 			side.appendChild(img)
 		}
 		side.appendChild(BRDownloadElement(1, id))
-
 		sides.appendChild(side)
-
 		container.appendChild(sides)
 		tab.Load(token, container, arr.title, 'var(--e621-secondary-bg)')
 	})

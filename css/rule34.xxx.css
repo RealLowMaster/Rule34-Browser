@@ -50,7 +50,8 @@
 .rule34-xxx-sides > div:last-child { width: calc(100% - 260px) }
 
 .rule34-xxx-sides > div:last-child > dlr {
-	display: block;
+	display: flex;
+	align-items: center;
 	width: 100%;
 	padding: 10px;
 	margin: 10px 0;
@@ -82,13 +83,13 @@
 
 .rule34-xxx-sides > div:last-child > dlr > div:first-child { background-color: #2d8bdc }
 .rule34-xxx-sides > div:last-child > dlr > div:first-child:hover { background-color: #1474c7 }
-.rule34-xxx-sides > div:last-child > dlr > div:last-child { background-color: #4f729b }
-.rule34-xxx-sides > div:last-child > dlr > div:last-child:hover { background-color: #3e5979 }
+.rule34-xxx-sides > div:last-child > dlr > div:last-child { background-color: #a0a }
+.rule34-xxx-sides > div:last-child > dlr > div:last-child:hover { background-color: #7a007a }
 
-.rule34-xxx-sides > div:last-child > dlr > div:first-child { background-color: #2d8bdc }
-.rule34-xxx-sides > div:last-child > dlr > div:first-child:hover { background-color: #1474c7 }
-.rule34-xxx-sides > div:last-child > dlr > div:last-child { background-color: #4f729b }
-.rule34-xxx-sides > div:last-child > dlr > div:last-child:hover { background-color: #3e5979 }
+.rule34-xxx-sides > div:last-child > dlr[dl] > div:first-child { background-color: #f00 }
+.rule34-xxx-sides > div:last-child > dlr[dl] > div:first-child:hover { background-color: #960000 }
+.rule34-xxx-sides > div:last-child > dlr[dl] > div:last-child { background-color: #ff0062 }
+.rule34-xxx-sides > div:last-child > dlr[dl] > div:last-child:hover { background-color: #b40246 }
 
 .rule34-xxx-tags {
 	display: block;

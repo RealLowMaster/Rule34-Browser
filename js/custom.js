@@ -40,7 +40,7 @@ const sites = [
 		home: E621Home
 	},
 	{
-		name: 'GelBooru.com',
+		name: 'GelBooru.com (demo)',
 		url: 'gelbooru.com',
 		icon: 'webp',
 		ip: '',
@@ -511,6 +511,8 @@ class BrowserManager {
 			case 9: Rule34XXXPool(tabId, value); return
 			case 10: E621Home(tabId, value[0], value[1]); return
 			case 11: E621XXXPost(tabId, value); return
+			case 12: GelBooruHome(tabId, value[0], value[1]); return
+			case 13: GelBooruPost(tabId, value); return
 		}
 	}
 	
@@ -773,6 +775,7 @@ mb_search.onsubmit = e => {
 	switch(browser.GetActiveSite()) {
 		case 0: Rule34XXXHome(browser.selectedTab, 1, mbs.value); return
 		case 1: E621Home(browser.selectedTab, 1, mbs.value); return
+		case 2: GelBooruHome(browser.selectedTab, 1, mbs.value); return
 	}
 }
 
@@ -800,6 +803,11 @@ function JumpPage() {
 		case 1:
 			switch(tab.jumpPage) {
 				case 0: E621Home(tab.id, value, tab.submit_search); return
+			}
+			return
+		case 2:
+			switch(tab.jumpPage) {
+				case 0: GelBooruHome(tab.id, value, tab.submit_search); return
 			}
 			return
 	}
@@ -1495,7 +1503,7 @@ function DownloadClick(site, id) {
 					return
 				}
 				downloader.Add(dl_index, arr.thumb, arr.url, arr.src, GetData(arr))
-			}, true)
+			})
 			return
 		case 1:
 			e621.Post(id, (err, arr) => {
@@ -1511,7 +1519,23 @@ function DownloadClick(site, id) {
 					return
 				}
 				downloader.Add(dl_index, arr.thumb, arr.url, arr.src, GetData(arr))
-			}, true)
+			})
+			return
+		case 2:
+			gelbooru.Post(id, (err, arr) => {
+				if (err) {
+					console.error(err)
+					downloader.StopFromStarting(dl_index)
+					PopAlert(Language('cto'), 'danger')
+					return
+				}
+				if (!IsFormatSupported(arr.format)) {
+					downloader.StopFromStarting(dl_index)
+					PopAlert(Language('fns'), 'danger')
+					return
+				}
+				downloader.Add(dl_index, arr.thumb, arr.url, arr.src, GetData(arr))
+			})
 			return
 	}
 }

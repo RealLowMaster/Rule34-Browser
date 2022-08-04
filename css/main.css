@@ -506,7 +506,6 @@
 	justify-content: center;
 	align-items: center;
 	width: 220px;
-	position: relative;
 }
 
 #dl-container > div > div:first-child > img:first-child {
@@ -515,18 +514,19 @@
 	border-radius: 3px;
 }
 
-#dl-container > div > div:first-child > img:last-child {
-	width: 32px;
-	height: 32px;
-	position: absolute;
-	top: -16px;
-	left: -16px;
-}
-
 #dl-container > div > div:last-child {
 	width: 500px;
 	padding: 20px 70px 20px 15px;
 	border-left: 1px solid var(--secondary-bg-alt);
+	position: relative;
+}
+
+#dl-container > div > div:last-child > img {
+	width: 32px;
+	height: 32px;
+	position: absolute;
+	top: -16px;
+	right: -16px;
 }
 
 #dl-container > div[d] > div:last-child { border-left-color: var(--text-brand) }

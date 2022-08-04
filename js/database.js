@@ -437,13 +437,13 @@ function DeletePost(site, id, keep) {
 }
 
 function ReDownloadPost(site, id) {
-	loading.Show(4, 'Finding Post...')
+	loading.Show(4, Language('finding-post')+'...')
 	const i = GetPost(site, id)
 	if (i != null) {
 		try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
 		try { unlinkSync(paths.dl+db.post[i][2]+'.'+db.post[i][3]) } catch(err) {}
 
-		loading.Forward('Connecting To Page...')
+		loading.Forward(Language('con-to-page')+'...')
 		switch(site) {
 			case 0: r34xxx.Post(id, (err, arr) => {
 				if (err) {
@@ -461,7 +461,14 @@ function ReDownloadPost(site, id) {
 				}
 				downloader.ReDownload(arr.src, arr.format, i)
 			}); return
-				
+			case 2: gelbooru.Post(id, (err, arr) => {
+				if (err) {
+					loading.Close()
+					KeyManager.stop = false
+					return
+				}
+				downloader.ReDownload(arr.src, arr.format, i)
+			})
 		}
 	} else {
 		loading.Forward()

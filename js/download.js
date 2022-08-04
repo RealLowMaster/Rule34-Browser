@@ -173,12 +173,12 @@ class DownloadManager {
 		let save2 = document.createElement('img')
 		save2.src = thumb
 		save.appendChild(save2)
-		save2 = document.createElement('img')
-		save2.src = `Image/sites/${sites[this.dls[i].site].url}-32x32.${sites[this.dls[i].site].icon}`
-		save.appendChild(save2)
 		this.dls[i].container.appendChild(save)
 
 		save = document.createElement('div')
+		save2 = document.createElement('img')
+		save2.src = `Image/sites/${sites[this.dls[i].site].url}-32x32.${sites[this.dls[i].site].icon}`
+		save.appendChild(save2)
 		save2 = document.createElement('p')
 		save2.innerText = page_url
 		save2.onclick = () => downloader.OpenURL(page_url)
@@ -258,6 +258,8 @@ class DownloadManager {
 			console.error(err)
 			this.dls[i].btn1.style.display = 'none'
 			this.dls[i].btn2.remove()
+			this.dls[i].span.innerText = Language('finish')
+			this.dls[i].procress.style.width = '100%'
 			this.SendToAddPost(sindex)
 		})
 
@@ -649,7 +651,7 @@ class DownloadManager {
 		let total_size = 0, dl_size = 0
 		const tmp = paths.tmp+db.post[i][2]+'.'+format
 
-		loading.Forward('Getting Response...')
+		loading.Forward(Language('getting-response')+'...')
 		const dl = new Download(src, tmp)
 
 		dl.OnError(err => {

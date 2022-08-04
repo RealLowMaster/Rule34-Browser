@@ -57,7 +57,7 @@ class GelBooru {
 			return response.text()
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
-			let arr = { maxPages: null }, save, save2
+			let arr = { maxPages: null }, save, save2, save3
 
 			// Posts
 			arr.posts = []
@@ -87,21 +87,59 @@ class GelBooru {
 			arr.pagination = save[1]
 
 			// Tag
-			try {
-				save = html.getElementById('tag-list').children
-				if (save.length == 0) save = null
-			} catch(err) {
+			try { save = html.getElementById('tag-list') } catch(err) {
 				console.error(err)
 				save = null
 			}
 			if (save != null) {
-				arr.tag = []
-				for (let i = 0, l = save.length; i < l; i++) {
-					save2 = save[i].children
-					arr.tag.push([
-						save2[save2.length-2].innerText,
-						save2[save2.length-1].innerText
-					])
+				// Artist
+				save2 = save.getElementsByClassName('tag-type-artist')
+				if (save2.length > 0) {
+					arr.artist = []
+					for (let i = 0, l = save2.length; i < l; i++) {
+						save3 = save2[i].children
+						arr.artist.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
+					}
+				}
+
+				// Character
+				save2 = save.getElementsByClassName('tag-type-character')
+				if (save2.length > 0) {
+					arr.character = []
+					for (let i = 0, l = save2.length; i < l; i++) {
+						save3 = save2[i].children
+						arr.character.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
+					}
+				}
+
+				// Copyright
+				save2 = save.getElementsByClassName('tag-type-copyright')
+				if (save2.length > 0) {
+					arr.parody = []
+					for (let i = 0, l = save2.length; i < l; i++) {
+						save3 = save2[i].children
+						arr.parody.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
+					}
+				}
+
+				// Meta
+				save2 = save.getElementsByClassName('tag-type-metadata')
+				if (save2.length > 0) {
+					arr.meta = []
+					for (let i = 0, l = save2.length; i < l; i++) {
+						save3 = save2[i].children
+						arr.meta.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
+					}
+				}
+
+				// Tag
+				save2 = save.getElementsByClassName('tag-type-general')
+				if (save2.length > 0) {
+					arr.tag = []
+					for (let i = 0, l = save2.length; i < l; i++) {
+						save3 = save2[i].children
+						arr.tag.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
+					}
 				}
 			}
 
@@ -188,7 +226,7 @@ class GelBooru {
 					for (let i = 0, l = save2.length; i < l; i++) {
 						statindex++
 						save3 = save2[i].children
-						arr.artist.push([save3[save3.length-2].innerText, save3[save3.length-1]])
+						arr.artist.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
 					}
 				}
 
@@ -200,7 +238,7 @@ class GelBooru {
 					for (let i = 0, l = save2.length; i < l; i++) {
 						statindex++
 						save3 = save2[i].children
-						arr.character.push([save3[save3.length-2].innerText, save3[save3.length-1]])
+						arr.character.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
 					}
 				}
 
@@ -212,7 +250,7 @@ class GelBooru {
 					for (let i = 0, l = save2.length; i < l; i++) {
 						statindex++
 						save3 = save2[i].children
-						arr.parody.push([save3[save3.length-2].innerText, save3[save3.length-1]])
+						arr.parody.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
 					}
 				}
 
@@ -224,7 +262,7 @@ class GelBooru {
 					for (let i = 0, l = save2.length; i < l; i++) {
 						statindex++
 						save3 = save2[i].children
-						arr.meta.push([save3[save3.length-2].innerText, save3[save3.length-1]])
+						arr.meta.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
 					}
 				}
 
@@ -236,7 +274,7 @@ class GelBooru {
 					for (let i = 0, l = save2.length; i < l; i++) {
 						statindex++
 						save3 = save2[i].children
-						arr.tag.push([save3[save3.length-2].innerText, save3[save3.length-1]])
+						arr.tag.push([save3[save3.length-2].innerText, save3[save3.length-1].innerText])
 					}
 				}
 
@@ -271,7 +309,8 @@ class GelBooru {
 					for (let i = 0, l = save.length; i < l; i++) {
 						arr.likethis.push({
 							id: Number(LastChar('=', save[i].href)),
-							thumb: save[i].children[0].src
+							thumb: save[i].children[0].src,
+							video: false
 						})
 					}
 				}

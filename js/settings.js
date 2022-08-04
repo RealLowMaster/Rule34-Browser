@@ -1,5 +1,7 @@
 const defaultSetting = {
 	r34_xxx_original_size: false,
+	e621_net_orginal_size: false,
+	gelbooru_com_orginal_size: false,
 	// Default
 	theme: 0,
 	language: 0,
@@ -20,6 +22,8 @@ const defaultSetting = {
 // [ 'setting name', 'translate name', 'translate tip' || null ]
 const sto_checkbox = [
 	['r34_xxx_original_size', 'originalsize', 'originalsizetip'],
+	['e621_net_orginal_size', 'originalsize', 'originalsizetip'],
+	['gelbooru_com_orginal_size', 'originalsize', 'originalsizetip'],
 	['animations', 'animations', 'animationstip'],
 	['not', 'notifications', 'nottip'],
 	['not_sound', 'notsound', 'notsoundtip'],
