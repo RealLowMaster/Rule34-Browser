@@ -29,8 +29,7 @@ const sites = [
 		icon: 'png',
 		ip: '104.26.1.234',
 		location: 'USA - California - San Francisco',
-		home: Rule34XXXHome,
-		cooming: false
+		home: Rule34XXXHome
 	},
 	{
 		name: 'E621.net (demo)',
@@ -38,8 +37,7 @@ const sites = [
 		icon: 'webp',
 		ip: '',
 		location: '',
-		home: E621Home,
-		cooming: false
+		home: E621Home
 	},
 	{
 		name: 'GelBooru.com',
@@ -47,8 +45,7 @@ const sites = [
 		icon: 'webp',
 		ip: '',
 		location: '',
-		home: GelBooruHome,
-		cooming: true
+		home: GelBooruHome
 	}
 ]
 

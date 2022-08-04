@@ -128,10 +128,7 @@ class GelBooru {
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
 
-			let arr = {url:url,size:'',id:id,thumb:'',format:''}, save, save2
-
-			const t = document.createElement('div')
-			t.click()
+			let arr = {url:url,size:'',id:id,thumb:'',format:''}, save, save2, save3, statindex = 3
 
 			arr.title = html.title
 			// Source
@@ -172,73 +169,114 @@ class GelBooru {
 					return
 				}
 			}
-
-			callback(null, arr)
-			return
-
-			// States
-			try {
-				arr.format = LastChar('.', arr.src)
-				save = html.getElementById('post-information').children[1].children
-				
-				save2 = save[5].innerText.replace(/ /g, '').replace(/\t/g, '').replace(/\n/g, '').toLowerCase()
-				if (save2.indexOf('size') == 0) arr.size = save2.replace('size:', '')
-				else if (save[6] != undefined) {
-					save2 = save[6].innerText.replace(/ /g, '').replace(/\t/g, '').replace(/\n/g, '').toLowerCase()
-					if (save2.indexOf('size') == 0) arr.size = save2.replace('size:', '')
-				}
-			} catch(err) { console.error(err) }
-
-			// Thumb
-			try { arr.thumb = arr.srcresize.replace('/sample/', '/preview/') } catch(err) { console.error(err) }
+			arr.format = LastChar('.', arr.src)
 
 			// Tags
 			try {
-				save = html.getElementById('tag-list').children
+				save = html.getElementById('tag-list')
 				if (save.length == 0) save = null
 			} catch(err) {
 				console.error(err)
 				save = null
 			}
 			if (save != null) {
-				const data = [
-					[], // 0 Artist
-					[], // 1 Copyright
-					[], // 2 Character
-					[], // 3 Species
-					[], // 4 General
-					[], // 5 Meta
-				]
-				let index = 0, save3
-				for (let i = 0, l = save.length; i < l; i++) {
-					if (save[i].tagName == 'SPAN') {
-						switch(save[i].innerText) {
-							case 'Artist': index = 0; break
-							case 'Copyright': index = 1; break
-							case 'Character': index = 2; break
-							case 'Tag': index = 3; break
-							case 'Metadata': index = 4; break
-						}
-					} else {
-						save2 = save[i].children
-						if (save2.length == 0) continue
-						for (let j = 0, n = save2.length; j < n; j++) {
-							save3 = save2[j].children
-							data[index].push([
-								save3[1].innerText,
-								save3[2].innerText
-							])
-						}
+				// Artist
+				save2 = save.getElementsByClassName('tag-type-artist')
+				if (save2.length > 0) {
+					arr.artist = []
+					statindex++
+					for (let i = 0, l = save2.length; i < l; i++) {
+						statindex++
+						save3 = save2[i].children
+						arr.artist.push([save3[save3.length-2].innerText, save3[save3.length-1]])
 					}
 				}
-				
-				if (data[0].length != 0) arr.artist = data[0]
-				if (data[1].length != 0) arr.parody = data[1]
-				if (data[2].length != 0) arr.character = data[2]
-				if (data[3].length != 0) arr.tag = data[3]
-				if (data[4].length != 0) arr.meta = data[4]
+
+				// Character
+				save2 = save.getElementsByClassName('tag-type-character')
+				if (save2.length > 0) {
+					arr.character = []
+					statindex++
+					for (let i = 0, l = save2.length; i < l; i++) {
+						statindex++
+						save3 = save2[i].children
+						arr.character.push([save3[save3.length-2].innerText, save3[save3.length-1]])
+					}
+				}
+
+				// Copyright
+				save2 = save.getElementsByClassName('tag-type-copyright')
+				if (save2.length > 0) {
+					arr.parody = []
+					statindex++
+					for (let i = 0, l = save2.length; i < l; i++) {
+						statindex++
+						save3 = save2[i].children
+						arr.parody.push([save3[save3.length-2].innerText, save3[save3.length-1]])
+					}
+				}
+
+				// Meta
+				save2 = save.getElementsByClassName('tag-type-metadata')
+				if (save2.length > 0) {
+					arr.meta = []
+					statindex++
+					for (let i = 0, l = save2.length; i < l; i++) {
+						statindex++
+						save3 = save2[i].children
+						arr.meta.push([save3[save3.length-2].innerText, save3[save3.length-1]])
+					}
+				}
+
+				// Tag
+				save2 = save.getElementsByClassName('tag-type-general')
+				if (save2.length > 0) {
+					arr.tag = []
+					statindex++
+					for (let i = 0, l = save2.length; i < l; i++) {
+						statindex++
+						save3 = save2[i].children
+						arr.tag.push([save3[save3.length-2].innerText, save3[save3.length-1]])
+					}
+				}
+
+				save = save.children
+				for (let i = statindex, l = statindex + 7; i < l; i++) {
+					if (save[i] == undefined) continue
+					save2 = save[i].innerText.replace(/\n/g, '').replace(/ /g, '').replace(/\t/g, '').toLowerCase()
+					if (save2.indexOf('size') == 0) {
+						arr.size = save2.replace('size:', '')
+						break
+					}
+				}
 			}
-			
+
+			// Thumb
+			if (arr.video) try { arr.thumb = LastChar('/', arr.srcresize, true).replace('/images/', '/thumbnails/')+'/thumbnail_'+LastChar('/', LastChar('.', arr.srcresize, true))+'.jpg' } catch(err) { console.error(err) } else try { arr.thumb = arr.srcresize.replace('/samples/', '/thumbnails/').replace('/sample_', '/thumbnail_') } catch(err) { console.error(err) }
+
+			// More Like This
+			try { save = html.getElementsByClassName('mainBodyPadding')[0].children } catch(err) {
+				console.error(err)
+				save = null
+			}
+			if (save != null && save.length != 0) {
+				for (let i = 3, l = save.length; i < l; i++) {
+					if (save[i].tagName == 'DIV' && save[i-1].tagName == 'BR' && save[i+1].tagName == 'BR') {
+						save = save[i].getElementsByTagName('a')
+						break
+					}
+				}
+				if (save.length != 0) {
+					arr.likethis = []
+					for (let i = 0, l = save.length; i < l; i++) {
+						arr.likethis.push({
+							id: Number(LastChar('=', save[i].href)),
+							thumb: save[i].children[0].src
+						})
+					}
+				}
+			}
+
 			callback(null, arr)
 		}).catch(err => {
 			console.error(err)
