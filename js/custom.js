@@ -357,8 +357,9 @@ class BrowserManager {
 	}
 
 	CloseTab(index) {
+		this.saveTab = false
 		clearTimeout(this.timeout)
-		try { event.stopPropagation() } catch(err) {}
+		try { event.stopImmediatePropagation(); event.stopPropagation() } catch(err) {}
 		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
 			this.tabs[i].Close()
 			this.AddHistory(this.tabs[i].title.innerText, this.tabs[i].site, this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
@@ -375,9 +376,8 @@ class BrowserManager {
 				} else {
 					mb_jump_page.style.display = 'none'
 					mb_search.style.display = 'none'
-					this.SaveOpenTabs()
 				}
-			} else this.SaveOpenTabs()
+			} this.ActivateTab(this.selectedTab)
 
 			window.onmousemove = e => {
 				if (e.screenY > 65) this.ResizeTabs()
@@ -385,6 +385,8 @@ class BrowserManager {
 			browser.SetNeedReload(-2)
 			try { jsonfile.writeFileSync(dirDocument+'/history', {v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
 			try { jsonfile.writeFileSync(dirDocument+'/tabs', {v:db.manager.tabs, a:db.tabs}) } catch(err) { console.error(err) }
+			this.saveTab = true
+			this.SaveOpenTabs()
 			return
 		}
 	}
@@ -442,10 +444,8 @@ class BrowserManager {
 		}
 		this.selectedTab = null
 		this.selectedTabIndex = null
-		this.SetNeedReload(-2)
 		this.ActivateTab(id)
 		this.ResizeTabs()
-		browser.SetNeedReload(-2)
 		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history }) } catch(err) { console.error(err) }
 		try { jsonfile.writeFileSync(dirDocument+'/tabs', {v:db.manager.tabs, a:db.tabs}) } catch(err) { console.error(err) }
 	}
@@ -466,9 +466,8 @@ class BrowserManager {
 	}
 
 	SaveOpenTabs() {
-		if (setting.opened_tabs && this.saveTab) {
-			console.log('save')
-			const arr = [this.selectedTabIndex]
+		if (this.saveTab && setting.opened_tabs) {
+			const arr = [this.selectedTabIndex, this.backward]
 			for (let i = 0, l = this.tabs.length; i < l; i++) {
 				arr.push([
 					this.tabs[i].selectedHistory,
@@ -531,8 +530,10 @@ class BrowserManager {
 	}
 
 	OpenInNewTab(index, value = null) {
+		this.saveTab = false
 		const id = this.AddTab()
 		this.Link(id, index, value)
+		this.saveTab = true
 		this.ActivateTab(id)
 	}
 
@@ -597,7 +598,7 @@ class BrowserManager {
 
 	SetNeedReload(site) {
 		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].site == site) this.tabs[i].needReload = true
-		this.ActivateTab(this.selectedTab)
+		if (this.selectedTabIndex != null && this.tabs[this.selectedTabIndex].site == site) this.ActivateTab(this.selectedTab)
 	}
 
 	ResizeTabs() {
@@ -636,9 +637,14 @@ class BrowserManager {
 		this.Link(this.AddTab(), this.copied[0][this.copied[2]], this.copied[1][this.copied[2]])
 	}
 
-	DuplicateTab(index) {
-		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
-			this.Link(this.AddTab(), this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
+	DuplicateTab(id) {
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == id) {
+			const tab = this.GetTab(this.AddTab(i == l-1 ? null : i+1, id))
+			tab.selectedHistory = this.tabs[i].selectedHistory
+			tab.history = this.tabs[i].history.slice()
+			tab.historyValue = this.tabs[i].historyValue.slice()
+			tab.Reload()
+			this.ActivateTab(tab.id)
 			return
 		}
 	}
@@ -1358,9 +1364,10 @@ function LoadDatabase() {
 		if (setting.auto_backup) try { BackUp() } catch(err) { console.error(err) }
 		CheckScriptUpdate()
 		KeyManager.ChangeCategory('default')
-		if (setting.opened_tabs && db.open_tabs.length > 1) {
+		if (setting.opened_tabs && db.open_tabs.length > 2) {
 			browser.saveTab = false
-			for (let i = 1, l = db.open_tabs.length; i < l; i++) {
+			if (typeof db.open_tabs[1] == 'boolean') browser.backward = db.open_tabs[1]
+			for (let i = 2, l = db.open_tabs.length; i < l; i++) {
 				try {
 					const tab = browser.GetTab(browser.AddTab())
 					tab.selectedHistory = db.open_tabs[i][0]
@@ -1370,14 +1377,13 @@ function LoadDatabase() {
 				} catch(err) { console.error(err) }
 			}
 			const l = browser.tabs.length
-			if (browser.tabs.length != 0) {
+			if (l != 0) {
 				if (typeof db.open_tabs[0] == 'number') {
 					if (db.open_tabs[0] >= l) try { browser.ActivateTab(browser.tabs[l-1].id) } catch(err) { console.error(err) }
 					else try { browser.ActivateTab(browser.tabs[db.open_tabs[0]].id) } catch(err) { console.error(err) }
 				}
-			} else {
-				browser.OpenInNewTab(-1, 1)
-			}
+			} else browser.OpenInNewTab(-1, 1)
+
 			browser.saveTab = true
 		} else browser.OpenInNewTab(-1, 1)
 	} else {
