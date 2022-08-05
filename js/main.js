@@ -11,6 +11,7 @@ const ThisWindow = remote.getCurrentWindow(), loading = new Loading(), update_nu
 ThisWindow.addListener('close', e => {
 	e.preventDefault()
 	if (UpdateScript.updating) return
+	browser.SaveOpenTabs()
 	if (downloader.HasDownload()) {
 		Confirm(Language('ydl-are-sure-cls-app'), [
 			{
@@ -182,7 +183,7 @@ function SetHotKeys() {
 
 function SetContextMenus() {
 	let i = ContextManager.AddMenu('menu')
-	ContextManager.AddItem(i, { icon:'new-tab', text:'newtab', click: () => NewTab() })
+	ContextManager.AddItem(i, { icon:'new-tab', text:'newtab', click: () => browser.OpenInNewTab(-1, 1) })
 	ContextManager.AddItem(i, {})
 	ContextManager.AddItem(i, { icon:'history', text:'history', click: () => browser.OpenInNewTab(-4, 1)})
 	ContextManager.AddItem(i, { icon:'download', text:'downloads', click: () => downloader.OpenPanel() })

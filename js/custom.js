@@ -214,6 +214,7 @@ class Tab {
 			this.history[this.selectedHistory] = index
 			this.historyValue[this.selectedHistory] = value
 		}
+		browser.SaveOpenTabs()
 	}
 
 	Prev() {
@@ -228,6 +229,7 @@ class Tab {
 		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 		this.customizing = false
 		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
+		browser.SaveOpenTabs()
 	}
 	
 	Next() {
@@ -242,6 +244,7 @@ class Tab {
 		browser.Link(this.id, this.history[this.selectedHistory], this.historyValue[this.selectedHistory])
 		this.customizing = false
 		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
+		browser.SaveOpenTabs()
 	}
 
 	Reload() {
@@ -299,7 +302,8 @@ class BrowserManager {
 		this.tabs = []
 		this.selectedTab = null
 		this.selectedTabIndex = null
-		this.copied = null;
+		this.saveTab = true
+		this.copied = null
 		this.backward = true
 		this.timeout = null
 		this.draging = null
@@ -371,8 +375,9 @@ class BrowserManager {
 				} else {
 					mb_jump_page.style.display = 'none'
 					mb_search.style.display = 'none'
+					this.SaveOpenTabs()
 				}
-			}
+			} else this.SaveOpenTabs()
 
 			window.onmousemove = e => {
 				if (e.screenY > 65) this.ResizeTabs()
@@ -384,10 +389,11 @@ class BrowserManager {
 		}
 	}
 
-	ActivateTab(index) {
+	ActivateTab(id) {
 		if (this.tabs.length == 0) {
 			this.selectedTab == null
 			this.selectedTabIndex = null
+			this.SaveOpenTabs()
 			return
 		}
 		if (this.selectedTab != null) {
@@ -399,8 +405,8 @@ class BrowserManager {
 		}
 		this.selectedTab = null
 		this.selectedTabIndex = null
-		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
-			this.selectedTab = index
+		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == id) {
+			this.selectedTab = id
 			this.selectedTabIndex = i
 
 			if (this.tabs[i].site < 0) mb_search.style.display = 'none'
@@ -418,31 +424,36 @@ class BrowserManager {
 			this.tabs[i].tab.setAttribute('active','')
 			this.tabs[i].page.style.display = 'block'
 			mb_pages.scrollTop = this.tabs[i].scroll
+			this.SaveOpenTabs()
 			return
 		}
 		this.selectedTab = null
 		this.selectedTabIndex = null
+		this.SaveOpenTabs()
 	}
 
-	CloseOtherTabs(index) {
+	CloseOtherTabs(id) {
 		clearTimeout(this.timeout)
-		for (let i = this.tabs.length - 1; i >= 0; i--) if (this.tabs[i].id != index) {
+		for (let i = this.tabs.length - 1; i >= 0; i--) if (this.tabs[i].id != id) {
 			this.tabs[i].Close()
 			this.AddHistory(this.tabs[i].title.innerText, this.tabs[i].site, this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
+			this.AddSaveTab(this.tabs[i].selectedHistory, this.tabs[i].history, this.tabs[i].historyValue)
 			this.tabs.splice(i, 1)
 		}
 		this.selectedTab = null
 		this.selectedTabIndex = null
 		this.SetNeedReload(-2)
-		this.ActivateTab(index)
+		this.ActivateTab(id)
 		this.ResizeTabs()
 		browser.SetNeedReload(-2)
 		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history }) } catch(err) { console.error(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/tabs', {v:db.manager.tabs, a:db.tabs}) } catch(err) { console.error(err) }
 	}
 
 	CloseAllTabs() {
 		for (let i = this.tabs.length - 1; i >= 0; i--) {
 			this.AddHistory(this.tabs[i].title.innerText, this.tabs[i].site, this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
+			this.AddSaveTab(this.tabs[i].selectedHistory, this.tabs[i].history, this.tabs[i].historyValue)
 			this.tabs[i].Close()
 		}
 		this.tabs = []
@@ -450,6 +461,24 @@ class BrowserManager {
 		this.selectedTabIndex = null
 		this.SetNeedReload(-2)
 		try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
+		try { jsonfile.writeFileSync(dirDocument+'/tabs', {v:db.manager.tabs, a:db.tabs}) } catch(err) { console.error(err) }
+		this.SaveOpenTabs()
+	}
+
+	SaveOpenTabs() {
+		if (setting.opened_tabs && this.saveTab) {
+			console.log('save')
+			const arr = [this.selectedTabIndex]
+			for (let i = 0, l = this.tabs.length; i < l; i++) {
+				arr.push([
+					this.tabs[i].selectedHistory,
+					this.tabs[i].history,
+					this.tabs[i].historyValue
+				])
+			}
+			db.open_tabs = arr
+			try { jsonfile.writeFileSync(dirDocument+'/open_tabs', {v:db.manager.open_tabs, a:db.open_tabs}) } catch(err) { console.error(err) }
+		}
 	}
 
 	AddHistory(txt, site, val, val2) {
@@ -839,12 +868,6 @@ mbs.oninput = () => {
 }
 
 window.onmousedown = e => { if (e.which == 2) e.preventDefault() }
-
-function NewTab() {
-	const id = browser.AddTab()
-	browser.ActivateTab(id)
-	LoadPage(id, 1)
-}
 
 function ShowStartup(list) {
 	const container = document.createElement('div')
@@ -1335,7 +1358,28 @@ function LoadDatabase() {
 		if (setting.auto_backup) try { BackUp() } catch(err) { console.error(err) }
 		CheckScriptUpdate()
 		KeyManager.ChangeCategory('default')
-		NewTab()
+		if (setting.opened_tabs && db.open_tabs.length > 1) {
+			browser.saveTab = false
+			for (let i = 1, l = db.open_tabs.length; i < l; i++) {
+				try {
+					const tab = browser.GetTab(browser.AddTab())
+					tab.selectedHistory = db.open_tabs[i][0]
+					tab.history = db.open_tabs[i][1]
+					tab.historyValue = db.open_tabs[i][2]
+					tab.Reload()
+				} catch(err) { console.error(err) }
+			}
+			const l = browser.tabs.length
+			if (browser.tabs.length != 0) {
+				if (typeof db.open_tabs[0] == 'number') {
+					if (db.open_tabs[0] >= l) try { browser.ActivateTab(browser.tabs[l-1].id) } catch(err) { console.error(err) }
+					else try { browser.ActivateTab(browser.tabs[db.open_tabs[0]].id) } catch(err) { console.error(err) }
+				}
+			} else {
+				browser.OpenInNewTab(-1, 1)
+			}
+			browser.saveTab = true
+		} else browser.OpenInNewTab(-1, 1)
 	} else {
 		CheckScriptUpdate()
 		loading.Close()
@@ -2544,10 +2588,11 @@ function OpenLastTab() {
 	const l = db.tabs.length
 	if (l == 0) return
 	const tab = browser.GetTab(browser.AddTab())
-	tab.history = db.tabs[l-1][1]
 	tab.selectedHistory = db.tabs[l-1][0]
+	tab.history = db.tabs[l-1][1]
 	tab.historyValue = db.tabs[l-1][2]
 	tab.Reload()
+	try { browser.ActivateTab(tab.id) } catch(err) { console.error(err) }
 	db.tabs.splice(l-1, 1)
 	try { jsonfile.writeFileSync(dirDocument+'/tabs', {v:db.manager.tabs, a:db.tabs}) } catch(err) { console.error(err) }
 }

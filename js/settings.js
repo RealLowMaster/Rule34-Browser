@@ -8,16 +8,18 @@ const defaultSetting = {
 	animations: true,
 	not: true,
 	not_sound: true,
+	seen_release: update_number - 1,
+	full_screen: true,
+	developer_mode: false,
+	// Custom
 	pic_per_page: 30,
 	dl_path: null,
 	dl_limit: 5,
 	default_volume: 100,
 	save_tab_limit: 50,
 	maximum_pixel: 2,
-	seen_release: update_number - 1,
 	auto_backup: true,
-	full_screen: true,
-	developer_mode: false
+	opened_tabs: true
 }
 
 // [ 'setting name', 'translate name', 'translate tip' || null ]
@@ -30,7 +32,8 @@ const sto_checkbox = [
 	['not_sound', 'notsound', 'notsoundtip'],
 	['full_screen', 'fullscreen', 'fullscreentip'],
 	['developer_mode', 'devmode', 'devmodetip'],
-	['auto_backup', 'autobackup', 'autobackuptip']
+	['auto_backup', 'autobackup', 'autobackuptip'],
+	['opened_tabs', 'openedtabs', 'openedtabstip']
 ]
 
 // [ 'setting name', 'translate name', [index = 0 => value 1, index = 1 => value 2, etc ...] ]

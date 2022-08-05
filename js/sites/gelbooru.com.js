@@ -148,7 +148,6 @@ function GelBooruHome(tabId, page = 1, search = null) {
 	tab.search = search
 	if (browser.selectedTab == tab.id) mbs.value = search
 	tab.submit_search = search
-	
 
 	gelbooru.Page(page, search, (err, arr) => {
 		if (err) {

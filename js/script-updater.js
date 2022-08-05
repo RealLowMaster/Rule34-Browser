@@ -32,6 +32,7 @@ function CheckScriptUpdate() {
 function Update(json) {
 	UpdateScript.updating = true
 	loading.Show(2, Language('updating')+'...')
+	browser.SaveOpenTabs()
 	downloader.CancelAll(() => {
 		const dl = new Download(json.script_url, paths.tmp+'update.zip')
 		const info = {
