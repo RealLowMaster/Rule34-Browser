@@ -63,7 +63,7 @@
     line-height: 20px;
 	white-space: nowrap;
     text-overflow: ellipsis;
-	text-align: left;
+	text-align: var(--align);
     overflow: hidden;
 	cursor: default;
 }

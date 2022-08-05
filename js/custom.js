@@ -51,6 +51,8 @@ const sites = [
 
 const db = {
 	history: [],
+	tabs: [],
+	open_tabs: [],
 	reads: [],
 	post: [],
 	post_have: [],
@@ -76,6 +78,8 @@ const db = {
 	species_link: [],
 	manager: {
 		history: 0,
+		tabs: 0,
+		open_tabs: 0,
 		reads: 0,
 		post: 0,
 		have: 0,
@@ -163,6 +167,7 @@ class Tab {
 
 	Load(token, html, txt, bg = null, page = 1, maxPage = 1) {
 		if (token != this.token) return
+		this.token = null
 		this.needReload = false
 		this.page.innerHTML = null
 		this.page.appendChild(html)
@@ -264,6 +269,7 @@ class Tab {
 
 	Error(token, err) {
 		if (token != this.token) return
+		this.token = null
 		this.Change('Image/alert-24x24.webp', 'Error')
 		let save = document.createElement('div')
 		save.classList.add('alert')
@@ -352,6 +358,7 @@ class BrowserManager {
 		for (let i = 0, l = this.tabs.length; i < l; i++) if (this.tabs[i].id == index) {
 			this.tabs[i].Close()
 			this.AddHistory(this.tabs[i].title.innerText, this.tabs[i].site, this.tabs[i].history[this.tabs[i].selectedHistory], this.tabs[i].historyValue[this.tabs[i].selectedHistory])
+			this.AddSaveTab(this.tabs[i].selectedHistory, this.tabs[i].history, this.tabs[i].historyValue)
 			this.tabs.splice(i, 1)
 
 			if (index == this.selectedTab) {
@@ -371,7 +378,8 @@ class BrowserManager {
 				if (e.screenY > 65) this.ResizeTabs()
 			}
 			browser.SetNeedReload(-2)
-			try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
+			try { jsonfile.writeFileSync(dirDocument+'/history', {v:db.manager.history, a:db.history}) } catch(err) { console.error(err) }
+			try { jsonfile.writeFileSync(dirDocument+'/tabs', {v:db.manager.tabs, a:db.tabs}) } catch(err) { console.error(err) }
 			return
 		}
 	}
@@ -450,6 +458,13 @@ class BrowserManager {
 			if (val2 != undefined) db.history.push([txt, site, val, val2])
 			else db.history.push([txt, site, val])
 		}
+	}
+
+	AddSaveTab(selectedHistory, history, historyValue) {
+		const l = db.tabs.length
+		if (l == setting.save_tab_limit) db.tabs.splice(0,1)
+		else if (l > setting.save_tab_limit) db.tabs.splice(0, l - setting.save_tab_limit)
+		db.tabs.push([selectedHistory, history, historyValue])
 	}
 
 	GetTab(index) {
@@ -944,6 +959,30 @@ function LoadDatabase() {
 		console.error(err)
 	}
 
+	// tabs
+	if (existsSync(dirDocument+'/tabs')) try { db_tmp.tabs = jsonfile.readFileSync(dirDocument+'/tabs') } catch(err) {
+		db_tmp.tabs = 'LoadingTabsDB->'+err
+		console.error(err)
+	} else try {
+		db_tmp.tabs = { v:db.manager.tabs, a:[] }
+		jsonfile.writeFileSync(dirDocument+'/tabs', db_tmp.tabs)
+	} catch(err) {
+		db_tmp.tabs = 'CreatingTabsDB->'+err
+		console.error(err)
+	}
+
+	// open_tabs
+	if (existsSync(dirDocument+'/open_tabs')) try { db_tmp.open_tabs = jsonfile.readFileSync(dirDocument+'/open_tabs') } catch(err) {
+		db_tmp.open_tabs = 'LoadingOpenTabsDB->'+err
+		console.error(err)
+	} else try {
+		db_tmp.open_tabs = { v:db.manager.open_tabs, a:[] }
+		jsonfile.writeFileSync(dirDocument+'/open_tabs', db_tmp.open_tabs)
+	} catch(err) {
+		db_tmp.open_tabs = 'CreatingOpenTabsDB->'+err
+		console.error(err)
+	}
+
 	// reads
 	if (existsSync(dirDocument+'/reads')) try { db_tmp.reads = jsonfile.readFileSync(dirDocument+'/reads') } catch(err) {
 		db_tmp.reads = 'LoadingReadsDB->'+err
@@ -1105,6 +1144,32 @@ function LoadDatabase() {
 		} else error_list.push('History Database is Corrupted #Version')
 	} else error_list.push(db_tmp.history)
 	delete db_tmp.history
+
+	// tabs
+	if (typeof db_tmp.tabs === 'object') {
+		if (typeof db_tmp.tabs.v === 'number') {
+			if (db_tmp.tabs.v > db.manager.tabs) error_list.push('Tabs Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.tabs.a)) {
+					db.tabs = db_tmp.tabs.a.slice()
+				} else error_list.push('Tabs Database is Corrupted #Data')
+			}
+		} else error_list.push('Tabs Database is Corrupted #Version')
+	} else error_list.push(db_tmp.tabs)
+	delete db_tmp.tabs
+
+	// open_tabs
+	if (typeof db_tmp.open_tabs === 'object') {
+		if (typeof db_tmp.open_tabs.v === 'number') {
+			if (db_tmp.open_tabs.v > db.manager.open_tabs) error_list.push('OpenTabs Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.open_tabs.a)) {
+					db.open_tabs = db_tmp.open_tabs.a.slice()
+				} else error_list.push('OpenTabs Database is Corrupted #Data')
+			}
+		} else error_list.push('OpenTabs Database is Corrupted #Version')
+	} else error_list.push(db_tmp.open_tabs)
+	delete db_tmp.open_tabs
 
 	// reads
 	if (typeof db_tmp.reads === 'object') {
@@ -2392,7 +2457,7 @@ function LoadHistory(tabId, page) {
 		tab.Load(token, container, 'History - Page 1', null, 1, 1)
 	} else {
 		const count = db.history.length
-		const total_pages = Math.ceil(count / 20)
+		const total_pages = Math.ceil(count / 40)
 
 		save = document.createElement('div')
 		save.classList.add('btn')
@@ -2405,12 +2470,12 @@ function LoadHistory(tabId, page) {
 		container.appendChild(save)
 
 		let min = 0, max
-		if (count < 20) max = count
+		if (count < 40) max = count
 		else {
 			const use_page = page - 1
-			max = use_page * 20
+			max = use_page * 40
 			max = count - max
-			min = max - 20
+			min = max - 40
 			if (min < 0) min = 0
 		}
 		save = document.createElement('div')
@@ -2475,13 +2540,16 @@ function LoadHistory(tabId, page) {
 	}
 }
 
-function OpenLastHistory() {
-	if (db.history.length == 0) return
-	const i = db.history.length - 1
-	browser.OpenInNewTab(db.history[i][2], db.history[i][3])
-	db.history.splice(i, 1)
-	browser.SetNeedReload(-2)
-	try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a: db.history }) } catch(err) { console.error(err) }
+function OpenLastTab() {
+	const l = db.tabs.length
+	if (l == 0) return
+	const tab = browser.GetTab(browser.AddTab())
+	tab.history = db.tabs[l-1][1]
+	tab.selectedHistory = db.tabs[l-1][0]
+	tab.historyValue = db.tabs[l-1][2]
+	tab.Reload()
+	db.tabs.splice(l-1, 1)
+	try { jsonfile.writeFileSync(dirDocument+'/tabs', {v:db.manager.tabs, a:db.tabs}) } catch(err) { console.error(err) }
 }
 
 // Tag

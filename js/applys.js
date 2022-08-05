@@ -52,12 +52,16 @@ function ApplyLanguage(index) {
 	const dro = document.querySelectorAll('[dro]')
 	if (language_options[index][0]) {
 		document.documentElement.style.setProperty('--dir', 'rtl')
+		document.documentElement.style.setProperty('--align', 'right')
 		document.documentElement.style.setProperty('--diro', 'ltr')
+		document.documentElement.style.setProperty('--aligno', 'left')
 		for (let i = 0, l = dr.length; i < l; i++) dr[i].setAttribute('rtl','')
 		for (let i = 0, l = dro.length; i < l; i++) dro[i].removeAttribute('rtl')
 	} else {
 		document.documentElement.style.setProperty('--dir', 'ltr')
+		document.documentElement.style.setProperty('--align', 'left')
 		document.documentElement.style.setProperty('--diro', 'rtl')
+		document.documentElement.style.setProperty('--aligno', 'right')
 		for (let i = 0, l = dr.length; i < l; i++) dr[i].removeAttribute('rtl')
 		for (let i = 0, l = dro.length; i < l; i++) dro[i].setAttribute('rtl','')
 	}

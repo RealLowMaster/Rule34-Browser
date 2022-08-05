@@ -12,6 +12,7 @@ const defaultSetting = {
 	dl_path: null,
 	dl_limit: 5,
 	default_volume: 100,
+	save_tab_limit: 50,
 	maximum_pixel: 2,
 	seen_release: update_number - 1,
 	auto_backup: true,
@@ -45,7 +46,8 @@ const sto_range = [
 	['pic_per_page', 'picperpage', 1, 120],
 	['default_volume', 'defaultvolume', 0, 100],
 	['dl_limit', 'dllimit', 1, 20, 'dllimittip'],
-	['pixel_limit', 'pixellimit', 1000, 18200, 'pixellimittip']
+	['pixel_limit', 'pixellimit', 1000, 18200, 'pixellimittip'],
+	['save_tab_limit', 'savetablimit', 5, 300, 'savetablimittip']
 ]
 
 // [ 'setting name', isFolder, 'title' || null ]
@@ -437,6 +439,7 @@ function ApplySetting(prev_setting = null) {
 		if (setting.theme != prev_setting.theme) ApplyTheme(setting.theme)
 		if (setting.language != prev_setting.language) ApplyLanguage(setting.language)
 		if (setting.full_screen != prev_setting.full_screen) ChangeScreenMode(setting.full_screen, false)
+		// if (setting.save_tab_limit != prev_setting.save_tab_limit) {}
 		if (setting.dl_path != prev_setting.dl_path) PopAlert(Language('restart-for-apply-setting'), 'warning')
 	}
 }

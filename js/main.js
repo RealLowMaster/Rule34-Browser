@@ -145,16 +145,17 @@ function SetHotKeys() {
 	KeyManager.use_public = true
 
 	KeyManager.AddCategory('default')
-	KeyManager.AddHotKey('default', false, false, false, 37, 'browser.PrevPage()') // LeftArrow
-	KeyManager.AddHotKey('default', false, false, false, 39, 'browser.NextPage()') // RightArrow
+	KeyManager.AddHotKey('default', false, false, false, 37, () => browser.PrevPage()) // LeftArrow
+	KeyManager.AddHotKey('default', false, false, false, 39, () => browser.NextPage()) // RightArrow
+	KeyManager.AddHotKey('default', true, false, false, 72, () => browser.OpenInNewTab(-4, 1)) // h
 	KeyManager.AddHotKey('default', true, false, false, 74, downloader.OpenPanel) // j
-	KeyManager.AddHotKey('default', true, false, false, 78, NewTab) // n
+	KeyManager.AddHotKey('default', true, false, false, 78, () => browser.OpenInNewTab(-1, 1)) // n
 	KeyManager.AddHotKey('default', true, false, false, 68, OpenReads) // d
-	KeyManager.AddHotKey('default', true, false, false, 83, 'AddThisTabToReads(browser.selectedTab)') // s
-	KeyManager.AddHotKey('default', true, false, false, 82, () => browser.ReloadTab(browser.selectedTab))
-	KeyManager.AddHotKey('default', true, true, false, 84, OpenLastHistory)
-	KeyManager.AddHotKey('default', true, false, false, 87, () => browser.CloseTab(browser.selectedTab))
-	KeyManager.AddHotKey('default', false, false, false, 27, AskForQuitApp)
+	KeyManager.AddHotKey('default', true, false, false, 83, () => AddThisTabToReads(browser.selectedTab)) // s
+	KeyManager.AddHotKey('default', true, false, false, 82, () => browser.ReloadTab(browser.selectedTab)) // r
+	KeyManager.AddHotKey('default', true, true, false, 84, OpenLastTab) // t
+	KeyManager.AddHotKey('default', true, false, false, 87, () => browser.CloseTab(browser.selectedTab)) // w
+	KeyManager.AddHotKey('default', false, false, false, 27, AskForQuitApp) // Esc
 	
 	KeyManager.AddCategory('slider')
 	KeyManager.AddHotKey('slider', false, false, false, 65, SliderPrev)
@@ -183,11 +184,7 @@ function SetContextMenus() {
 	let i = ContextManager.AddMenu('menu')
 	ContextManager.AddItem(i, { icon:'new-tab', text:'newtab', click: () => NewTab() })
 	ContextManager.AddItem(i, {})
-	ContextManager.AddItem(i, { icon:'history', text:'history', click: () => {
-		const id = browser.AddTab()
-		browser.ActivateTab(id)
-		LoadHistory(id, 1)
-	} })
+	ContextManager.AddItem(i, { icon:'history', text:'history', click: () => browser.OpenInNewTab(-4, 1)})
 	ContextManager.AddItem(i, { icon:'download', text:'downloads', click: () => downloader.OpenPanel() })
 	// ContextManager.AddItem(i, { icon:'bookmarks', text:'bookmarks', click: () => OpenBookmarks() })
 	ContextManager.AddItem(i, { icon:'reads', text:'reads', click: () => OpenReads() })
