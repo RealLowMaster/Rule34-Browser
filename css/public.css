@@ -231,6 +231,8 @@ svg {
 .btn-primary:hover { background-color: #4752c4 }
 .btn-success { background-color: #3ba55d }
 .btn-success:hover { background-color: #33804c }
+.btn-warning { background-color: #e69916 }
+.btn-warning:hover { background-color: #cc8202 }
 .btn-danger { background-color: #ed4245 }
 .btn-danger:hover { background-color: #c03537 }
 .btn-secondary { background-color: #4f545c }

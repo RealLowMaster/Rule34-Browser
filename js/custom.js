@@ -1696,6 +1696,7 @@ function NormalLinkElement(name, inner, tabId, link, notNormal = true, lang = fa
 function ChangeFilter(backward) {
 	browser.backward = backward
 	browser.SetNeedReload(-1)
+	browser.SetNeedReload(-5)
 }
 
 function GetMainMenu(tab, page) {
@@ -2180,6 +2181,13 @@ function Post(tabId, site, id) {
 
 			save2 = document.createElement('div')
 			save2.classList.add('btn')
+			save2.classList.add('btn-warning')
+			save2.innerHTML = Icon('collection')+Language('collections')
+			save2.onclick = () => OpenAddPostCollection(i)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
 			save2.classList.add('btn-secondary')
 			save2.innerHTML = Icon('edit')+Language('editpack')
 			save2.onclick = () => EditPack(id)
@@ -2332,6 +2340,13 @@ function Post(tabId, site, id) {
 			save2.classList.add('btn-primary')
 			save2.innerHTML = Icon('box')+Language('pack')
 			save2.onclick = () => OpenPacking(site, id)
+			save.appendChild(save2)
+
+			save2 = document.createElement('div')
+			save2.classList.add('btn')
+			save2.classList.add('btn-warning')
+			save2.innerHTML = Icon('collection')+Language('collections')
+			save2.onclick = () => OpenAddPostCollection(i)
 			save.appendChild(save2)
 
 			save2 = document.createElement('div')
@@ -2835,6 +2850,9 @@ function LoadByInfo(tabId, page, type, index) {
 	const token = tab.Loading(-1, 1)
 	tab.AddHistory(-6, [page, type, index])
 	let loads = [], title
+	let save = document.createElement('div')
+	save.classList.add('main-page-title')
+	let save2 = document.createElement('span')
 	switch(type) {
 		case 0: // parody
 			if (typeof db.parody[index] !== 'string') {
@@ -2848,6 +2866,8 @@ function LoadByInfo(tabId, page, type, index) {
 				}
 			} else if (db.post[i][4].indexOf(index) != -1) loads.push(i)
 			title = 'Parody '+db.parody[index]
+			save.innerText = 'Parody > '
+			save2.innerText = db.parody[index]
 			break
 		case 1: // character
 			if (typeof db.character[index] !== 'string') {
@@ -2861,6 +2881,8 @@ function LoadByInfo(tabId, page, type, index) {
 				}
 			} else if (db.post[i][5].indexOf(index) != -1) loads.push(i)
 			title = 'Character '+db.character[index]
+			save.innerText = 'Character > '
+			save2.innerText = db.character[index]
 			break
 		case 2: // artist
 			if (typeof db.artist[index] !== 'string') {
@@ -2874,6 +2896,8 @@ function LoadByInfo(tabId, page, type, index) {
 				}
 			} else if (db.post[i][6].indexOf(index) != -1) loads.push(i)
 			title = 'Artist '+db.artist[index]
+			save.innerText = 'Artist > '
+			save2.innerText = db.artist[index]
 			break
 		case 3: // tag
 			if (typeof db.tag[index] !== 'string') {
@@ -2887,6 +2911,8 @@ function LoadByInfo(tabId, page, type, index) {
 				}
 			} else if (db.post[i][7].indexOf(index) != -1) loads.push(i)
 			title = 'Tag '+db.tag[index]
+			save.innerText = 'Tag > '
+			save2.innerText = db.tag[index]
 			break
 		case 4: // meta
 			if (typeof db.meta[index] !== 'string') {
@@ -2900,6 +2926,8 @@ function LoadByInfo(tabId, page, type, index) {
 				}
 			} else if (db.post[i][8].indexOf(index) != -1) loads.push(i)
 			title = 'Meta '+db.meta[index]
+			save.innerText = 'Meta > '
+			save2.innerText = db.meta[index]
 			break
 		case 5: // species
 			if (typeof db.species[index] !== 'string') {
@@ -2913,6 +2941,8 @@ function LoadByInfo(tabId, page, type, index) {
 				}
 			} else if (typeof db.post[i][12] == 'object' && db.post[i][12].indexOf(index) != -1) loads.push(i)
 			title = 'Specie '+db.species[index]
+			save.innerText = 'Specie > '
+			save2.innerText = db.species[index]
 			break
 	}
 
@@ -2920,9 +2950,13 @@ function LoadByInfo(tabId, page, type, index) {
 	container.classList.add('main-page')
 	container.appendChild(GetMainMenu(tab, 1))
 
-	let save = document.createElement('div')
+	save.appendChild(save2)
+	save.innerHTML += ' > Page '+page
+	container.appendChild(save)
+
+	save = document.createElement('div')
 	save.classList.add('main-page-filter')
-	let save2 = document.createElement('div')
+	save2 = document.createElement('div')
 	save2.innerHTML = Icon('new-to-old')
 	if (browser.backward) save2.setAttribute('active','')
 	else save2.onclick = () => ChangeFilter(true)

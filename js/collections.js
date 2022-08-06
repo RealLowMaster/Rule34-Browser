@@ -116,13 +116,83 @@ function LoadCollections(tabId) {
 function LoadCollection(tabId, index, page) {
 	const tab = browser.GetTab(tabId)
 	const token = tab.Loading(-5)
-	tab.AddHistory(-10)
+	tab.AddHistory(-10, [index, page])
+	if (db.collection[index] == undefined) tab.Error(token, Language('pnf'))
 	const container = document.createElement('div')
 	container.classList.add('main-page')
 	container.appendChild(GetMainMenu(tab, 0))
 
+	let save = document.createElement('div')
+	save.classList.add('main-page-title')
+	save.innerText = 'Collection > '
+	let save2 = document.createElement('span')
+	save2.innerText = db.collection[index][0]
+	save.appendChild(save2)
+	save.innerHTML += ' > Page '+page
+	container.appendChild(save)
 
-	tab.Load(token, container, '')
+	save = document.createElement('div')
+	save.classList.add('main-page-filter')
+	save2 = document.createElement('div')
+	save2.innerHTML = Icon('new-to-old')
+	if (browser.backward) save2.setAttribute('active','')
+	else save2.onclick = () => ChangeFilter(true)
+	save.appendChild(save2)
+	save2 = document.createElement('div')
+	save2.innerHTML = Icon('old-to-new')
+	if (!browser.backward) save2.setAttribute('active','')
+	else save2.onclick = () => ChangeFilter(false)
+	save.appendChild(save2)
+	container.appendChild(save)
+
+	const post_cont = db.collection[index][1].length
+	const date = new Date().getTime()
+	const total_pages = Math.ceil(post_cont / setting.pic_per_page)
+	if (page > total_pages) page = total_pages
+
+	if (total_pages > 0) {
+		save = document.createElement('div')
+		save.classList.add('main-page-posts')
+
+		let min = 0, max
+		tab.save = []
+		if (browser.backward) {
+			if (post_cont < setting.pic_per_page) max = post_cont
+			else {
+				const use_page = page - 1
+				max = use_page * setting.pic_per_page
+				max = post_cont - max
+				min = max - setting.pic_per_page
+				if (min < 0) min = 0
+			}
+			for (let i = max - 1; i >= min; i--) save.appendChild(GetPostElement(tab, db.collection[index][1][i], date))
+		} else {
+			if (post_cont < setting.pic_per_page) max = post_cont
+			else {
+				min = (setting.pic_per_page * page) - setting.pic_per_page
+				max = min + setting.pic_per_page
+				if (max > post_cont) max = post_cont
+			}
+			for (let i = min; i < max; i++) save.appendChild(GetPostElement(tab, db.collection[index][1][i], date))
+		}
+		container.appendChild(save)
+		container.appendChild(GetPagination(tab, -1, total_pages, page))
+	} else {
+		page = 1
+		save = document.createElement('div')
+		save.classList.add('alert')
+		save.classList.add('alert-danger')
+		save.setAttribute('l', 'nopost')
+		save.innerText = Language('nopost')
+		container.appendChild(save)
+	}
+
+	save = document.createElement('div')
+	save.classList.add('post-counter')
+	save.innerText = post_cont
+	container.appendChild(save)
+
+	tab.Load(token, container, db.collection[index][0]+' '+page, null, page, total_pages)
 }
 
 const collection = {

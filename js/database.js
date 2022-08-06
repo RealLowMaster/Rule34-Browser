@@ -386,8 +386,17 @@ function DeletePost(site, id, keep) {
 	KeyManager.stop = true
 	loading.Show(1, 'Deleting...')
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
+
+		let col_save = false
+		for (let j = 0, n = db.collection.length; j < n; j++) {
+			const ci = db.collection[j][1].indexOf(i)
+			if (ci != -1) {
+				db.collection[j][1].splice(ci, 1)
+				col_save = true
+			}
+		}
+
 		if (db.post[i][0] == -1) {
-			console.log(!keep)
 			if (!keep) {
 				for (let j = 0, n = db.post[i][10].length; j < n; j++) {
 					try { unlinkSync(paths.thumb+db.post[i][2][j]+'.jpg') } catch(err) {}
@@ -428,6 +437,11 @@ function DeletePost(site, id, keep) {
 		loading.Forward()
 		loading.Close()
 		browser.SetNeedReload(-1)
+		if (col_save) {
+			try { jsonfile.writeFileSync(paths.db+'collection', { v:db.manager.collection, a:db.collection }) } catch(err) { console.error(err) }
+			browser.SetNeedReload(-4)
+			browser.SetNeedReload(-5)
+		}
 		return
 	}
 	KeyManager.stop = false

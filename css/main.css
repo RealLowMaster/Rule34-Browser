@@ -464,6 +464,16 @@
 	user-select: none;
 }
 
+.main-page-title {
+	width: 100%;
+	margin: 40px 0 20px 0;
+	color: var(--primary-header);
+	font-size: 18px;
+	text-align: center;
+}
+
+.main-page-title > span { color: var(--text-warning); text-shadow: 0 0 2px var(--text-warning) }
+
 /* Downloads */
 #dl-window {
 	display: none;

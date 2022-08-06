@@ -136,6 +136,7 @@ function Pack() {
 		KeyManager.stop = false
 		return
 	}
+	let col_save = false
 	for (let i = 0; i < cl; i++) {
 		const site = Number(children[i].getAttribute('s')), id = Number(children[i].getAttribute('i'))
 		if (site != -1) {
@@ -143,6 +144,13 @@ function Pack() {
 			if (found != null) {
 				siteList.push(site)
 				idList.push(found)
+				for (let j = 0, n = db.collection.length; j < n; j++) {
+					const ci = db.collection[j][1].indexOf(found)
+					if (ci != -1) {
+						db.collection[j][1].splice(ci, 1)
+						col_save = true
+					}
+				}
 			}
 		} else {
 			siteList.push(-1)
@@ -176,6 +184,13 @@ function Pack() {
 			save[11].push(pack.data[11][idList[i]])
 			save[12].push(pack.data[12][idList[i]])
 		}
+	}
+
+	// Save Collection
+	if (col_save) {
+		try { jsonfile.writeFileSync(paths.db+'collection', { v:db.manager.collection, a:db.collection }) } catch(err) { console.error(err) }
+		browser.SetNeedReload(-4)
+		browser.SetNeedReload(-5)
 	}
 
 	// Sorting Ids Lower -> Higher
