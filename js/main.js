@@ -255,6 +255,7 @@ function SetContextMenus() {
 	ContextManager.AddItem(i, { icon:'box-open', text:'unpack', click: () => AskForUnPack(ContextManager.save[3]) })
 	ContextManager.AddItem(i, { icon:'edit', text:'editpack', click: () => EditPack(ContextManager.save[3]) })
 	ContextManager.AddItem(i, { icon:'redownload', text:'redownload', click: () => ReDownloadPost(ContextManager.save[2], ContextManager.save[3]) })
+	ContextManager.AddItem(i, { icon:'collection', text:'collections', click: () => OpenAddPostCollection(ContextManager.save[5]) })
 	// ContextManager.AddItem(i, { text:'rethumb', click: () => {} })
 	ContextManager.AddItem(i, { icon:'trash', text:'delete', click: () => ConfirmDeletingPost(ContextManager.save[2], ContextManager.save[3], false) })
 	ContextManager.AddItem(i, { icon:'delete-file', text:'delete-shave', click: () => ConfirmDeletingPost(ContextManager.save[2], ContextManager.save[3], true) })
@@ -262,4 +263,10 @@ function SetContextMenus() {
 
 	i = ContextManager.AddMenu('pack')
 	ContextManager.AddItem(i, { icon:'xmark', text:'r-pack', click: () => RemoveFromPack(ContextManager.save[0], ContextManager.save[1]) })
+
+	i = ContextManager.AddMenu('collection')
+	ContextManager.AddItem(i, { icon:'link', text:'open', click: () => browser.LinkClick(ContextManager.save[0], ContextManager.save[1]) })
+	ContextManager.AddItem(i, { icon:'open-new-link', text:'open-in-ntab', click: () => browser.OpenLinkInNewTab(ContextManager.save[0], ContextManager.save[1]) })
+	ContextManager.AddItem(i, { icon:'edit', text:'rename', click: () => OpenAddCollection(ContextManager.save[2]) })
+	ContextManager.AddItem(i, { icon:'trash', text:'delete', click: () => AskDeleteCollection(ContextManager.save[2]) })
 }

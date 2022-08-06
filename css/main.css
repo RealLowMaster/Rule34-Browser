@@ -1047,3 +1047,164 @@
 	cursor: pointer;
 }
 .tagList > div > div:last-child:hover { background-color: var(--tertiary-bg) }
+
+/* Collections */
+.collection-container {
+	display: block;
+	width: 100%;
+	padding: 10px 15px;
+	text-align: center;
+}
+
+.collection-container > div {
+	display: inline-block;
+	width: 360px;
+	padding: 3px;
+	margin: 15px;
+	background-color: var(--tertiary-bg);
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color ease-in-out .2s;
+}
+
+.collection-container > div:hover { background-color: var(--accent-bg) }
+
+.collection-container > div > div:first-child {
+	width: 100%;
+	height: 229px;
+	position: relative;
+	background-color: var(--secondary-bg-alt);
+	border-radius: 4px;
+}
+
+.collection-container > div > div:first-child > img {
+	width: 225px;
+	height: 225px;
+	position: absolute;
+	top: 2px;
+	left: 126px;
+	transition: transform .2s, box-shadow .2s;
+}
+
+.collection-container > div > div:first-child > img:first-child { left: 2px }
+.collection-container > div > div:first-child > img:last-child { left: 64px; box-shadow: 0 0 3px #000a }
+
+.collection-container > div > div:first-child > img:hover {
+	z-index: +2;
+	box-shadow: 0 0 10px #000a;
+	transform: scale(1.05);
+}
+
+.collection-container > div > div:last-child {
+	width: 100%;
+	margin-top: 10px;
+	padding: 7px 10px;
+	background-color: var(--secondary-bg-alt);
+	color: var(--primary-header);
+	border-radius: 4px;
+	position: relative;
+}
+
+.collection-container > div > div:last-child > div {
+	padding: 0 3px;
+	background-color: var(--text-brand);
+	color: var(--primary-header);
+	border-radius: 4px;
+	font-size: 12px;
+	position: absolute;
+	bottom: -6px;
+	right: 10px;
+}
+
+#addcol {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+    height: calc(100% - var(--topMenuSize));
+	background-color: #000a;
+    position: fixed;
+    top: var(--topMenuSize);
+    left: 0;
+}
+
+#addcol > div {
+	width: 400px;
+	height: 130px;
+	padding: 20px;
+	background-color: var(--primary-bg);
+}
+
+#addcol > div > input {
+	display: block;
+	width: 100%;
+	margin: 0 auto 20px auto;
+	padding: 7px 10px;
+	background-color: var(--secondary-bg);
+	color: var(--primary-header);
+	border: 1px solid var(--secondary-bg-alt);
+	border-radius: 4px;
+	transition: border-color ease-in-out .2s;
+	box-shadow: 0 1px 3px 0 #000a;
+}
+
+#addcol > div > input:hover,
+#addcol > div > input:focus { border-color: var(--text-brand) }
+
+#addpostcol {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	background-color: #000a;
+}
+
+#addpostcol > div {
+	width: 600px;
+	height: 530px;
+	background-color: var(--primary-bg);
+	border-radius: 7px;
+	box-shadow: 0 0 10px 0 #000a;
+}
+
+#addpostcol > div > div:first-child {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding: 0 15px 0 0;
+	height: 50px;
+	background-color: var(--secondary-bg);
+	border-radius: 7px 7px 0 0;
+}
+
+#addpostcol > div > div:last-child {
+	padding: 15px;
+	height: 480px;
+	border-radius: 0 0 7px 7px;
+	overflow-y: auto;
+}
+
+#addpostcolc > div {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: 40px;
+	padding: 0 115px 0 15px;
+	margin: 5px 0;
+	background-color: var(--secondary-bg-alt);
+	color: var(--primary-header);
+	border-radius: 4px;
+	position: relative;
+}
+
+#addpostcolc > div > p {
+	display: block;
+	width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#addpostcolc > div > div {
+	position: absolute;
+	right: 15px;
+}

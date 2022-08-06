@@ -20,7 +20,7 @@
 	</script>
 	<!-- From My Template -->
 	<script type="text/javascript" src="js/icons-database.js"></script>
-	<!-- <script type="text/javascript" src="js/icons.js"></script> -->
+	<script type="text/javascript" src="js/icons.js"></script>
 	<script type="text/javascript" src="js/defualt-classes.js"></script>
 	<script type="text/javascript" src="js/main.js" defer></script>
 	<script type="text/javascript" src="js/actions.js"></script>
@@ -43,6 +43,7 @@
 	<!-- <script type="text/javascript" src="js/sites/rule34.xyz.js" defer></script> -->
 	<!-- Other -->
 	<script type="text/javascript" src="js/custom.js" defer></script>
+	<script type="text/javascript" src="js/collections.js" defer></script>
 	<script type="text/javascript" src="js/slider.js" defer></script>
 	<script type="text/javascript" src="js/packing.js" defer></script>
 	<script type="text/javascript" src="js/readlist.js" defer></script>
@@ -104,6 +105,24 @@
 					<div lt="addtabreads" onclick="AddThisTabToReads(browser.selectedTab)"><i ic="add-reads"></i></div>
 				</div>
 				<div id="reads"></div>
+			</div>
+
+			<!-- Add Collection -->
+			<form id="addcol">
+				<div>
+					<input type="text" id="addcoli" lp="name">
+					<div class="btn btn-primary" l="add" id="addcolb" onclick="AddCollection()"></div><div class="btn btn-danger" l="cancel" onclick="CloseAddCollection()"></div>
+				</div>
+			</form>
+
+			<!-- Add Post To Collection -->
+			<div id="addpostcol">
+				<div>
+					<div>
+						<div class="btn btn-danger" l="close" onclick="CloseAddPostCollection()"></div>
+					</div>
+					<div id="addpostcolc"></div>
+				</div>
 			</div>
 
 			<!-- Properties -->

@@ -539,6 +539,8 @@ class BrowserManager {
 
 	Link(tabId, index, value) {
 		switch(index) {
+			case -10: LoadCollection(tabId, value[0], value[1]); return
+			case -9: LoadCollections(tabId); return
 			case -8: LoadInfo(tabId, value[0], value[1]); return
 			case -7: LoadTagsMenu(tabId); return
 			case -6: LoadByInfo(tabId, value[0], value[1], value[2]); return
@@ -1060,12 +1062,13 @@ function LoadDatabase() {
 	}
 
 	// collection
-	/*
 	if (existsSync(paths.db+'collection')) try { db_tmp.collection = jsonfile.readFileSync(paths.db+'collection') } catch(err) {
 		db_tmp.collection = undefined
 		console.error(err)
 		Alert('LoadingCollectionDB->'+err)
 	} else try {
+		tmp_collection = []
+		for (let i = 0, l = sites.length; i < l; i++) tmp_collection.push([])
 		db_tmp.collection = { v:db.manager.collection, a:[] }
 		jsonfile.writeFileSync(paths.db+'collection', db_tmp.collection)
 	} catch(err) {
@@ -1073,7 +1076,6 @@ function LoadDatabase() {
 		console.error(err)
 		Alert('CreatingCollectionDB->'+err)
 	}
-	*/
 
 	// artist
 	if (existsSync(paths.db+'artist')) try { db_tmp.artist = jsonfile.readFileSync(paths.db+'artist') } catch(err) {
@@ -1243,6 +1245,19 @@ function LoadDatabase() {
 		} else error_list.push('Downloads Database is Corrupted #Version')
 	} else error_list.push(db_tmp.have)
 	delete db_tmp.have
+
+	// collection
+	if (typeof db_tmp.collection === 'object') {
+		if (typeof db_tmp.collection.v === 'number') {
+			if (db_tmp.collection.v > db.manager.collection) error_list.push('Collection Database Version is not supported')
+			else {
+				if (Array.isArray(db_tmp.collection.a)) {
+					db.collection = db_tmp.collection.a.slice()
+				} else error_list.push('Collection Database is Corrupted #Data')
+			}
+		} else error_list.push('Collection Database is Corrupted #Version')
+	} else error_list.push(db_tmp.collection)
+	delete db_tmp.collection
 
 	// artist
 	if (typeof db_tmp.artist === 'object') {
@@ -1696,12 +1711,12 @@ function GetMainMenu(tab, page) {
 	return container
 }
 
-function PostLink(tabId, link, site, id, sldIndex, pack) {
+function PostLink(tabId, link, site, id, sldIndex, index, pack) {
 	const e = window.event, key = e.which
 	if (key == 1) browser.LinkClick(tabId, link)
 	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
 	else {
-		ContextManager.save = [tabId, link, site, id, sldIndex]
+		ContextManager.save = [tabId, link, site, id, sldIndex, index]
 
 		if (pack) {
 			ContextManager.SetActiveItem('posts', 3, false)
@@ -1724,7 +1739,7 @@ function GetPostElement(tab, i, date = 0) {
 	if (db.post[i][0] == -1) pack = true
 	const container = document.createElement('div')
 	const len = tab.save.length
-	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len, pack)
+	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len, i, pack)
 	let save = document.createElement('img')
 	save.loading = 'lazy'
 	if (pack) {
@@ -2483,10 +2498,6 @@ function LoadSites(tabId) {
 	tab.Load(token, container, 'Sites')
 }
 
-function LoadCollections(tabId) {
-	PopAlert(Language('coming-soon'), 'warning')
-}
-
 // History
 function LoadHistory(tabId, page) {
 	const tab = browser.GetTab(tabId)
@@ -3022,6 +3033,7 @@ function GetBackup() {
 
 async function BackUp(save_path = null, callback = null) {
 	const backup_files = [
+		'collection',
 		'artist',
 		'character',
 		'have',
