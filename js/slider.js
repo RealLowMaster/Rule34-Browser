@@ -34,6 +34,7 @@ const slider = {
 	container: document.getElementById('slider'),
 	img_container: document.getElementById('sld-img'),
 	pack_page: document.getElementById('sldppage'),
+	loading: document.getElementById('sld-loading'),
 	pack_icon: null,
 	element: null,
 	osize: false,
@@ -99,6 +100,7 @@ function SliderNext(jump) {
 }
 
 function SliderChange(index) {
+	slider.loading.style.display = 'flex'
 	if (slider.overview) {
 		const children = document.getElementById('sld-overview').children
 		children[slider.active].removeAttribute('active')
@@ -170,6 +172,7 @@ function SliderChange(index) {
 		slider.element.draggable = false
 		slider.is_video = true
 		slider.element.onloadeddata = () => {
+			slider.loading.style.display = 'none'
 			slider.img_container.appendChild(slider.element)
 			if (slider.osize) {
 				SliderOriginalSize(false)
@@ -184,6 +187,7 @@ function SliderChange(index) {
 		const ivsave = slider.is_video
 		slider.is_video = false
 		slider.element.onload = () => {
+			slider.loading.style.display = 'none'
 			slider.img_container.appendChild(slider.element)
 			if (slider.osize) {
 				if (ivsave) SliderOriginalSize(true)
