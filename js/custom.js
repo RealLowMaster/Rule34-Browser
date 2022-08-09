@@ -836,6 +836,7 @@ function JumpPage() {
 	let value = Math.min(Math.abs(Number(mbjp.value)), tab.maxPages)
 	if (value < 1) value = 1
 	switch(tab.site) {
+		case -5: LoadCollection(tab.id, tab.jumpPage, value); return
 		case -3: LoadInfo(tab.id, value, tab.jumpPage); return
 		case -2: LoadHistory(tab.id, value); return
 		case -1:

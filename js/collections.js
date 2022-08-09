@@ -113,9 +113,9 @@ function LoadCollections(tabId) {
 	tab.Load(token, container, 'Collections')
 }
 
-function LoadCollection(tabId, index, page) {
+function LoadCollection(tabId, index = null, page = 1) {
 	const tab = browser.GetTab(tabId)
-	const token = tab.Loading(-5)
+	const token = tab.Loading(-5, index)
 	tab.AddHistory(-10, [index, page])
 	if (db.collection[index] == undefined) tab.Error(token, Language('pnf'))
 	const container = document.createElement('div')
@@ -176,7 +176,19 @@ function LoadCollection(tabId, index, page) {
 			for (let i = min; i < max; i++) save.appendChild(GetPostElement(tab, db.collection[index][1][i], date))
 		}
 		container.appendChild(save)
-		container.appendChild(GetPagination(tab, -1, total_pages, page))
+		const pagination = GetPaginationList(total_pages, page)
+		save = document.createElement('div')
+		save.classList.add('main-page-pagination')
+		for (let i = 0, l = pagination.length; i < l; i++) {
+			if (pagination[i][1] != null) save.appendChild(NormalLinkElement('div', pagination[i][0], tabId, tab.AddLink(-10, [index, pagination[i][1]])))
+			else {
+				const btn = document.createElement('div')
+				btn.setAttribute('active', '')
+				btn.innerText = pagination[i][0]
+				save.appendChild(btn)
+			}
+		}
+		container.appendChild(save)
 	} else {
 		page = 1
 		save = document.createElement('div')
