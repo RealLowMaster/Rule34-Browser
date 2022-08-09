@@ -101,12 +101,11 @@ class rule34xxx {
 			arr.posts = []
 			try {
 				save = html.getElementById('post-list').getElementsByClassName('image-list')[0].children
-				if (save.length == 0) save = null
 			} catch(err) {
 				console.error(err)
 				save = null
 			}
-			if (save != null) {
+			if (save != null && save.length > 0) {
 				for (let i = 0, l = save.length; i < l; i++) {
 					const img = save[i].children[0].children[0]
 					arr.posts.push({

@@ -79,7 +79,7 @@ class e621net {
 			arr.posts = []
 			try {
 				save = html.getElementById('posts-container').children
-				if (save.length == 0) save = null
+				if (save.length == 0 || save[0].tagName != 'ARTICLE') save = null
 			} catch(err) {
 				console.error(err)
 				save = null
