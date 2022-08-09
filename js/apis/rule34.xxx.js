@@ -39,7 +39,7 @@ class rule34xxx {
 		return arr
 	}
 
-	#GetPagination(html, perPage = 42, limit = true) {
+	#GetPagination(html, perPage, limit, page) {
 		let save
 		try {
 			save = html.getElementById('paginator').children[0]
@@ -52,29 +52,27 @@ class rule34xxx {
 			save = null
 		}
 
+		if (page == 0) page = 1
+
 		const arr = [0, []]
 		if (save != null) {
-			for (let i = 0, l = save.length; i < l; i++) {
-				if (save[i].tagName == 'A') arr[1].push([Number(LastChar('=', save[i].href)) / perPage + 1, save[i].innerText])
-				else if (save[i].tagName == 'B') arr[1].push([null, save[i].innerText])
-			}
 			for (let i = save.length - 1; i >= 0; i--) {
-				if (save[i].tagName == 'B') {
-					arr[0] = Number(save[i].innerHTML)
-					break
-				}
 				if (save[i].tagName == 'A') {
-					let num = Number(LastChar('=', save[i].href))
-					if (isNaN(num)) arr[0] = 1
-					else {
-						num = num / perPage + 1
-						if (limit) arr[0] = num > this.maxPage ? this.maxPage : num
-						else arr[0] = num
-					}
+					arr[0] = Number(LastChar('=', save[i].href)) / perPage + 1
+					break
+				} else if (save[i].tagName == 'B') {
+					arr[0] = page
 					break
 				}
 			}
-		} else arr[0] = 1
+
+			if (arr[0] == 0) arr[0] = page
+			if (limit && arr[0] > this.maxPage) arr[0] = this.maxPage
+			arr[1] = GetPaginationList(arr[0], page)
+		} else {
+			arr[0] = page
+			arr[1] = GetPaginationList(page, page)
+		}
 		return arr
 	}
 
@@ -117,7 +115,7 @@ class rule34xxx {
 			} else throw Language('npost')
 
 			// Pagination
-			save = this.#GetPagination(html)
+			save = this.#GetPagination(html, 42, true, page + 1)
 			arr.maxPages = save[0]
 			arr.pagination = save[1]
 
@@ -213,6 +211,7 @@ class rule34xxx {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		page--
 		const url = this.baseURL+'index.php?page=artist&s=list&search='+(search == null ? '' : ToURL(search))+'&pid='+(page * 25)
+		page++
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
@@ -225,7 +224,7 @@ class rule34xxx {
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
 			let arr = {}, save
-			arr.title = 'Artists > '+(search == null ? '' : search+' > ')+'Page '+(page + 1)
+			arr.title = 'Artists > '+(search == null ? '' : search+' > ')+'Page '+page
 
 			// List
 			try {
@@ -250,7 +249,7 @@ class rule34xxx {
 			} else arr.list = null
 
 			// Pagination
-			save = this.#GetPagination(html, 25, false)
+			save = this.#GetPagination(html, 25, false, page)
 			arr.maxPages = save[0]
 			arr.pagination = save[1]
 			
@@ -266,6 +265,7 @@ class rule34xxx {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		page--
 		const url = this.baseURL+'index.php?page=tags&s=list&pid='+(page * 50)+(search == null ? '' : '&sort=asc&order_by=tag&tags='+ToURL(search))
+		page++
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
@@ -278,7 +278,7 @@ class rule34xxx {
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
 			let arr = {}, save
-			arr.title = 'Tags > '+(search == null ? '' : search+' > ')+'Page '+(page + 1)
+			arr.title = 'Tags > '+(search == null ? '' : search+' > ')+'Page '+page
 
 			// List
 			try {
@@ -302,7 +302,7 @@ class rule34xxx {
 			} else arr.list = null
 
 			// Pagination
-			save = this.#GetPagination(html, 50, false)
+			save = this.#GetPagination(html, 50, false, page)
 			arr.maxPages = save[0]
 			arr.pagination = save[1]
 			
@@ -318,6 +318,7 @@ class rule34xxx {
 		if (typeof callback !== 'function') throw "Callback should be Function."
 		page--
 		const url = this.baseURL+'index.php?page=pool&s=list&pid='+(page * 25)
+		page++
 
 		if (!window.navigator.onLine) { callback(Language('no-internet'), null); return }
 		fetch(url).then(response => {
@@ -330,7 +331,7 @@ class rule34xxx {
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
 			let arr = {}, save
-			arr.title = 'Pools > Page '+(page + 1)
+			arr.title = 'Pools > Page '+page
 
 			// List
 			try {
@@ -357,7 +358,7 @@ class rule34xxx {
 			} else arr.list = null
 
 			// Pagination
-			save = this.#GetPagination(html, 25, false)
+			save = this.#GetPagination(html, 25, false, page)
 			arr.maxPages = save[0]
 			arr.pagination = save[1]
 			

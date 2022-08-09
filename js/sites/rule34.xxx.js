@@ -104,18 +104,18 @@ function Rule34XXXGetPagination(tab, arr, linkId) {
 	container.classList.add('rule34-xxx-pagination')
 	arr = arr.pagination
 	for (let i = 0, l = arr.length; i < l; i++) {
-		if (arr[i][0] == null) {
+		if (arr[i][1] == null) {
 			const save = document.createElement('span')
-			save.innerText = arr[i][1]
+			save.innerText = arr[i][0]
 			container.appendChild(save)
-		} else if (typeof arr[i][0] === 'object') {
-			if (arr[i][0][0] != null) container.appendChild(NormalLinkElement('div', arr[i][1], tab.id, tab.AddLink(linkId, arr[i][0]), false))
+		} else if (typeof arr[i][1] === 'object') {
+			if (arr[i][1][0] != null) container.appendChild(NormalLinkElement('div', arr[i][0], tab.id, tab.AddLink(linkId, arr[i][1]), false))
 			else {
 				const save = document.createElement('span')
-				save.innerText = arr[i][1]
+				save.innerText = arr[i][0]
 				container.appendChild(save)
 			}
-		} else container.appendChild(NormalLinkElement('div', arr[i][1], tab.id, tab.AddLink(linkId, arr[i][0]), false))
+		} else container.appendChild(NormalLinkElement('div', arr[i][0], tab.id, tab.AddLink(linkId, arr[i][1]), false))
 	}
 	return container
 }
@@ -152,7 +152,7 @@ function Rule34XXXHome(tabId, page = 1, search = null) {
 
 		side = document.createElement('div')
 		side.appendChild(Rule34XXXGetPosts(tab, arr))
-		for (let i = 0, l = arr.pagination.length; i < l; i++) arr.pagination[i][0] = [arr.pagination[i][0], search]
+		for (let i = 0, l = arr.pagination.length; i < l; i++) arr.pagination[i][1] = [arr.pagination[i][1], search]
 		side.appendChild(Rule34XXXGetPagination(tab, arr, 4))
 		sides.appendChild(side)
 
@@ -281,7 +281,7 @@ function Rule34XXXArtists(tabId, page = 1, search = null) {
 			save.appendChild(save2)
 		}
 		container.appendChild(save)
-		for (let i = 0, l = arr.pagination.length; i < l; i++) arr.pagination[i][0] = [arr.pagination[i][0], search]
+		for (let i = 0, l = arr.pagination.length; i < l; i++) arr.pagination[i][1] = [arr.pagination[i][1], search]
 		container.appendChild(Rule34XXXGetPagination(tab, arr, 5))
 
 		tab.Load(token, container, arr.title, 'var(--r34x-primary-bg)', page, arr.maxPages)
@@ -343,7 +343,7 @@ function Rule34XXXTags(tabId, page = 1, search = null) {
 			save.appendChild(save2)
 		}
 		container.appendChild(save)
-		for (let i = 0, l = arr.pagination.length; i < l; i++) arr.pagination[i][0] = [arr.pagination[i][0], search]
+		for (let i = 0, l = arr.pagination.length; i < l; i++) arr.pagination[i][1] = [arr.pagination[i][1], search]
 		container.appendChild(Rule34XXXGetPagination(tab, arr, 6))
 
 		tab.Load(token, container, arr.title, 'var(--r34x-primary-bg)', page, arr.maxPages)
