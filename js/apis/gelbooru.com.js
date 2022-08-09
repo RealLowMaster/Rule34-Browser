@@ -62,7 +62,7 @@ class GelBooru {
 			// Posts
 			arr.posts = []
 			try {
-				save = html.getElementsByClassName('thumbnail-container')[0].children
+				save = html.getElementsByClassName('thumbnail-container')[0].getElementsByClassName('thumbnail-preview')
 				if (save.length == 0) save = null
 			} catch(err) {
 				console.error(err)
@@ -70,6 +70,7 @@ class GelBooru {
 			}
 
 			if (save != null) {
+				console.log(save)
 				for (let i = 0, l = save.length; i < l; i++) {
 					save2 = save[i].children[0]
 					arr.posts.push({
