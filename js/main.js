@@ -161,6 +161,7 @@ function SetHotKeys() {
 	KeyManager.AddCategory('slider')
 	KeyManager.AddHotKey('slider', false, false, false, 65, SliderPrev)
 	KeyManager.AddHotKey('slider', false, false, false, 68, SliderNext)
+	KeyManager.AddHotKey('slider', false, false, false, 67, () => OpenAddPostCollection(slider.post_index))
 	KeyManager.AddHotKey('slider', false, false, false, 37, SliderPrev)
 	KeyManager.AddHotKey('slider', false, false, false, 39, SliderNext)
 	KeyManager.AddHotKey('slider', false, false, false, 72, () => {if (slider.hide) {SliderHide(false)} else SliderHide(true)})
@@ -170,6 +171,9 @@ function SetHotKeys() {
 	
 	KeyManager.AddCategory('downloads')
 	KeyManager.AddHotKey('downloads', false, false, false, 27, downloader.ClosePanel)
+
+	KeyManager.AddCategory('collection')
+	KeyManager.AddHotKey('collection', false, false, false, 27, CloseAddPostCollection)
 
 	KeyManager.AddCategory('setting')
 	KeyManager.AddHotKey('setting', true, false, false, 83, SaveSetting)

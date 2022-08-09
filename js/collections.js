@@ -200,7 +200,9 @@ const collection = {
 }
 
 function OpenAddPostCollection(index) {
+	if (index == null) return
 	KeyManager.stop = true
+	KeyManager.ChangeCategory('collection')
 	document.getElementById('addpostcol').style.display = 'flex'
 	const container = document.getElementById('addpostcolc')
 	collection.post = index
@@ -228,6 +230,7 @@ function OpenAddPostCollection(index) {
 
 		container.appendChild(save)
 	}
+	KeyManager.stop = false
 }
 
 function AddPostCollection(who, index, remove) {
@@ -248,8 +251,10 @@ function AddPostCollection(who, index, remove) {
 }
 
 function CloseAddPostCollection() {
+	KeyManager.stop = true
 	document.getElementById('addpostcolc').innerHTML = null
 	document.getElementById('addpostcol').style.display = 'none'
+	KeyManager.BackwardCategory()
 	KeyManager.stop = false
 }
 

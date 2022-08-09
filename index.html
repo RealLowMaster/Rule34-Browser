@@ -107,6 +107,26 @@
 				<div id="reads"></div>
 			</div>
 
+			<!-- Slider -->
+			<div id="slider">
+				<div id="sld-overview"></div>
+				<div id="sld-loading"><img src="Image/loading.gif">Loading...</div>
+				<div>
+					<div id="sld-img"></div>
+					<form class="sldform" id="sldform"><input type="number" id="sldinput" min="1" max="1" value="1"><span id="sldpage"></span></form>
+					<form class="sldform" id="sldpform"><i ic="layer"></i><input type="number" id="sldpinput" min="1" max="1" value="1" style="width:30px"><span id="sldppage"></span></form>
+					<div id="sld-btns">
+						<div lt="sld-coll" id="sld-coll" onclick="OpenAddPostCollection(slider.post_index)"><i ic="collection"></i></div>
+						<div lt="sld-prev" onclick="SliderPrev()"><i ic="prev"></i></div>
+						<div lt="sld-next" onclick="SliderNext()"><i ic="next"></i></div>
+						<div lt="sld-hide" onclick="if (slider.hide) {SliderHide(false)} else SliderHide(true)"><i ic="hide"></i></div>
+						<div lt="sld-osize" onclick="SliderToggleOSize()"><i ic="maximize"></i></div>
+						<div lt="close" onclick="CloseSlider()"><i ic="xmark"></i></div>
+					</div>
+					<div id="sld-toggle" l="overview" lt="sld-overview" onclick="if (slider.overview) {SliderOverview(false)} else SliderOverview(true)"></div>
+				</div>
+			</div>
+
 			<!-- Add Collection -->
 			<form id="addcol">
 				<div>
@@ -137,25 +157,6 @@
 					<div class="btn btn-danger" l="close" onclick="downloader.ClosePanel()"></div>
 				</div>
 				<div id="dl-container"></div>
-			</div>
-
-			<!-- Slider -->
-			<div id="slider">
-				<div id="sld-overview"></div>
-				<div id="sld-loading"><img src="Image/loading.gif">Loading...</div>
-				<div>
-					<div id="sld-img"></div>
-					<form class="sldform" id="sldform"><input type="number" id="sldinput" min="1" max="1" value="1"><span id="sldpage"></span></form>
-					<form class="sldform" id="sldpform"><i ic="layer"></i><input type="number" id="sldpinput" min="1" max="1" value="1" style="width:30px"><span id="sldppage"></span></form>
-					<div id="sld-btns">
-						<div lt="sld-prev" onclick="SliderPrev()"><i ic="prev"></i></div>
-						<div lt="sld-next" onclick="SliderNext()"><i ic="next"></i></div>
-						<div lt="sld-hide" onclick="if (slider.hide) {SliderHide(false)} else SliderHide(true)"><i ic="hide"></i></div>
-						<div lt="sld-osize" onclick="SliderToggleOSize()"><i ic="maximize"></i></div>
-						<div lt="close" onclick="CloseSlider()"><i ic="xmark"></i></div>
-					</div>
-					<div id="sld-toggle" l="overview" lt="sld-overview" onclick="if (slider.overview) {SliderOverview(false)} else SliderOverview(true)"></div>
-				</div>
 			</div>
 
 			<!-- Settings -->

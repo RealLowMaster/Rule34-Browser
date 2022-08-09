@@ -41,7 +41,8 @@ const slider = {
 	overview: false,
 	hide: false,
 	is_url: false,
-	is_video: false
+	is_video: false,
+	post_index: null
 }
 
 function OpenSlider(list, index, isurl = false, thumbList, animated) {
@@ -55,21 +56,25 @@ function OpenSlider(list, index, isurl = false, thumbList, animated) {
 	else slider.active = 0
 	slider.sub_active = null
 
-	if (slider.is_url && thumbList != null) slider.thumbList = thumbList
-	else slider.thumbList = []
-
-	if (slider.is_url && animated != null) slider.animatedList = animated
-	else slider.animatedList = []
+	if (slider.is_url) {
+		if (thumbList != null) slider.thumbList = thumbList
+		if (animated != null) slider.animatedList = animated
+		document.getElementById('sld-coll').style.display = 'none'
+	} else {
+		slider.thumbList = []
+		slider.animatedList = []
+		document.getElementById('sld-coll').style.display = 'flex'
+	}
 
 	const btns = document.getElementById('sld-btns').children
 	if (slider.listLength <= 1) {
-		btns[0].style.display = 'none'
 		btns[1].style.display = 'none'
+		btns[2].style.display = 'none'
 		sldform.style.display = 'none'
 		document.getElementById('sld-toggle').style.display = 'none'
 	} else {
-		btns[0].style.display = 'flex'
 		btns[1].style.display = 'flex'
+		btns[2].style.display = 'flex'
 		sldform.style.display = 'block'
 		document.getElementById('sld-toggle').style.display = 'block'
 	}
@@ -119,6 +124,7 @@ function SliderChange(index) {
 	const i = slider.list[slider.active]
 	let src, format
 	if (!slider.is_url) {
+		slider.post_index = i
 		if (db.post[i][0] == -1) {
 			if (same) {
 				format = db.post[i][3][slider.sub_active]
@@ -157,6 +163,7 @@ function SliderChange(index) {
 			return
 		}
 	} else {
+		slider.post_index = null
 		src = i
 		format = LastChar('.', src)
 	}
