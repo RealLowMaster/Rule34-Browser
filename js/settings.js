@@ -2,6 +2,8 @@ const defaultSetting = {
 	r34_xxx_original_size: false,
 	e621_net_orginal_size: false,
 	gelbooru_com_orginal_size: false,
+	derpibooru_org_orginal_size: false,
+	derpibooru_org_resized_size: 1,
 	// Default
 	theme: 0,
 	language: 0,
@@ -27,6 +29,7 @@ const sto_checkbox = [
 	['r34_xxx_original_size', 'originalsize', 'originalsizetip'],
 	['e621_net_orginal_size', 'originalsize', 'originalsizetip'],
 	['gelbooru_com_orginal_size', 'originalsize', 'originalsizetip'],
+	['derpibooru_org_orginal_size', 'originalsize', 'originalsizetip'],
 	['animations', 'animations', 'animationstip'],
 	['not', 'notifications', 'nottip'],
 	['not_sound', 'notsound', 'notsoundtip'],
@@ -40,7 +43,8 @@ const sto_checkbox = [
 const sto_radio = [
 	['theme', 'theme', ['dark', 'light']],
 	['language', 'language', ['english', 'persian']],
-	['maximum_pixel', 'maximumpixel', ['mpvlow', 'mplow', 'mpmid', 'mphigh', 'mpvhigh']]
+	['maximum_pixel', 'maximumpixel', ['mpvlow', 'mplow', 'mpmid', 'mphigh', 'mpvhigh']],
+	['derpibooru_org_resized_size', 'resizedsize', ['small', 'medium', 'large']]
 ]
 
 // [ 'setting name', 'translate name', min, max, 'translate tip' || null ]

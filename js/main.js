@@ -129,6 +129,11 @@ function ChangeScreenMode(fullscreen = null, save = true) {
 	if (save) jsonfile.writeFileSync(dirDocument+'/setting.json', setting)
 }
 
+function FirstChar(char, txt, backward = false) {
+	if (backward) return new String(txt).substring(0, txt.indexOf(char))
+	else return new String(txt).substring(txt.indexOf(char) + 1)
+}
+
 function LastChar(char, txt, backward = false) {
 	if (backward) return new String(txt).substring(0, txt.lastIndexOf(char))
 	else return new String(txt).substring(txt.lastIndexOf(char) + 1)

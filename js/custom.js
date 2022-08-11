@@ -53,8 +53,7 @@ const sites = [
 		icon: 'webp',
 		ip: '104.26.3.244',
 		location: 'USA - San Francisco - California',
-		home: null,
-		cooming: true
+		home: null
 	}
 ]
 
@@ -2488,23 +2487,23 @@ function LoadSites(tabId) {
 	let save = document.createElement('div')
 	save.classList.add('main-page-sites')
 	for (let i = 0, l = sites.length; i < l; i++) {
-		if (sites[i].cooming == true) {
-			const save2 = document.createElement('div')
-			save2.onmousedown = () => PopAlert(Language('coming-soon'), 'warning')
-			save2.setAttribute('lt', 'coming-soon')
-			save2.title = Language('coming-soon')
-			save2.style.border = '1px solid #E67E22'
-			let save3 = document.createElement('div')
-			let save4 = document.createElement('img')
-			save4.src = 'Image/sites/'+sites[i].url+'-32x32.'+sites[i].icon
-			save4.title = sites[i].url
-			save3.appendChild(save4)
-			save2.appendChild(save3)
-			save4 = document.createElement('p')
-			save4.innerText = sites[i].name
-			save2.appendChild(save4)
-			save.appendChild(save2)
-		} else {
+		// if (sites[i].cooming == true) {
+		// 	const save2 = document.createElement('div')
+		// 	save2.onmousedown = () => PopAlert(Language('coming-soon'), 'warning')
+		// 	save2.setAttribute('lt', 'coming-soon')
+		// 	save2.title = Language('coming-soon')
+		// 	save2.style.border = '1px solid #E67E22'
+		// 	let save3 = document.createElement('div')
+		// 	let save4 = document.createElement('img')
+		// 	save4.src = 'Image/sites/'+sites[i].url+'-32x32.'+sites[i].icon
+		// 	save4.title = sites[i].url
+		// 	save3.appendChild(save4)
+		// 	save2.appendChild(save3)
+		// 	save4 = document.createElement('p')
+		// 	save4.innerText = sites[i].name
+		// 	save2.appendChild(save4)
+		// 	save.appendChild(save2)
+		// } else {
 			const save2 = NormalLinkElement('div', null, tabId, tab.AddLink(3, i), false, true)
 			save2.title = sites[i].url
 			let save3 = document.createElement('div')
@@ -2517,7 +2516,7 @@ function LoadSites(tabId) {
 			save4.innerText = sites[i].name
 			save2.appendChild(save4)
 			save.appendChild(save2)
-		}
+		// }
 	}
 	container.appendChild(save)
 	tab.Load(token, container, 'Sites')
@@ -3118,16 +3117,23 @@ async function BackUp(save_path = null, callback = null) {
 }
 
 function test(page, search) {
-	const gelbooru = new GelBooru()
 
-	// 7543778 | 7543863
-	gelbooru.Post(page, (err, result) => {
+	const derpibooru = new DerpiBooruorg()
+
+	// 2692869
+	derpibooru.Post(page, (err, result) => {
 		console.error(err)
 		console.log(result)
 	})
 
 
+	// const gelbooru = new GelBooru()
 
+	// // 7543778 | 7543863
+	// gelbooru.Post(page, (err, result) => {
+	// 	console.error(err)
+	// 	console.log(result)
+	// })
 
 	// const e621 = new e621net()
 

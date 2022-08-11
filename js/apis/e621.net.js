@@ -14,7 +14,7 @@ class e621net {
 		}
 
 		const arr = [0, []]
-		if (save != null) {
+		if (save != null && save.length > 0) {
 			if (cpage >= this.maxPage) {
 				cpage = this.maxPage
 				arr[0] = cpage
