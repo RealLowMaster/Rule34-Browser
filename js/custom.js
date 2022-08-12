@@ -53,7 +53,7 @@ const sites = [
 		icon: 'webp',
 		ip: '104.26.3.244',
 		location: 'USA - San Francisco - California',
-		home: null
+		home: DerpiBooruHome
 	}
 ]
 
@@ -568,6 +568,10 @@ class BrowserManager {
 			case 11: E621XXXPost(tabId, value); return
 			case 12: GelBooruHome(tabId, value[0], value[1]); return
 			case 13: GelBooruPost(tabId, value); return
+			case 14: DerpiBooruHome(tabId, value[0], value[1]); return
+			case 15: DerpiBooruPost(tabId, value); return
+			case 16: DerpiBooruTags(tabId, value[0], value[1]); return
+			case 17: DerpiBooruRandom(tabId); return
 		}
 	}
 	
@@ -836,6 +840,7 @@ mb_search.onsubmit = e => {
 		case 0: Rule34XXXHome(browser.selectedTab, 1, mbs.value); return
 		case 1: E621Home(browser.selectedTab, 1, mbs.value); return
 		case 2: GelBooruHome(browser.selectedTab, 1, mbs.value); return
+		case 3: DerpiBooruHome(browser.selectedTab, 1, mbs.value); return
 	}
 }
 
@@ -869,6 +874,11 @@ function JumpPage() {
 		case 2:
 			switch(tab.jumpPage) {
 				case 0: GelBooruHome(tab.id, value, tab.submit_search); return
+			}
+			return
+		case 3:
+			switch(tab.jumpPage) {
+				case 0: DerpiBooruHome(tab.id, value, tab.submit_search); return
 			}
 			return
 	}
