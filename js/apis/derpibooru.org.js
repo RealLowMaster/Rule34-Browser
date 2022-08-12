@@ -128,6 +128,7 @@ class DerpiBooruorg {
 			arr.srcresize = arr.src.replace('/download/', '/')
 			save = LastChar('.', arr.srcresize)
 			arr.srcresize = LastChar('.', arr.srcresize, true)
+			arr.video = IsFormatVideo(save)
 
 			arr.thumb = arr.srcresize+'/thumb.'+save
 			switch(setting.derpibooru_org_resized_size) {

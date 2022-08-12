@@ -81,8 +81,6 @@
 	padding: 10px;
 	margin: 10px 0;
 	color: #222;
-	user-select: none;
-	cursor: pointer;
 }
 
 .gelbooru-sides > div:last-child > dlr > * {
@@ -92,6 +90,7 @@
 	color: #fff;
 	cursor: pointer;
 	transition: background-color ease .2s;
+	user-select: none;
 }
 
 .gelbooru-sides > div:last-child > dlr > img {

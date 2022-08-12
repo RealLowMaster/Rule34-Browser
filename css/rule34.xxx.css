@@ -56,8 +56,6 @@
 	padding: 10px;
 	margin: 10px 0;
 	color: #222;
-	user-select: none;
-	cursor: pointer;
 }
 
 .rule34-xxx-sides > div:last-child > dlr > * {
@@ -69,6 +67,7 @@
 	cursor: pointer;
 	box-shadow: 1px 1px 3px 0 #000a;
 	transition: background-color ease .2s;
+	user-select: none;
 }
 
 .rule34-xxx-sides > div:last-child > dlr > img {

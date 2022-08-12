@@ -3128,13 +3128,13 @@ async function BackUp(save_path = null, callback = null) {
 
 function test(page, search) {
 
-	const derpibooru = new DerpiBooruorg()
+	// const derpibooru = new DerpiBooruorg()
 
-	// 2692869
-	derpibooru.Post(page, (err, result) => {
-		console.error(err)
-		console.log(result)
-	})
+	// // 2692869
+	// derpibooru.Post(page, (err, result) => {
+	// 	console.error(err)
+	// 	console.log(result)
+	// })
 
 
 	// const gelbooru = new GelBooru()

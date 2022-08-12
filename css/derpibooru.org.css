@@ -43,18 +43,17 @@
 	width: 100%;
 }
 
-.derpb-sides > dlr {
+.derpb-sides > div > dlr {
 	display: flex;
+	justify-content: center;
 	align-items: center;
 	width: 100%;
 	padding: 10px;
 	margin: 10px 0;
 	color: #222;
-	user-select: none;
-	cursor: pointer;
 }
 
-.derpb-sides > dlr > * {
+.derpb-sides > div > dlr > * {
 	display: inline-block;
 	margin: 0 10px;
 	padding: 8px 10px;
@@ -63,9 +62,10 @@
 	cursor: pointer;
 	box-shadow: 1px 1px 3px 0 #000a;
 	transition: background-color ease .2s;
+	user-select: none;
 }
 
-.derpb-sides > dlr > img {
+.derpb-sides > div > dlr > img {
 	width: 32px;
 	height: 32px;
 	padding: 0;
@@ -75,15 +75,15 @@
 	transition: none;
 }
 
-.derpb-sides > dlr > div:first-child { background-color: #2d8bdc }
-.derpb-sides > dlr > div:first-child:hover { background-color: #1474c7 }
-.derpb-sides > dlr > div:last-child { background-color: #a0a }
-.derpb-sides > dlr > div:last-child:hover { background-color: #7a007a }
+.derpb-sides > div > dlr > div:first-child { background-color: #2d8bdc }
+.derpb-sides > div > dlr > div:first-child:hover { background-color: #1474c7 }
+.derpb-sides > div > dlr > div:last-child { background-color: #a0a }
+.derpb-sides > div > dlr > div:last-child:hover { background-color: #7a007a }
 
-.derpb-sides > dlr[dl] > div:first-child { background-color: #f00 }
-.derpb-sides > dlr[dl] > div:first-child:hover { background-color: #960000 }
-.derpb-sides > dlr[dl] > div:last-child { background-color: #ff0062 }
-.derpb-sides > dlr[dl] > div:last-child:hover { background-color: #b40246 }
+.derpb-sides > div > dlr[dl] > div:first-child { background-color: #f00 }
+.derpb-sides > div > dlr[dl] > div:first-child:hover { background-color: #960000 }
+.derpb-sides > div > dlr[dl] > div:last-child { background-color: #ff0062 }
+.derpb-sides > div > dlr[dl] > div:last-child:hover { background-color: #b40246 }
 
 .derpb-posts { display: block; width: 100%; padding-left: 10px }
 
@@ -175,3 +175,50 @@
 	color: #222;
 	border: 1px solid #000;
 }
+
+.derpb-size {
+	display: block;
+	width: 100%;
+	text-align: center;
+}
+
+.derpb-tags {
+	display: block;
+	width: 100%;
+	padding: 20px;
+}
+
+.derpb-tags > div {
+	display: inline-flex;
+	height: 30px;
+	margin: 5px;
+	border: 1px solid;
+	cursor: pointer;
+}
+
+.derpb-tags > div > span:first-child {
+	height: 100%;
+	padding: 5px;
+}
+
+.derpb-tags > div > span:last-child {
+	height: 100%;
+	padding: 5px;
+	user-select: none;
+}
+
+.derpb-tags > div[artist] { background-color: #b9bce1; border-color: #959ad1; color: #393f85 }
+.derpb-tags > div[artist] > span:last-child { background-color: #959ad1; color: #333 }
+.derpb-tags > div[artist]:hover { background-color: #acafd0 }
+
+.derpb-tags > div[character] { background-color: #b5dfd8; border-color: #5bc8b6; color: #2d8677 }
+.derpb-tags > div[character] > span:last-child { background-color: #5bc8b6; color: #333 }
+.derpb-tags > div[character]:hover { background-color: #a7cac3 }
+
+.derpb-tags > div[specie] { background-color: #e6c9b5; border-color: #cd946c; color: #8b552f }
+.derpb-tags > div[specie] > span:last-child { background-color: #cd946c; color: #333 }
+.derpb-tags > div[specie]:hover { background-color: #c3aa98 }
+
+.derpb-tags > div[tag] { background-color: #d0e29c; border-color: #b3cf5d; color: #6f8f0e }
+.derpb-tags > div[tag] > span:last-child { background-color: #b3cf5d; color: #333 }
+.derpb-tags > div[tag]:hover { background-color: #bcca94 }

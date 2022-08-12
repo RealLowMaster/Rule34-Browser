@@ -3,9 +3,9 @@ const derpibooru = new DerpiBooruorg()
 function DerpiBooruMenu(tab) {
 	let save = document.createElement('div')
 	save.classList.add('derpb-menu')
-    const img = document.createElement('img')
-    img.src = 'Image/sites/derpibooru.org-32x32.webp'
-    save.appendChild(img)
+	const img = document.createElement('img')
+	img.src = 'Image/sites/derpibooru.org-32x32.webp'
+	save.appendChild(img)
 	save.appendChild(NormalLinkElement('div', 'Random', tab.id, tab.AddLink(17), false))
 	save.appendChild(NormalLinkElement('div', 'Tags', tab.id, tab.AddLink(16, [1, null]), false))
 	return save
@@ -56,7 +56,6 @@ function DerpiBooruHome(tabId, page = 1, search = null) {
 	tab.search = search
 	if (browser.selectedTab == tab.id) mbs.value = search
 	tab.submit_search = search
-	
 
 	derpibooru.Page(page, search, (err, arr) => {
 		if (err) {
@@ -75,10 +74,7 @@ function DerpiBooruHome(tabId, page = 1, search = null) {
 		const sides = document.createElement('div')
 		sides.classList.add('derpb-sides')
 
-		let side = document.createElement('div')
-		sides.appendChild(side)
-
-		side = document.createElement('div')
+		const side = document.createElement('div')
 		side.appendChild(DerpiBooruGetPosts(tab, arr))
 		for (let i = 0, l = arr.pagination.length; i < l; i++) arr.pagination[i][1] = [arr.pagination[i][1], search]
 		side.appendChild(DerpiBooruGetPagination(tab, arr, 14))
@@ -105,26 +101,26 @@ function DerpiBooruPost(tabId, id) {
 
 		const sides = document.createElement('div')
 		sides.classList.add('derpb-sides')
-		let side = document.createElement('div')
-		side.appendChild(DerpiBooruGetTags(tab, arr))
-		let save = document.createElement('div')
-		save.classList.add('derpb-tags')
-		save.classList.add('pt-1')
-		let save2 = document.createElement('p')
-		save2.innerText = 'States'
-		save.appendChild(save2)
-		save2 = document.createElement('div')
-		save2.innerText = 'Id: '+arr.id
-		save.appendChild(save2)
-		save2 = document.createElement('div')
-		save2.innerText = 'Size: '+arr.size
-		save.appendChild(save2)
-		save2 = document.createElement('div')
-		save2.innerText = 'Format: '+arr.format
-		save.appendChild(save2)
-		side.appendChild(save)
-		sides.appendChild(side)
-		side = document.createElement('div')
+
+		// let save = document.createElement('div')
+		// save.classList.add('derpb-tags')
+		// save.classList.add('pt-1')
+		// let save2 = document.createElement('p')
+		// save2.innerText = 'States'
+		// save.appendChild(save2)
+		// save2 = document.createElement('div')
+		// save2.innerText = 'Id: '+arr.id
+		// save.appendChild(save2)
+		// save2 = document.createElement('div')
+		// save2.innerText = 'Size: '+arr.size
+		// save.appendChild(save2)
+		// save2 = document.createElement('div')
+		// save2.innerText = 'Format: '+arr.format
+		// save.appendChild(save2)
+		// side.appendChild(save)
+		// sides.appendChild(side)
+
+		const side = document.createElement('div')
 		const src = arr.src
 		if (arr.video) {
 			const vid = document.createElement('video')
@@ -147,7 +143,74 @@ function DerpiBooruPost(tabId, id) {
 			img.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
 			side.appendChild(img)
 		}
+
+		let save = document.createElement('div'), save2, save3
+		save.classList.add('derpb-size')
+		save.innerText = arr.size
+		side.appendChild(save)
+
 		side.appendChild(BRDownloadElement(3, id))
+
+		save = document.createElement('div')
+		save.classList.add('derpb-tags')
+
+		if (arr.artist) {
+			for (let i = 0, l = arr.artist.length; i < l; i++) {
+				save2 = NormalLinkElement('div', null, tab.id, tab.AddLink(14, [1, arr.artist[i][0]]))
+				save2.setAttribute('artist','')
+				save3 = document.createElement('span')
+				save3.innerText = arr.artist[i][0]
+				save2.appendChild(save3)
+				save3 = document.createElement('span')
+				save3.innerText = arr.artist[i][1]
+				save2.appendChild(save3)
+				save.appendChild(save2)
+			}
+		}
+
+		if (arr.character) {
+			for (let i = 0, l = arr.character.length; i < l; i++) {
+				save2 = NormalLinkElement('div', null, tab.id, tab.AddLink(14, [1, arr.character[i][0]]))
+				save2.setAttribute('character','')
+				save3 = document.createElement('span')
+				save3.innerText = arr.character[i][0]
+				save2.appendChild(save3)
+				save3 = document.createElement('span')
+				save3.innerText = arr.character[i][1]
+				save2.appendChild(save3)
+				save.appendChild(save2)
+			}
+		}
+
+		if (arr.specie) {
+			for (let i = 0, l = arr.specie.length; i < l; i++) {
+				save2 = NormalLinkElement('div', null, tab.id, tab.AddLink(14, [1, arr.specie[i][0]]))
+				save2.setAttribute('specie','')
+				save3 = document.createElement('span')
+				save3.innerText = arr.specie[i][0]
+				save2.appendChild(save3)
+				save3 = document.createElement('span')
+				save3.innerText = arr.specie[i][1]
+				save2.appendChild(save3)
+				save.appendChild(save2)
+			}
+		}
+
+		if (arr.tag) {
+			for (let i = 0, l = arr.tag.length; i < l; i++) {
+				save2 = NormalLinkElement('div', null, tab.id, tab.AddLink(14, [1, arr.tag[i][0]]))
+				save2.setAttribute('tag','')
+				save3 = document.createElement('span')
+				save3.innerText = arr.tag[i][0]
+				save2.appendChild(save3)
+				save3 = document.createElement('span')
+				save3.innerText = arr.tag[i][1]
+				save2.appendChild(save3)
+				save.appendChild(save2)
+			}
+		}
+
+		side.appendChild(save)
 		sides.appendChild(side)
 		container.appendChild(sides)
 		tab.Load(token, container, arr.title, 'var(--derpb-primary-bg)')
