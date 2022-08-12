@@ -104,7 +104,7 @@ class DerpiBooruorg {
 			return response.text()
 		}).then(html => {
 			html = new DOMParser().parseFromString(html, 'text/html')
-			let arr = {url:url,size:'',id:id,thumb:'',format:''}, save, save2
+			let arr = {url:url,size:'',id:id,thumb:'',format:''}, save, save2, save3, save4
 
 			arr.title = html.title
 			// Source
@@ -112,7 +112,6 @@ class DerpiBooruorg {
 			arr.src = null
 			try {
 				save = html.getElementsByClassName('stretched-mobile-links')
-				console.log(save)
 				save = save[save.length-1].children
 				arr.src = save[save.length-1].href
 			} catch(err) {
@@ -126,22 +125,16 @@ class DerpiBooruorg {
 				return
 			}
 
-			try {
-				save = html.getElementsByClassName('image-scaled')
-				console.log(save)
-				arr.srcresize = save[0].src
-			} catch(err) {
-				console.error(err)
-				callback(Language('err404'), null)
-				return
+			arr.srcresize = arr.src.replace('/download/', '/')
+			save = LastChar('.', arr.srcresize)
+			arr.srcresize = LastChar('.', arr.srcresize, true)
+
+			arr.thumb = arr.srcresize+'/thumb.'+save
+			switch(setting.derpibooru_org_resized_size) {
+				case 0: arr.srcresize += '/small.'+save; break
+				case 1: arr.srcresize += '/medium.'+save; break
+				case 2: arr.srcresize += '/large.'+save; break
 			}
-
-			
-
-			
-
-			callback(null, arr)
-			return
 
 			// States
 			try {
@@ -149,58 +142,71 @@ class DerpiBooruorg {
 				arr.size = html.getElementsByClassName('image-size')[0].innerText
 			} catch(err) { console.error(err) }
 
-			// Thumb
-			try { arr.thumb = arr.srcresize.replace('/sample/', '/preview/') } catch(err) { console.error(err) }
-
-			// Tags
 			try {
-				save = html.getElementById('tag-list').children
-				if (save.length == 0) save = null
+				save = html.getElementsByClassName('tag-list')[0]
 			} catch(err) {
 				console.error(err)
 				save = null
 			}
+
 			if (save != null) {
-				const data = [
-					[], // 0 Artist
-					[], // 1 Copyright
-					[], // 2 Character
-					[], // 3 Species
-					[], // 4 General
-					[], // 5 Meta
-				]
-				let index = 0, save3
-				for (let i = 0, l = save.length; i < l; i++) {
-					if (save[i].tagName == 'H2') {
-						switch(save[i].innerText) {
-							case 'Artists': index = 0; break
-							case 'Copyrights': index = 1; break
-							case 'Characters': index = 2; break
-							case 'Species': index = 3; break
-							case 'General': index = 4; break
-							case 'Meta': index = 5; break
-						}
-					} else {
-						save2 = save[i].children
-						if (save2.length == 0) continue
-						for (let j = 0, n = save2.length; j < n; j++) {
-							save3 = save2[j].children
-							data[index].push([
-								save3[1].innerText,
-								save3[2].innerText
-							])
-						}
+				// artist
+				save2 = save.querySelectorAll('[data-tag-category="origin"]')
+				if (save2.length > 0) {
+					arr.artist = []
+					for (let i = 0, l = save2.length; i < l; i++) {
+						save3 = save2[i].children
+						save4 = save3[0].children
+						arr.artist.push([
+							save4[save4.length-1].innerText,
+							save3[save3.length-1].innerText
+						])
 					}
 				}
-				
-				if (data[0].length != 0) arr.artist = data[0]
-				if (data[1].length != 0) arr.parody = data[1]
-				if (data[2].length != 0) arr.character = data[2]
-				if (data[3].length != 0) arr.specie = data[3]
-				if (data[4].length != 0) arr.tag = data[4]
-				if (data[5].length != 0) arr.meta = data[5]
+
+				// characters
+				save2 = save.querySelectorAll('[data-tag-category="character"]')
+				if (save2.length > 0) {
+					arr.character = []
+					for (let i = 0, l = save2.length; i < l; i++) {
+						save3 = save2[i].children
+						save4 = save3[0].children
+						arr.character.push([
+							save4[save4.length-1].innerText,
+							save3[save3.length-1].innerText
+						])
+					}
+				}
+
+				// specie
+				save2 = save.querySelectorAll('[data-tag-category="species"]')
+				if (save2.length > 0) {
+					arr.specie = []
+					for (let i = 0, l = save2.length; i < l; i++) {
+						save3 = save2[i].children
+						save4 = save3[0].children
+						arr.specie.push([
+							save4[save4.length-1].innerText,
+							save3[save3.length-1].innerText
+						])
+					}
+				}
+
+				// tag
+				save2 = save.querySelectorAll('[data-tag-category=""]')
+				if (save2.length > 0) {
+					arr.tag = []
+					for (let i = 0, l = save2.length; i < l; i++) {
+						save3 = save2[i].children
+						save4 = save3[0].children
+						arr.tag.push([
+							save4[save4.length-1].innerText,
+							save3[save3.length-1].innerText
+						])
+					}
+				}
 			}
-			
+
 			callback(null, arr)
 		}).catch(err => {
 			console.error(err)
