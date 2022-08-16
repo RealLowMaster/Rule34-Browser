@@ -89,9 +89,9 @@ const db = {
 		tabs: 0,
 		open_tabs: 0,
 		reads: 0,
-		post: 0,
+		post: 1,
 		have: 0,
-		collection: 0,
+		collection: 1,
 		artist: 0,
 		tag: 0,
 		parody: 0,
@@ -1241,6 +1241,9 @@ function LoadDatabase() {
 			else {
 				if (Array.isArray(db_tmp.post.a)) {
 					if (Array.isArray(db_tmp.post.h)) {
+						switch(db_tmp.post.v) {
+							case 0: db_tmp.post = Post0To1(db_tmp.post); break
+						}
 						if (db_tmp.post.h.length < sites.length) for (let i = 0, l = sites.length; i < l; i++) if (!Array.isArray(db_tmp.post.h[i])) db_tmp.post.h[i] = []
 						db.post = db_tmp.post.a.slice()
 						db.post_have = db_tmp.post.h.slice()
@@ -1270,6 +1273,10 @@ function LoadDatabase() {
 		if (typeof db_tmp.collection.v === 'number') {
 			if (db_tmp.collection.v > db.manager.collection) error_list.push('Collection Database Version is not supported')
 			else {
+				switch(db_tmp.collection.v) {
+					case 0: db_tmp.collection = Collection0To1(db_tmp.collection); break
+				}
+
 				if (Array.isArray(db_tmp.collection.a)) {
 					db.collection = db_tmp.collection.a.slice()
 				} else error_list.push('Collection Database is Corrupted #Data')

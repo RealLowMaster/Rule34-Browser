@@ -2,19 +2,11 @@
 	--derpb-primary-bg: #fff;
 	--derpb-secondary-bg: #d5e7f5;
 	--derpb-interactive-hover: #e6eef3;
-
-	--derpb-primary-header: #222;
-	--derpb-link: #009;
-	--derpb-link-hover: #000;
-
 	--derpb-interactive-normal: rgba(50,50,50,.1);
-	
 	--derpb-img-bd-color: #0000ff;
-
-	--derpb-dl-bg-noraml: #444;
 }
 
-.derpb-page { color: var(--derpb-primary-header) }
+.derpb-page { color: #333 }
 
 .derpb-menu {
 	display: flex;
@@ -69,7 +61,7 @@
 	width: 32px;
 	height: 32px;
 	padding: 0;
-	background-color: var(--derpb-link);
+	background-color: #009;
 	cursor: default;
 	box-shadow: none;
 	transition: none;
@@ -176,17 +168,8 @@
 	border: 1px solid #000;
 }
 
-.derpb-size {
-	display: block;
-	width: 100%;
-	text-align: center;
-}
-
-.derpb-tags {
-	display: block;
-	width: 100%;
-	padding: 20px;
-}
+.derpb-size { display: block; width: 100%; text-align: center }
+.derpb-tags { display: block; width: 100%; padding: 20px }
 
 .derpb-tags > div {
 	display: inline-flex;
@@ -196,16 +179,8 @@
 	cursor: pointer;
 }
 
-.derpb-tags > div > span:first-child {
-	height: 100%;
-	padding: 5px;
-}
-
-.derpb-tags > div > span:last-child {
-	height: 100%;
-	padding: 5px;
-	user-select: none;
-}
+.derpb-tags > div > span:first-child { height: 100%; padding: 5px }
+.derpb-tags > div > span:last-child { height: 100%; padding: 5px; user-select: none }
 
 .derpb-tags > div[artist] { background-color: #b9bce1; border-color: #959ad1; color: #393f85 }
 .derpb-tags > div[artist] > span:last-child { background-color: #959ad1; color: #333 }
