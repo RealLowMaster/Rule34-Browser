@@ -325,7 +325,7 @@ class DownloadManager {
 		const finished = () => {
 			if (dl) this.SendToAddPost(index)
 			else {
-				try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
+				try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have, i:db.post_id }) } catch(err) { console.error(err) }
 				loading.Forward()
 				loading.Close()
 				KeyManager.stop = false

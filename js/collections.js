@@ -50,7 +50,7 @@ function LoadCollections(tabId) {
 			let counter = 0
 			for (let j = counter; j < n; j++) {
 				counter++
-				const post = db.post[db.collection[i][1][j]]
+				const post = GetPost(db.collection[i][1][j], false)
 				const url = paths.thumb+(post[0] == -1 ? post[2][0] : post[2])+'.jpg'
 				if (existsSync(url)) {
 					imgs[0].src = url
@@ -64,7 +64,7 @@ function LoadCollections(tabId) {
 			} else {
 				for (let j = counter; j < n; j++) {
 					counter++
-					const post = db.post[db.collection[i][1][j]]
+					const post = GetPost(db.collection[i][1][j], false)
 					const url = paths.thumb+(post[0] == -1 ? post[2][0] : post[2])+'.jpg'
 					if (existsSync(url)) {
 						imgs[1].src = url
@@ -77,7 +77,7 @@ function LoadCollections(tabId) {
 				} else {
 					for (let j = counter; j < n; j++) {
 						counter++
-						const post = db.post[db.collection[i][1][j]]
+						const post = GetPost(db.collection[i][1][j], false)
 						const url = paths.thumb+(post[0] == -1 ? post[2][0] : post[2])+'.jpg'
 						if (existsSync(url)) {
 							imgs[2].src = url
@@ -165,7 +165,7 @@ function LoadCollection(tabId, index = null, page = 1) {
 				min = max - setting.pic_per_page
 				if (min < 0) min = 0
 			}
-			for (let i = max - 1; i >= min; i--) save.appendChild(GetPostElement(tab, db.collection[index][1][i], date))
+			for (let i = max - 1; i >= min; i--) save.appendChild(GetPostElement(tab, db.collection[index][1][i], date, true))
 		} else {
 			if (post_cont < setting.pic_per_page) max = post_cont
 			else {
@@ -173,7 +173,7 @@ function LoadCollection(tabId, index = null, page = 1) {
 				max = min + setting.pic_per_page
 				if (max > post_cont) max = post_cont
 			}
-			for (let i = min; i < max; i++) save.appendChild(GetPostElement(tab, db.collection[index][1][i], date))
+			for (let i = min; i < max; i++) save.appendChild(GetPostElement(tab, db.collection[index][1][i], date, true))
 		}
 		container.appendChild(save)
 		const pagination = GetPaginationList(total_pages, page)
@@ -211,13 +211,13 @@ const collection = {
 	post: null
 }
 
-function OpenAddPostCollection(index) {
-	if (index == null) return
+function OpenAddPostCollection(id) {
+	if (id == null) return
 	KeyManager.stop = true
 	KeyManager.ChangeCategory('collection')
 	document.getElementById('addpostcol').style.display = 'flex'
 	const container = document.getElementById('addpostcolc')
-	collection.post = index
+	collection.post = id
 
 	let save, save2
 	for (let i = 0, l = db.collection.length; i < l; i++) {
@@ -229,7 +229,7 @@ function OpenAddPostCollection(index) {
 
 		save2 = document.createElement('div')
 		save2.classList.add('btn')
-		if (db.collection[i][1].indexOf(index) != -1) {
+		if (db.collection[i][1].indexOf(id) != -1) {
 			save2.classList.add('btn-danger')
 			save2.innerText = Language('remove')
 			save2.setAttribute('onclick', 'AddPostCollection(this, '+i+', true)')

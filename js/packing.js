@@ -29,7 +29,7 @@ pack.container.ondragover = e => {
 
 function OpenPacking(site, id) {
 	if (site == -1) return
-	const index = GetPost(site, id)
+	const index = GetPostBySite(site, id)
 	if (index == null) return
 	if (!pack.open) {
 		pack.open = true
@@ -92,35 +92,40 @@ function RemoveFromPack(site, id) {
 				pack.listBack[0].push(site)
 				pack.listBack[1].push(id)
 			}
-			if (typeof pack.data[12] == 'object') db.post.push([
-				site,
-				id,
-				pack.data[2][sid],
-				pack.data[3][sid],
-				pack.data[4][sid],
-				pack.data[5][sid],
-				pack.data[6][sid],
-				pack.data[7][sid],
-				pack.data[8][sid],
-				pack.data[9][sid],
-				null,
-				null,
-				pack.data[12][sid]
-			])
-			else db.post.push([
-				site,
-				id,
-				pack.data[2][sid],
-				pack.data[3][sid],
-				pack.data[4][sid],
-				pack.data[5][sid],
-				pack.data[6][sid],
-				pack.data[7][sid],
-				pack.data[8][sid],
-				pack.data[9][sid]
-			])
+			if (typeof pack.data[12] == 'object') {
+				const index2 = db.post.push([
+					site,
+					id,
+					pack.data[2][sid],
+					pack.data[3][sid],
+					pack.data[4][sid],
+					pack.data[5][sid],
+					pack.data[6][sid],
+					pack.data[7][sid],
+					pack.data[8][sid],
+					pack.data[9][sid],
+					null,
+					null,
+					pack.data[12][sid]
+				]) - 1
+				db.post_id[index2] = Number(id.toString()+site)
+			} else {
+				const index2 = db.post.push([
+					site,
+					id,
+					pack.data[2][sid],
+					pack.data[3][sid],
+					pack.data[4][sid],
+					pack.data[5][sid],
+					pack.data[6][sid],
+					pack.data[7][sid],
+					pack.data[8][sid],
+					pack.data[9][sid]
+				]) - 1
+				db.post_id[index2] = Number(id.toString()+site)
+			}
 			browser.SetNeedReload(-1)
-			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
+			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have, i:db.post_id }) } catch(err) { console.error(err) }
 		}
 		return
 	}
@@ -136,21 +141,14 @@ function Pack() {
 		KeyManager.stop = false
 		return
 	}
-	let col_save = false
 	for (let i = 0; i < cl; i++) {
 		const site = Number(children[i].getAttribute('s')), id = Number(children[i].getAttribute('i'))
 		if (site != -1) {
-			const found = GetPost(site, id)
+			const found = GetPostBySite(site, id)
 			if (found != null) {
 				siteList.push(site)
 				idList.push(found)
-				for (let j = 0, n = db.collection.length; j < n; j++) {
-					const ci = db.collection[j][1].indexOf(found)
-					if (ci != -1) {
-						db.collection[j][1].splice(ci, 1)
-						col_save = true
-					}
-				}
+				RemovePostFromCollections(db.post_id[found])
 			}
 		} else {
 			siteList.push(-1)
@@ -186,13 +184,6 @@ function Pack() {
 		}
 	}
 
-	// Save Collection
-	if (col_save) {
-		try { jsonfile.writeFileSync(paths.db+'collection', { v:db.manager.collection, a:db.collection }) } catch(err) { console.error(err) }
-		browser.SetNeedReload(-4)
-		browser.SetNeedReload(-5)
-	}
-
 	// Sorting Ids Lower -> Higher
 	let done = false
 	while (!done) {
@@ -213,10 +204,11 @@ function Pack() {
 		if (siteList[i] != -1) {
 			db.post_have[siteList[i]].push(db.post[idList[i]][1])
 			db.post.splice(idList[i], 1)
+			db.post_id.splice(idList[i], 1)
 		}
 	}
 	if (pack.edit) {
-		const packIndex = GetPost(-1, pack.data[1])
+		const packIndex = GetPostBySite(-1, pack.data[1])
 		if (packIndex == null) {
 			PopAlert('nopostfound', 'danger')
 			loading.Close()
@@ -225,14 +217,16 @@ function Pack() {
 			return
 		}
 		db.post[packIndex] = save
+	} else {
+		const index = db.post.push(save) - 1
+		db.post_id[index] = save[1]
 	}
-	else db.post.push(save)
 	browser.SetNeedReload(-1)
 	pack.listBack = [[],[]]
 	ClosePacking()
 	loading.Close()
 	KeyManager.stop = false
-	try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
+	try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have, i:db.post_id }) } catch(err) { console.error(err) }
 	PopAlert(Language('pack-end'))
 }
 
@@ -256,51 +250,59 @@ function UnPack(id) {
 		PopAlert(Language('cunpack-in-edit'), 'danger')
 		return
 	}
-	const index = GetPost(-1, id)
+	const index = GetPostBySite(-1, id)
 	if (index == null) {
 		loading.Close()
 		KeyManager.stop = false
 		return
 	}
 	const data = db.post[index].slice()
+	RemovePostFromCollections(db.post_id[index])
 	db.post.splice(index, 1)
+	db.post_id.splice(index, 1)
+
 
 	for (let i = 0, l = data[10].length; i < l; i++) {
 		const hindex = db.post_have[data[10][i]].indexOf(data[11][i])
 		if (hindex >= 0) db.post_have[data[10][i]].splice(hindex, 1)
-		if (typeof data[12] == 'object') db.post.push([
-			data[10][i], // 0
-			data[11][i], // 1
-			data[2][i], // 2
-			data[3][i], // 3
-			data[4][i], // 4
-			data[5][i], // 5
-			data[6][i], // 6
-			data[7][i], // 7
-			data[8][i], // 8
-			data[9][i], // 9
-			null, // 10
-			null, // 11
-			data[12][i], // 12
-		])
-		else db.post.push([
-			data[10][i], // 0
-			data[11][i], // 1
-			data[2][i], // 2
-			data[3][i], // 3
-			data[4][i], // 4
-			data[5][i], // 5
-			data[6][i], // 6
-			data[7][i], // 7
-			data[8][i], // 8
-			data[9][i] // 9
-		])
+		if (typeof data[12] == 'object') {
+			const index2 = db.post.push([
+				data[10][i], // 0
+				data[11][i], // 1
+				data[2][i], // 2
+				data[3][i], // 3
+				data[4][i], // 4
+				data[5][i], // 5
+				data[6][i], // 6
+				data[7][i], // 7
+				data[8][i], // 8
+				data[9][i], // 9
+				null, // 10
+				null, // 11
+				data[12][i], // 12
+			]) - 1
+			db.post_id[index2] = Number(data[11][i].toString()+data[10][i])
+		} else {
+			const index2 = db.post.push([
+				data[10][i], // 0
+				data[11][i], // 1
+				data[2][i], // 2
+				data[3][i], // 3
+				data[4][i], // 4
+				data[5][i], // 5
+				data[6][i], // 6
+				data[7][i], // 7
+				data[8][i], // 8
+				data[9][i] // 9
+			]) - 1
+			db.post_id[index2] = Number(data[11][i].toString()+data[10][i])
+		}
 	}
 
 	loading.Close()
 	KeyManager.stop = false
 	browser.SetNeedReload(-1)
-	try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
+	try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have, i:db.post_id }) } catch(err) { console.error(err) }
 	PopAlert(Language('unpack-end'))
 }
 
@@ -317,7 +319,7 @@ function EditPack(id) {
 	if (mb_pages.hasAttribute('p')) CloseReads()
 	document.getElementById('packing').style.display = 'block'
 	mb_pages.setAttribute('p', '')
-	const index = GetPost(-1, id)
+	const index = GetPostBySite(-1, id)
 	if (index == null) {
 		ClosePacking()
 		PopAlert(Language('nopostfound'), 'danger')
@@ -365,14 +367,15 @@ function ClosePacking() {
 
 		let changed = false
 		for (let i = siteList.length - 1; i >= 0; i--) {
-			const index = GetPost(siteList[i], idList[i])
+			const index = GetPostBySite(siteList[i], idList[i])
 			if (index != null) {
 				db.post.splice(index, 1)
+				db.post_id.splice(index, 1)
 				changed = true
 			}
 		}
 		if (changed) {
-			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
+			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have, i:db.post_id }) } catch(err) { console.error(err) }
 			browser.SetNeedReload(-1)
 		}
 	}

@@ -64,6 +64,7 @@ const db = {
 	reads: [],
 	post: [],
 	post_have: [],
+	post_id: [],
 	have: [],
 	collection: [],
 	artist: [],
@@ -1054,7 +1055,7 @@ function LoadDatabase() {
 	} else try {
 		post_have = []
 		for (let i = 0, l = sites.length; i < l; i++) post_have.push([])
-		db_tmp.post = { v:db.manager.post, a:[], h: post_have.slice() }
+		db_tmp.post = { v:db.manager.post, a:[], h: post_have.slice(), i:[] }
 		delete post_have
 		jsonfile.writeFileSync(paths.db+'post', db_tmp.post)
 	} catch(err) {
@@ -1182,6 +1183,7 @@ function LoadDatabase() {
 
 	// -------------> Check Databases
 	const error_list = []
+	let save = false
 	// history
 	if (typeof db_tmp.history === 'object') {
 		if (typeof db_tmp.history.v === 'number') {
@@ -1233,6 +1235,7 @@ function LoadDatabase() {
 		} else error_list.push('Reads Database is Corrupted #Version')
 	} else error_list.push(db_tmp.reads)
 	delete db_tmp.reads
+	save = false
 
 	// post
 	if (typeof db_tmp.post === 'object') {
@@ -1242,17 +1245,20 @@ function LoadDatabase() {
 				if (Array.isArray(db_tmp.post.a)) {
 					if (Array.isArray(db_tmp.post.h)) {
 						switch(db_tmp.post.v) {
-							case 0: db_tmp.post = Post0To1(db_tmp.post); break
+							case 0: db_tmp.post = Post0To1(db_tmp.post); save = true; break
 						}
 						if (db_tmp.post.h.length < sites.length) for (let i = 0, l = sites.length; i < l; i++) if (!Array.isArray(db_tmp.post.h[i])) db_tmp.post.h[i] = []
-						db.post = db_tmp.post.a.slice()
-						db.post_have = db_tmp.post.h.slice()
-					} else error_list.push('Post Database is Corrupted #Data-1')
+						if (save) try { jsonfile.writeFileSync(paths.db+'post', db_tmp.post) } catch(err) { error_list.push('Couldn\'t save new version of Post Database') }
+						db.post = db_tmp.post.a.splice(0)
+						db.post_have = db_tmp.post.h.splice(0)
+						db.post_id = db_tmp.post.i.splice(0)
+					} else error_list.push('Post Database is Corrupted #Data-2')
 				} else error_list.push('Post Database is Corrupted #Data-1')
 			}
 		} else error_list.push('Post Database is Corrupted #Version')
 	} else error_list.push(db_tmp.post)
 	delete db_tmp.post
+	save = false
 
 	// have
 	if (typeof db_tmp.have === 'object') {
@@ -1267,6 +1273,7 @@ function LoadDatabase() {
 		} else error_list.push('Downloads Database is Corrupted #Version')
 	} else error_list.push(db_tmp.have)
 	delete db_tmp.have
+	save = false
 
 	// collection
 	if (typeof db_tmp.collection === 'object') {
@@ -1274,16 +1281,16 @@ function LoadDatabase() {
 			if (db_tmp.collection.v > db.manager.collection) error_list.push('Collection Database Version is not supported')
 			else {
 				switch(db_tmp.collection.v) {
-					case 0: db_tmp.collection = Collection0To1(db_tmp.collection); break
+					case 0: db_tmp.collection = Collection0To1(db_tmp.collection); save = true; break
 				}
-
-				if (Array.isArray(db_tmp.collection.a)) {
-					db.collection = db_tmp.collection.a.slice()
-				} else error_list.push('Collection Database is Corrupted #Data')
+				if (save) try { jsonfile.writeFileSync(paths.db+'collection', db_tmp.collection) } catch(err) { error_list.push('Couldn\'t save new version of Collection Database') }
+				if (Array.isArray(db_tmp.collection.a)) db.collection = db_tmp.collection.a.splice(0)
+				else error_list.push('Collection Database is Corrupted #Data')
 			}
 		} else error_list.push('Collection Database is Corrupted #Version')
 	} else error_list.push(db_tmp.collection)
 	delete db_tmp.collection
+	save = false
 
 	// artist
 	if (typeof db_tmp.artist === 'object') {
@@ -1738,12 +1745,12 @@ function GetMainMenu(tab, page) {
 	return container
 }
 
-function PostLink(tabId, link, site, id, sldIndex, index, pack) {
+function PostLink(tabId, link, site, id, sldIndex, pack, iid) {
 	const e = window.event, key = e.which
 	if (key == 1) browser.LinkClick(tabId, link)
 	else if (key == 2) browser.OpenLinkInNewTab(tabId, link)
 	else {
-		ContextManager.save = [tabId, link, site, id, sldIndex, index]
+		ContextManager.save = [tabId, link, site, id, sldIndex, iid]
 
 		if (pack) {
 			ContextManager.SetActiveItem('posts', 3, false)
@@ -1761,12 +1768,14 @@ function PostLink(tabId, link, site, id, sldIndex, index, pack) {
 	}
 }
 
-function GetPostElement(tab, i, date = 0) {
+function GetPostElement(tab, i, date = 0, isId = false) {
 	let pack = false
+	if (isId) i = GetPost(i)
 	if (db.post[i][0] == -1) pack = true
+
 	const container = document.createElement('div')
 	const len = tab.save.length
-	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len, i, pack)
+	container.onmousedown = () => PostLink(tab.id, tab.AddLink(-5, [db.post[i][0], db.post[i][1]]), db.post[i][0], db.post[i][1], len, pack, db.post_id[i])
 	let save = document.createElement('img')
 	save.loading = 'lazy'
 	if (pack) {
@@ -1884,7 +1893,7 @@ function GetPaginationForInfo(tab, total_pages, page, type, index) {
 
 function OpenPostProperties(site, id) {
 	KeyManager.stop = true
-	const index = GetPost(site, id)
+	const index = GetPostBySite(site, id)
 	if (index == null) {
 		KeyManager.stop = false
 		return

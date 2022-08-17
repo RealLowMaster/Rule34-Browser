@@ -330,12 +330,19 @@ function LinkSpecies(name1, name2) {
 }
 
 // Post
-function GetPost(site, id, index = true) {
+function GetPostBySite(site, id, index = true) {
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
 		if (index) return i
-		else return db.post[i]
+		return db.post[i]
 	}
 	return null
+}
+
+function GetPost(id, index = true) {
+	id = db.post_id.indexOf(id)
+	if (id == -1) return null
+	if (index) return id
+	return db.post[id]
 }
 
 function AddPost(site, id, imgId, format, data, animated = null) {
@@ -352,10 +359,11 @@ function AddPost(site, id, imgId, format, data, animated = null) {
 		arr[11] = null
 		arr[12] = GetSpeciesIndex(data.specie)
 	}
-	db.post.push(arr)
+	const index = db.post.push(arr) - 1
+	db.post_id[index] = Number(id.toString()+site)
 	db.have[site].push(id)
 	browser.SetNeedReload(-1)
-	try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
+	try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have, i:db.post_id }) } catch(err) { console.error(err) }
 	try { jsonfile.writeFileSync(paths.db+'have', { v:db.manager.have, a:db.have }) } catch(err) { console.error(err) }
 }
 
@@ -387,14 +395,7 @@ function DeletePost(site, id, keep) {
 	loading.Show(1, 'Deleting...')
 	for (let i = 0, l = db.post.length; i < l; i++) if (db.post[i][1] == id && db.post[i][0] == site) {
 
-		let col_save = false
-		for (let j = 0, n = db.collection.length; j < n; j++) {
-			const ci = db.collection[j][1].indexOf(i)
-			if (ci != -1) {
-				db.collection[j][1].splice(ci, 1)
-				col_save = true
-			}
-		}
+		RemovePostFromCollections(db.post_id[i])
 
 		if (db.post[i][0] == -1) {
 			if (!keep) {
@@ -418,12 +419,14 @@ function DeletePost(site, id, keep) {
 				try { jsonfile.writeFileSync(paths.db+'have', { v:db.manager.have, a:db.have }) } catch(err) { console.error(err) }
 			}
 			db.post.splice(i, 1)
-			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
+			db.post_id.splice(i, 1)
+			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have, i:db.post_id }) } catch(err) { console.error(err) }
 		} else {
 			try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
 			try { unlinkSync(paths.dl+db.post[i][2]+'.'+db.post[i][3]) } catch(err) {}
 			db.post.splice(i, 1)
-			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have }) } catch(err) { console.error(err) }
+			db.post_id.splice(i, 1)
+			try { jsonfile.writeFileSync(paths.db+'post', { v:db.manager.post, a:db.post, h:db.post_have, i:db.post_id }) } catch(err) { console.error(err) }
 			if (!keep) {
 				const haveIndex = db.have[site].indexOf(id)
 				if (haveIndex >= 0) db.have[site].splice(haveIndex, 1)
@@ -437,11 +440,6 @@ function DeletePost(site, id, keep) {
 		loading.Forward()
 		loading.Close()
 		browser.SetNeedReload(-1)
-		if (col_save) {
-			try { jsonfile.writeFileSync(paths.db+'collection', { v:db.manager.collection, a:db.collection }) } catch(err) { console.error(err) }
-			browser.SetNeedReload(-4)
-			browser.SetNeedReload(-5)
-		}
 		return
 	}
 	KeyManager.stop = false
@@ -452,7 +450,7 @@ function DeletePost(site, id, keep) {
 
 function ReDownloadPost(site, id) {
 	loading.Show(4, Language('finding-post')+'...')
-	const i = GetPost(site, id)
+	const i = GetPostBySite(site, id)
 	if (i != null) {
 		try { unlinkSync(paths.thumb+db.post[i][2]+'.jpg') } catch(err) {}
 		try { unlinkSync(paths.dl+db.post[i][2]+'.'+db.post[i][3]) } catch(err) {}
@@ -517,4 +515,21 @@ function ClearHistory() {
 	try { jsonfile.writeFileSync(dirDocument+'/history', { v:db.manager.history, a:[] }) } catch(err) { console.log(err) }
 	browser.SetNeedReload(-2)
 	PopAlert(Language('all-history-deleted'))
+}
+
+// Collection
+function RemovePostFromCollections(id) {
+	let save = false
+	for (let i = 0, l = db.collection.length; i < l; i++) {
+		const index = db.collection[i][1].indexOf(id)
+		if (index != -1) {
+			db.collection[i][1].splice(index, 1)
+			save = true
+		}
+	}
+	if (save) {
+		try { jsonfile.writeFileSync(paths.db+'collection', { v:db.manager.collection, a:db.collection }) } catch(err) { console.error(err) }
+		browser.SetNeedReload(-4)
+		browser.SetNeedReload(-5)
+	}
 }
