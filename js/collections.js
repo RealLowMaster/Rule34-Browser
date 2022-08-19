@@ -338,5 +338,5 @@ function DeleteCollection(index) {
 	db.collection.splice(index, 1)
 	try { jsonfile.writeFileSync(paths.db+'collection', { v:db.manager.collection, a:db.collection }) } catch(err) { console.error(err) }
 	browser.SetNeedReload(-4)
-	browser.SetNeedReload(-1)
+	browser.SetNeedReload(-5)
 }

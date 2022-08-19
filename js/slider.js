@@ -124,7 +124,7 @@ function SliderChange(index) {
 	const i = slider.list[slider.active]
 	let src, format
 	if (!slider.is_url) {
-		slider.post_index = i
+		slider.post_index = db.post_id[i]
 		if (db.post[i][0] == -1) {
 			if (same) {
 				format = db.post[i][3][slider.sub_active]
