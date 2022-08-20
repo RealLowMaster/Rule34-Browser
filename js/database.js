@@ -480,7 +480,15 @@ function ReDownloadPost(site, id) {
 					return
 				}
 				downloader.ReDownload(arr.src, arr.format, i)
-			})
+			}); return
+			case 3: derpibooru.Post(id, (err, arr) => {
+				if (err) {
+					loading.Close()
+					KeyManager.stop = false
+					return
+				}
+				downloader.ReDownload(arr.src, arr.format, i)
+			}); return
 		}
 	} else {
 		loading.Forward()

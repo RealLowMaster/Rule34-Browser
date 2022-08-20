@@ -227,7 +227,7 @@ function GelBooruPost(tabId, id) {
 			vid.setAttribute('controlsList', 'nodownload')
 			vid.classList.add('gelbooru-image')
 			vid.volume = 1 / 100 * setting.default_volume
-			vid.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
+			vid.onclick = () => OpenSlider([src], 0, true)
 			vid.src = src
 			side.appendChild(vid)
 		} else {
@@ -236,7 +236,7 @@ function GelBooruPost(tabId, id) {
 			img.loading = 'lazy'
 			if (setting.gelbooru_com_orginal_size) img.src = src
 			else img.src = arr.srcresize
-			img.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
+			img.onclick = () => OpenSlider([src], 0, true)
 			side.appendChild(img)
 		}
 		side.appendChild(BRDownloadElement(2, id))

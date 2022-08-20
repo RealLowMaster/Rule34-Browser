@@ -101,7 +101,7 @@
 	width: 100px;
 	height: 30px;
 	padding: 5px;
-	background-color: var(--derpb-dl-bg-noraml);
+	background-color: #444;
 	color: #fff;
 	border-radius: 0 0 4px 4px;
 	position: absolute;

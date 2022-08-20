@@ -1700,6 +1700,22 @@ function DownloadClick(site, id) {
 				downloader.Add(dl_index, arr.thumb, arr.url, arr.src, GetData(arr))
 			})
 			return
+		case 3:
+			derpibooru.Post(id, (err, arr) => {
+				if (err) {
+					console.error(err)
+					downloader.StopFromStarting(dl_index)
+					PopAlert(Language('cto'), 'danger')
+					return
+				}
+				if (!IsFormatSupported(arr.format)) {
+					downloader.StopFromStarting(dl_index)
+					PopAlert(Language('fns'), 'danger')
+					return
+				}
+				downloader.Add(dl_index, arr.thumb, arr.url, arr.src, GetData(arr))
+			})
+			return
 	}
 }
 

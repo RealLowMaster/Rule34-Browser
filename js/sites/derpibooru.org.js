@@ -6,6 +6,7 @@ function DerpiBooruMenu(tab) {
 	const img = document.createElement('img')
 	img.src = 'Image/sites/derpibooru.org-32x32.webp'
 	save.appendChild(img)
+	return save
 	save.appendChild(NormalLinkElement('div', 'Random', tab.id, tab.AddLink(17), false))
 	save.appendChild(NormalLinkElement('div', 'Tags', tab.id, tab.AddLink(16, [1, null]), false))
 	return save
@@ -131,7 +132,7 @@ function DerpiBooruPost(tabId, id) {
 			vid.setAttribute('controlsList', 'nodownload')
 			vid.classList.add('derpb-image')
 			vid.volume = 1 / 100 * setting.default_volume
-			vid.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
+			vid.onclick = () => OpenSlider([src], 0, true)
 			vid.src = src
 			side.appendChild(vid)
 		} else {
@@ -140,7 +141,7 @@ function DerpiBooruPost(tabId, id) {
 			img.loading = 'lazy'
 			if (setting.r34_xxx_original_size) img.src = src
 			else img.src = arr.srcresize
-			img.onclick = () => OpenSlider([LastChar('?', src, true)], 0, true)
+			img.onclick = () => OpenSlider([src], 0, true)
 			side.appendChild(img)
 		}
 
