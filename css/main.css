@@ -248,9 +248,22 @@
 #mb-jump-page > input::-webkit-outer-spin-button { appearance: none }
 #mb-jump-page > input:hover,
 #mb-jump-page > input:focus { border-color: var(--primary-header) }
+#mb-jump-page > span { height: 100% }
 
-#mb-jump-page > span {
+#mb-jump-page > div {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
 	height: 100%;
+	padding: 0 4px;
+	margin-left: 3px;
+	background-color: var(--text-brand);
+	color: var(--primary-header);
+	cursor: pointer;
+}
+
+#mb-jump-page > div:hover {
+
 }
 
 #mb-pages { height: calc(100% - 69px); overflow-y: auto }

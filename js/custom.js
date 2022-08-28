@@ -845,9 +845,14 @@ mb_search.onsubmit = e => {
 	}
 }
 
-function JumpPage() {
+function JumpPage(random = false) {
 	const tab = browser.GetActiveTab()
-	let value = Math.min(Math.abs(Number(mbjp.value)), tab.maxPages)
+	let value
+	if (!random) value = Math.min(Math.abs(Number(mbjp.value)), tab.maxPages)
+	else {
+		value = Math.floor(Math.random() * tab.maxPages)
+		if (value > tab.maxPages) value = tab.maxPages
+	}
 	if (value < 1) value = 1
 	switch(tab.site) {
 		case -5: LoadCollection(tab.id, tab.jumpPage, value); return

@@ -44,7 +44,7 @@ const sto_radio = [
 	['theme', 'theme', ['dark', 'light']],
 	['language', 'language', ['english', 'persian']],
 	['maximum_pixel', 'maximumpixel', ['mpvlow', 'mplow', 'mpmid', 'mphigh', 'mpvhigh']],
-	['derpibooru_org_resized_size', 'resizedsize', ['small', 'medium', 'large']]
+	['derpibooru_org_resized_size', 'resized', ['small', 'medium', 'large']]
 ]
 
 // [ 'setting name', 'translate name', min, max, 'translate tip' || null ]
