@@ -159,6 +159,7 @@ function SetHotKeys() {
 	KeyManager.AddHotKey('default', true, false, false, 68, OpenReads) // d
 	KeyManager.AddHotKey('default', true, false, false, 83, () => AddThisTabToReads(browser.selectedTab)) // s
 	KeyManager.AddHotKey('default', true, false, false, 82, () => browser.ReloadTab(browser.selectedTab)) // r
+	KeyManager.AddHotKey('default', false, false, false, 81, () => JumpPage(true)) // Q
 	KeyManager.AddHotKey('default', true, true, false, 84, OpenLastTab) // t
 	KeyManager.AddHotKey('default', true, false, false, 87, () => browser.CloseTab(browser.selectedTab)) // w
 	KeyManager.AddHotKey('default', false, false, false, 27, AskForQuitApp) // Esc
