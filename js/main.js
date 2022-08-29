@@ -165,25 +165,25 @@ function SetHotKeys() {
 	KeyManager.AddHotKey('default', false, false, false, 27, AskForQuitApp) // Esc
 	
 	KeyManager.AddCategory('slider')
-	KeyManager.AddHotKey('slider', false, false, false, 65, SliderPrev)
-	KeyManager.AddHotKey('slider', false, false, false, 68, SliderNext)
-	KeyManager.AddHotKey('slider', false, false, false, 67, () => OpenAddPostCollection(slider.post_index))
-	KeyManager.AddHotKey('slider', false, false, false, 37, SliderPrev)
-	KeyManager.AddHotKey('slider', false, false, false, 39, SliderNext)
-	KeyManager.AddHotKey('slider', false, false, false, 72, () => {if (slider.hide) {SliderHide(false)} else SliderHide(true)})
-	KeyManager.AddHotKey('slider', false, false, false, 73, () => {if (slider.overview) {SliderOverview(false)} else SliderOverview(true)})
-	KeyManager.AddHotKey('slider', false, false, false, 79, SliderToggleOSize)
-	KeyManager.AddHotKey('slider', false, false, false, 27, CloseSlider)
+	KeyManager.AddHotKey('slider', false, false, false, 65, SliderPrev) // A
+	KeyManager.AddHotKey('slider', false, false, false, 68, SliderNext) // D
+	KeyManager.AddHotKey('slider', false, false, false, 67, () => OpenAddPostCollection(slider.post_index)) // C
+	KeyManager.AddHotKey('slider', false, false, false, 37, SliderPrev) // LeftArrow
+	KeyManager.AddHotKey('slider', false, false, false, 39, SliderNext) // RightArrow
+	KeyManager.AddHotKey('slider', false, false, false, 72, () => {if (slider.hide) {SliderHide(false)} else SliderHide(true)}) // H
+	KeyManager.AddHotKey('slider', false, false, false, 86, () => {if (slider.overview) {SliderOverview(false)} else SliderOverview(true)}) // V
+	KeyManager.AddHotKey('slider', false, false, false, 79, SliderToggleOSize) // O
+	KeyManager.AddHotKey('slider', false, false, false, 27, CloseSlider) // Esc
 	
 	KeyManager.AddCategory('downloads')
-	KeyManager.AddHotKey('downloads', false, false, false, 27, downloader.ClosePanel)
+	KeyManager.AddHotKey('downloads', false, false, false, 27, downloader.ClosePanel) // Esc
 
 	KeyManager.AddCategory('collection')
-	KeyManager.AddHotKey('collection', false, false, false, 27, CloseAddPostCollection)
+	KeyManager.AddHotKey('collection', false, false, false, 27, CloseAddPostCollection) // Esc
 
 	KeyManager.AddCategory('setting')
-	KeyManager.AddHotKey('setting', true, false, false, 83, SaveSetting)
-	KeyManager.AddHotKey('setting', false, false, false, 27, CloseSetting)
+	KeyManager.AddHotKey('setting', true, false, false, 83, SaveSetting) // S
+	KeyManager.AddHotKey('setting', false, false, false, 27, CloseSetting) // Esc
 
 	KeyManager.AddCategory('icon-manager')
 	KeyManager.AddHotKey('icon-manager', true, false, false, 90, 'OpenAddIcon()')
@@ -221,7 +221,7 @@ function SetContextMenus() {
 
 	i = ContextManager.AddMenu('tab')
 	ContextManager.AddItem(i, { icon:'copy', text:'copy', click: () => browser.CopyTab(ContextManager.save) })
-	ContextManager.AddItem(i, { icon:'reload', text:'reload', click: () => browser.ReloadTab(ContextManager.save) })
+	ContextManager.AddItem(i, { icon:'reload', text:'reload-nhk', click: () => browser.ReloadTab(ContextManager.save) })
 	ContextManager.AddItem(i, { icon:'add-reads', text:'addtoreads', click: () => AddThisTabToReads(ContextManager.save) })
 	ContextManager.AddItem(i, { icon:'duplicate', text:'duplicate', click: () => browser.DuplicateTab(ContextManager.save) })
 	// ContextManager.AddItem(i, { icon:'pin', text:'pin', click: () => browser.PinTab(ContextManager.save) })

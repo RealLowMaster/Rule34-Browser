@@ -260,11 +260,10 @@
 	background-color: var(--text-brand);
 	color: var(--primary-header);
 	cursor: pointer;
+	transition: background-color ease-in-out .3s;
 }
 
-#mb-jump-page > div:hover {
-
-}
+#mb-jump-page > div:hover { background-color: var(--text-warning) }
 
 #mb-pages { height: calc(100% - 69px); overflow-y: auto }
 #mb-pages[p] { width: calc(100% - 233px) }
@@ -1246,4 +1245,34 @@
 #addpostcolc > div > div {
 	position: absolute;
 	right: 15px;
+}
+
+/* HotKeys */
+.hotkeys {
+	direction: ltr !important;
+	color: var(--primary-header);
+}
+
+.hotkeys > div {
+	display: grid;
+	grid-template-columns: 2fr 9fr;
+	width: 100%;
+	padding: 6px;
+	margin: 6px 0;
+	background-color: var(--secondary-bg);
+	border-radius: 7px;
+}
+
+.hotkeys > div > div:first-child {
+	padding: 7px 10px;
+	background-color: var(--text-brand);
+	border-radius: 4px;
+	text-align: center;
+	white-space: nowrap
+}
+
+.hotkeys > div > div:last-child {
+	display: flex;
+	align-items: center;
+	padding: 0 10px;
 }
