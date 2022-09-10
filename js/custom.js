@@ -54,6 +54,14 @@ const sites = [
 		ip: '104.26.3.244',
 		location: 'USA - San Francisco - California',
 		home: DerpiBooruHome
+	},
+	{
+		name: 'Konachan.com (demo)',
+		url: 'konachan.com',
+		icon: 'webp',
+		ip: '',
+		location: '',
+		home: null
 	}
 ]
 
@@ -2181,20 +2189,10 @@ function Post(tabId, site, id) {
 					const sj = j
 					if (IsFormatVideo(db.post[i][3][j])) {
 						tab.save[2].push(1)
-						save = document.createElement('video')
-						save.classList.add('post-img')
-						save.loop = true
-						save.muted = false
-						save.autoplay = false
-						save.controls = true
-						save.setAttribute('controlsList', 'nodownload')
-						save.volume = 1 / 100 * setting.default_volume
-						save.src = url
-						save.onclick = () => {
+						container.appendChild(CreateVideo(url, false, () => {
 							const load_save = browser.tabs[browser.GetTabIndex(tabId)].save
 							OpenSlider(load_save[0], sj, true, load_save[1], load_save[2])
-						}
-						container.appendChild(save)
+						}))
 					} else {
 						if (db.post[i][9][j] == '0') tab.save[2].push(0)
 						else tab.save[2].push(-1)
@@ -2361,17 +2359,12 @@ function Post(tabId, site, id) {
 			const url = paths.dl+db.post[i][2]+'.'+db.post[i][3]
 			if (existsSync(url)) {
 				if (IsFormatVideo(db.post[i][3])) {
-					save = document.createElement('video')
-					save.classList.add('post-img')
-					save.loop = true
-					save.muted = false
-					save.autoplay = false
-					save.controls = true
-					save.setAttribute('controlsList', 'nodownload')
-					save.volume = 1 / 100 * setting.default_volume
-					save.src = url
-					save.setAttribute('onmousedown', `OpenSlider([${i}], 0)`)
-					container.appendChild(save)
+					container.appendChild(CreateVideo(url, false, () => OpenSlider([i], 0)))
+					const s = CreateVideo(url, false).children[0]
+					s.id = 'testv'
+					container.appendChild(s)
+					new Plyr('#testv')
+
 				} else {
 					save = document.createElement('img')
 					save.classList.add('post-img')

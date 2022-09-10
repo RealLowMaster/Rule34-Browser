@@ -6,27 +6,27 @@ let UpdateScript = {
 
 function CheckScriptUpdate() {
 	clearTimeout(UpdateScript.timer)
-	if (window.navigator.onLine) {
-		fetch('https://api.npoint.io/bbd08230ff7db7e634de', { method: "GET" }).then(res => {
-			if (!res.ok) {
-				console.error('GetUpdate->'+res.status)
-				UpdateScript.timer = setTimeout(CheckScriptUpdate, 4000)
-				return
-			}
-			return res.json()
-		}).then(json => {
-			if (json.app_version > app_version) {
-				UpdateScript.checked = true
-				Alert(Language('new-version-available'))
-			} else if (json.update_number > update_number) Update(json)
-			else {
-				UpdateScript.checked = true
-				PopAlert(Language('app-up-to-date'))
-			}
-		}).catch(err => {
+	if (!window.navigator.onLine) {
+		UpdateScript.timer = setTimeout(CheckScriptUpdate, 4000)
+		return
+	}
+	fetch('https://api.npoint.io/bbd08230ff7db7e634de', { method: "GET" }).then(res => {
+		if (!res.ok) {
+			console.error('GetUpdate->'+res.status)
 			UpdateScript.timer = setTimeout(CheckScriptUpdate, 4000)
-		})
-	} else UpdateScript.timer = setTimeout(CheckScriptUpdate, 4000)
+			return
+		}
+		return res.json()
+	}).then(json => {
+		if (json.app_version > app_version) {
+			UpdateScript.checked = true
+			Alert(Language('new-version-available'))
+		} else if (json.update_number > update_number) Update(json)
+		else {
+			UpdateScript.checked = true
+			PopAlert(Language('app-up-to-date'))
+		}
+	}).catch(err => UpdateScript.timer = setTimeout(CheckScriptUpdate, 4000) )
 }
 
 function Update(json) {

@@ -134,6 +134,7 @@ function RemoveFromPack(site, id) {
 function Pack() {
 	KeyManager.stop = true
 	loading.Show(1, Language('packing')+'...')
+	pack.container.scrollTop = 0
 	const idList = [], siteList = [], children = pack.container.children, cl = children.length
 	if (cl <= 1) {
 		PopAlert(Language('more-for-pack'), 'danger')
@@ -180,7 +181,8 @@ function Pack() {
 			save[9].push(pack.data[9][idList[i]])
 			save[10].push(pack.data[10][idList[i]])
 			save[11].push(pack.data[11][idList[i]])
-			save[12].push(pack.data[12][idList[i]])
+			if (pack.data[12] != null) save[12].push(pack.data[12][idList[i]] || [])
+			else save[12].push([])
 		}
 	}
 
@@ -348,6 +350,7 @@ function EditPack(id) {
 }
 
 function ClosePacking() {
+	pack.container.scrollTop = 0
 	if (pack.listBack[0].length > 0) {
 		const siteList = pack.listBack[0], idList = pack.listBack[1]
 		let done = false

@@ -37,6 +37,8 @@ const slider = {
 	loading: document.getElementById('sld-loading'),
 	pack_icon: null,
 	element: null,
+	token: null,
+	player: null,
 	osize: false,
 	overview: false,
 	hide: false,
@@ -116,10 +118,21 @@ function SliderChange(index) {
 	slider.active = index
 	sldinput.value = slider.active + 1
 
+	// try {
+	// 	if (slider.player != null) {
+	// 		slider.player.stop()
+	// 		slider.player.destroy(e => console.log(e))
+	// 	}
+	// 	slider.player = null
+	// } catch(err) { console.error(err) }
+
 	try {
-		slider.element.src = ''
 		slider.element.remove()
-	} catch(err) {}
+		// const children = slider.img_container.children
+		// for (let i = children.length - 1; i >= 0; i--) children[i].remove()
+		// if(slider.element != null) slider.element.remove()
+		slider.element = null
+	} catch(err) { console.error(err) }
 
 	const i = slider.list[slider.active]
 	let src, format
@@ -174,6 +187,7 @@ function SliderChange(index) {
 		slider.element.muted = false
 		slider.element.autoplay = true
 		slider.element.controls = true
+		slider.element.id = 'slplayer'
 		slider.element.setAttribute('controlsList', 'nodownload')
 		slider.element.volume = 1 / 100 * setting.default_volume
 		slider.element.draggable = false
