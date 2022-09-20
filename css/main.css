@@ -1433,15 +1433,13 @@
 	display: flex;
 	align-items: center;
 	width: 500px;
+	height: 40px;
 	margin: 6px auto;
-	padding: 4px;
 	border-radius: 4px;
 	background-color: var(--secondary-bg);
 	color: var(--primary-header);
 	position: relative;
 }
-
-#tabslistcontainer > div:hover {}
 
 #tabslistcontainer > div > img {
 	display: inline-block;
@@ -1450,12 +1448,17 @@
 }
 
 #tabslistcontainer > div > span {
-	display: inline-block;
+	display: flex;
+	align-items: center;
 	width: calc(100% - 70px);
+	height: 100%;
 	padding-left: 5px;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	cursor: pointer;
 }
+
+#tabslistcontainer > div > span:hover { background-color: var(--modifier-hover-bg) }
 
 #tabslistcontainer > div > div {
 	width: 20px;

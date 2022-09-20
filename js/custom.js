@@ -3193,6 +3193,7 @@ function OpenTabsList() {
 	const container = document.getElementById('tabslistcontainer')
 	for (let i = 0, l = browser.tabs.length; i < l; i++) {
 		save = document.createElement('div')
+		save.setAttribute('onclick', 'CloseTabsList('+browser.tabs[i].id+')')
 
 		save2 = document.createElement('img')
 		save3 = browser.tabs[i].site
@@ -3207,7 +3208,7 @@ function OpenTabsList() {
 		save.appendChild(save2)
 
 		save2 = document.createElement('div')
-		save2.onclick = () => {}
+		save2.setAttribute('onclick', 'RemoveTabList(this, '+browser.tabs[i].id+')')
 		save2.innerText = '⨯'
 		save.appendChild(save2)
 
@@ -3215,9 +3216,15 @@ function OpenTabsList() {
 	}
 }
 
-function CloseTabsList() {
+function CloseTabsList(tabId = null) {
 	KeyManager.ChangeCategory('default')
 	tabslist.style.display = 'none'
 	const children = tabslistcontainer.children
 	for (let i = children.length - 1; i >= 0; i--) try { children[i].remove() } catch(err) {}
+	if (tabId != null) browser.ActivateTab(tabId)
+}
+
+function RemoveTabList(who, tabId) {
+	who.parentElement.remove()
+	browser.CloseTab(tabId)
 }
