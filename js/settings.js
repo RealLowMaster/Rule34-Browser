@@ -21,7 +21,8 @@ const defaultSetting = {
 	save_tab_limit: 50,
 	maximum_pixel: 2,
 	auto_backup: true,
-	opened_tabs: true
+	opened_tabs: true,
+	auto_update: true
 }
 
 // [ 'setting name', 'translate name', 'translate tip' || null ]
@@ -36,7 +37,8 @@ const sto_checkbox = [
 	['full_screen', 'fullscreen', 'fullscreentip'],
 	['developer_mode', 'devmode', 'devmodetip'],
 	['auto_backup', 'autobackup', 'autobackuptip'],
-	['opened_tabs', 'openedtabs', 'openedtabstip']
+	['opened_tabs', 'openedtabs', 'openedtabstip'],
+	['auto_update']
 ]
 
 // [ 'setting name', 'translate name', [index = 0 => value 1, index = 1 => value 2, etc ...] ]

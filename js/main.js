@@ -79,6 +79,21 @@ function FormatSeconds(second) {
 	const sizes = ['Secends', 'Minutes', 'Hours']
 }
 
+function ToTime(seconds) {
+	seconds = parseInt(seconds)
+	const h = Math.floor(seconds / 3600)
+	seconds -= h * 3600
+	const m = Math.floor(seconds / 60)
+	seconds -= m * 60
+	
+	let str = ''
+	if (h > 0) str += (h < 10 ? '0'+h : h) + ':'
+	str += m < 10 ? '0'+m : m
+	str += ':'
+	str += seconds < 10 ? '0'+seconds : seconds
+	return str
+}
+
 function MemorySizeOf(obj) {
 	let bytes = 0
 	function sizeOf(obj) {
@@ -180,6 +195,9 @@ function SetHotKeys() {
 
 	KeyManager.AddCategory('collection')
 	KeyManager.AddHotKey('collection', false, false, false, 27, CloseAddPostCollection) // Esc
+	
+	KeyManager.AddCategory('tabslist')
+	KeyManager.AddHotKey('tabslist', false, false, false, 27, CloseTabsList) // Esc
 
 	KeyManager.AddCategory('setting')
 	KeyManager.AddHotKey('setting', true, false, false, 83, SaveSetting) // S

@@ -11,7 +11,6 @@
 	<link rel="stylesheet" type="text/css" href="css/context-menu.css">
 	<link rel="stylesheet" type="text/css" href="css/action.css">
 	<link rel="stylesheet" type="text/css" href="css/public.css">
-	<link rel="stylesheet" type="text/css" href="css/plyr.css">
 	<link rel="stylesheet" type="text/css" href="css/rule34.xxx.css">
 	<link rel="stylesheet" type="text/css" href="css/e621.net.css">
 	<link rel="stylesheet" type="text/css" href="css/gelbooru.com.css">
@@ -33,7 +32,6 @@
 	<script type="text/javascript" src="js/release-note.js" defer></script>
 	<script type="text/javascript" src="js/applys.js" defer></script>
 	<script type="text/javascript" src="js/settings.js" defer></script>
-	<script type="text/javascript" src="js/plyr.js" defer></script>
 	<!-- APIs -->
 	<script type="text/javascript" src="js/apis/rule34.xxx.js" defer></script>
 	<script type="text/javascript" src="js/apis/e621.net.js" defer></script>
@@ -75,6 +73,7 @@
 				<div>
 					<div id="mb-tabs"></div>
 					<div>
+						<div lt="tabs" onclick="OpenTabsList()"><i ic="layer"></i></div>
 						<div lt="newtab" onclick="browser.OpenInNewTab(-1, 1)"><i ic="plus"></i></div>
 						<div id="menu"><i ic="dots-vertical"></i></div>
 					</div>
@@ -113,6 +112,12 @@
 					<div lt="addtabreads" onclick="AddThisTabToReads(browser.selectedTab)"><i ic="add-reads"></i></div>
 				</div>
 				<div id="reads"></div>
+			</div>
+
+			<!-- Tabs -->
+			<div id="tabslist">
+				<div><div class="btn btn-danger" l="close" onclick="CloseTabsList()"></div></div>
+				<div id="tabslistcontainer"></div>
 			</div>
 
 			<!-- Slider -->

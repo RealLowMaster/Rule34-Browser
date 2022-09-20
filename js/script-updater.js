@@ -6,6 +6,7 @@ let UpdateScript = {
 
 function CheckScriptUpdate() {
 	clearTimeout(UpdateScript.timer)
+	if (!setting.auto_update) return
 	if (!window.navigator.onLine) {
 		UpdateScript.timer = setTimeout(CheckScriptUpdate, 4000)
 		return

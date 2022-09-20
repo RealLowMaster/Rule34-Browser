@@ -2360,11 +2360,6 @@ function Post(tabId, site, id) {
 			if (existsSync(url)) {
 				if (IsFormatVideo(db.post[i][3])) {
 					container.appendChild(CreateVideo(url, false, () => OpenSlider([i], 0)))
-					const s = CreateVideo(url, false).children[0]
-					s.id = 'testv'
-					container.appendChild(s)
-					new Plyr('#testv')
-
 				} else {
 					save = document.createElement('img')
 					save.classList.add('post-img')
@@ -3188,4 +3183,41 @@ function test(page, search) {
 	// r34xxx.Page(1, null, (err, result) => {
 	// 	console.log(result)
 	// })
+}
+
+// Tabs
+function OpenTabsList() {
+	KeyManager.ChangeCategory('tabslist')
+	tabslist.style.display = 'flex'
+	let save, save2, save3
+	const container = document.getElementById('tabslistcontainer')
+	for (let i = 0, l = browser.tabs.length; i < l; i++) {
+		save = document.createElement('div')
+
+		save2 = document.createElement('img')
+		save3 = browser.tabs[i].site
+		if (save3 < 0) save2.src = 'Image/favicon-32x32.png'
+		else save2.src = 'Image/sites/'+sites[save3].url+'-32x32.'+sites[save3].icon
+		save.appendChild(save2)
+
+		save2 =  document.createElement('span')
+		save3 = browser.tabs[i].title.innerText
+		save2.innerText = save3
+		save2.title = save3
+		save.appendChild(save2)
+
+		save2 = document.createElement('div')
+		save2.onclick = () => {}
+		save2.innerText = '⨯'
+		save.appendChild(save2)
+
+		container.appendChild(save)
+	}
+}
+
+function CloseTabsList() {
+	KeyManager.ChangeCategory('default')
+	tabslist.style.display = 'none'
+	const children = tabslistcontainer.children
+	for (let i = children.length - 1; i >= 0; i--) try { children[i].remove() } catch(err) {}
 }
