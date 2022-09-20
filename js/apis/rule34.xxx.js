@@ -4,7 +4,7 @@ class rule34xxx {
 		this.maxPage = 4762
 	}
 
-	#GetTags(html, arr, p = 0) {
+	#GetTags(html, arr) {
 		const data = [
 			[], // 0 Copyright
 			[], // 1 Character
@@ -16,9 +16,10 @@ class rule34xxx {
 		for (let i = 0, l = html.length; i < l; i++) {
 			if (html[i].hasAttribute('class')) {
 				const save = html[i].children
-				let value = save[0+p].innerText.replace(/\n/g, '')
+				const len = save.length - 1
+				let value = save[len-1].innerText.replace(/\n/g, '')
 				if (value[value.length-1] == ' ') value = LastChar(' ', value, true)
-				data[index].push([value, Number(save[1+p].innerText)])
+				data[index].push([value, Number(save[len].innerText)])
 			} else {
 				const save = html[i].innerText
 				if (save == "Copyright") index = 0
@@ -56,6 +57,7 @@ class rule34xxx {
 
 		const arr = [0, []]
 		if (save != null) {
+			
 			for (let i = save.length - 1; i >= 0; i--) {
 				if (save[i].tagName == 'A') {
 					arr[0] = Number(LastChar('=', save[i].href)) / perPage + 1
@@ -127,7 +129,7 @@ class rule34xxx {
 				console.error(err)
 				save = null
 			}
-			if (save != null) arr = this.#GetTags(save, arr, 2)
+			if (save != null) arr = this.#GetTags(save, arr)
 
 			callback(null, arr)
 		}).catch(err => {
