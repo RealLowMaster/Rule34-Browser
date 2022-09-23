@@ -15,7 +15,7 @@ function createWindow () {
 		show: false,
 		backgroundColor: "#fff",
 		paintWhenInitiallyHidden: true,
-		title: 'Rule34 Browser v2.3.5',
+		title: 'Rule34 Browser v2.3.6',
 		webPreferences: {
 			enableRemoteModule: true,
 			nodeIntegration: true,

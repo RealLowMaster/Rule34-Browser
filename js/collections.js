@@ -148,6 +148,7 @@ function LoadCollection(tabId, index = null, page = 1) {
 	const post_cont = db.collection[index][1].length
 	const date = new Date().getTime()
 	const total_pages = Math.ceil(post_cont / setting.pic_per_page)
+	let needReload = false
 	if (page > total_pages) page = total_pages
 
 	if (total_pages > 0) {
@@ -165,7 +166,15 @@ function LoadCollection(tabId, index = null, page = 1) {
 				min = max - setting.pic_per_page
 				if (min < 0) min = 0
 			}
-			for (let i = max - 1; i >= min; i--) save.appendChild(GetPostElement(tab, db.collection[index][1][i], date, true))
+			for (let i = max - 1; i >= min; i--) {
+				save2 = GetPost(db.collection[index][1][i])
+				if (save2 == null) {
+					db.collection[index][1].splice(i, 1)
+					needReload = true
+					continue
+				}
+				save.appendChild(GetPostElement(tab, save2, date))
+			}
 		} else {
 			if (post_cont < setting.pic_per_page) max = post_cont
 			else {
@@ -173,7 +182,15 @@ function LoadCollection(tabId, index = null, page = 1) {
 				max = min + setting.pic_per_page
 				if (max > post_cont) max = post_cont
 			}
-			for (let i = min; i < max; i++) save.appendChild(GetPostElement(tab, db.collection[index][1][i], date, true))
+			for (let i = min; i < max; i++) {
+				save2 = GetPost(db.collection[index][1][i])
+				if (save2 == null) {
+					db.collection[index][1].splice(i, 1)
+					needReload = true
+					continue
+				}
+				save.appendChild(GetPostElement(tab, save2, date))
+			}
 		}
 		container.appendChild(save)
 		const pagination = GetPaginationList(total_pages, page)
@@ -205,6 +222,12 @@ function LoadCollection(tabId, index = null, page = 1) {
 	container.appendChild(save)
 
 	tab.Load(token, container, db.collection[index][0]+' '+page, null, page, total_pages)
+	if (needReload) {
+		try { jsonfile.writeFileSync(paths.db+'collection', { v:db.manager.collection, a:db.collection }) } catch(err) { console.error(err) }
+		browser.SetNeedReload(-4)
+		browser.SetNeedReload(-5)
+		return
+	}
 }
 
 const collection = {
