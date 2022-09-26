@@ -2792,7 +2792,7 @@ function LoadInfo(tabId, page, type) {
 	container.classList.add('main-page')
 	container.appendChild(GetMainMenu(tab, 0))
 
-	const total_pages = Math.ceil(post_cont / setting.pic_per_page)
+	const total_pages = Math.ceil(post_cont / 30)
 	if (page > total_pages) page = total_pages
 
 	if (total_pages > 0) {
