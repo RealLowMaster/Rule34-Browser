@@ -54,14 +54,6 @@ const sites = [
 		ip: '104.26.3.244',
 		location: 'USA - San Francisco - California',
 		home: DerpiBooruHome
-	},
-	{
-		name: 'Konachan.com (demo)',
-		url: 'konachan.com',
-		icon: 'webp',
-		ip: '',
-		location: '',
-		home: null
 	}
 ]
 
